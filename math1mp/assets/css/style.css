@@ -284,3 +284,19 @@ a {
 
 .cf {
   zoom: 1; }
+
+footer {
+  background: rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-top: 1px dashed #b5e853;
+  padding: 0;
+  padding-bottom: 40px;
+  margin: 0; }
+
+footer span#left {
+  margin-top: 13px;
+  float: left; }
+
+footer span#right {
+  margin-top: 5px;
+  float: right; }
