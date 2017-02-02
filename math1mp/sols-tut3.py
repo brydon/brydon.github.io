@@ -91,7 +91,7 @@ print(population)
 
 population = 120
 years = 0
-while population-4>=0.01:
+while abs(population-4)>=0.01:
     years += 1
     population = 6*population/(2+population)
 print(years)
