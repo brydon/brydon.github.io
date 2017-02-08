@@ -25,25 +25,366 @@
       <section id="main_content">
         <p><em>With all these tutorial quesitons, don’t worry if you can’t do them all in the 50 minutes (usually less, because I make announcements too). Instead, focus on one or two that you think you mostly understand, and ask me questions until you fully understand. Some of these tutorial questions are really hard!</em></p>
 
+<h1 id="tutorial-6"><a href="#header-1"></a>Tutorial 6</h1>
+<h2 id="-week-of-feb9-14-2017"><a href="#header-2"></a> (Week of Feb9-14, 2017)</h2>
+<p>For this tutorial, we will be working on dictionaries! Along the way we’ll do some loops, file I/O, if statements, and even some stuff with lists! Find the tutorial file <a href="lab6.pdf">here</a>.</p>
+
 <h1 id="tutorial-5"><a href="#header-1"></a>Tutorial 5</h1>
 <h2 id="-week-of-feb-2-7-2017"><a href="#header-2"></a> (Week of Feb 2-7, 2017)</h2>
 
 <p>For this week’s tutorial we look at some basic file i/o, some more function stuff, the dangers of floating point problems, and just some general python tricks. Find the tutorial pdf <a href="lab5.pdf">here</a>. Question 1 also requires use of <a href="lipsum.txt">lipsum.txt</a>.</p>
+
+<p>The solutions are posted <a href="sols-tut5.py">sols-tut5.py</a>:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">math</span>
+
+
+<span class="c"># Question 1a</span>
+<span class="k">def</span> <span class="nf">read_file</span><span class="p">():</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">"lipsum.txt"</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="n">read_file</span><span class="p">()</span>
+
+
+<span class="c"># Question 1b</span>
+<span class="k">def</span> <span class="nf">read_file</span><span class="p">():</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">"lipsum.txt"</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+
+<span class="n">read_file</span><span class="p">()</span>
+
+
+<span class="c"># Question 2a</span>
+<span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="nb">sum</span> <span class="o">+=</span> <span class="mf">0.1</span>
+    <span class="k">if</span> <span class="nb">sum</span> <span class="o">==</span> <span class="mf">0.3</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"We expected 0.3, didn't get that at all"</span><span class="p">)</span>
+
+<span class="c"># Question 2b</span>
+<span class="n">number</span> <span class="o">=</span> <span class="mf">9.3</span>
+
+<span class="k">while</span> <span class="n">number</span> <span class="o">%</span> <span class="mf">0.5</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">number</span> <span class="o">-=</span> <span class="mf">0.1</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"We expected 9.0, not even CLOSE"</span><span class="p">)</span>
+
+<span class="c"># Question 2c</span>
+<span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="nb">sum</span> <span class="o">+=</span> <span class="mf">0.1</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">sum</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">:</span>
+        <span class="k">break</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"We expected 0.3, got close enough!"</span><span class="p">)</span>
+
+
+<span class="c"># Question 3</span>
+<span class="k">def</span> <span class="nf">quadratic</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="s">"""Performs the quadratic Formula.
+        No real roots: returns None
+        One real root: returns [root]
+        otherwise returns a sorted list of the roots"""</span>
+
+    <span class="n">discr</span> <span class="o">=</span> <span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="n">c</span>
+    <span class="k">if</span> <span class="n">discr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">discr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)]</span>
+    <span class="n">retlist</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="n">b</span><span class="o">+</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">discr</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">),</span>
+               <span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">discr</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)]</span>
+    <span class="n">retlist</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">retlist</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">quadratic</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">quadratic</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">quadratic</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">quadratic</span><span class="p">(</span><span class="o">-</span><span class="mi">17</span><span class="p">,</span> <span class="mi">5</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+
+
+<span class="c"># Question 4</span>
+<span class="k">def</span> <span class="nf">all_even</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">):</span>
+    <span class="s">"""Returns a list of integers between min and max (inclusive) whose digits (base 10) are all even"""</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">alleven</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">for</span> <span class="n">digit</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">digit</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">alleven</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">alleven</span><span class="p">:</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">values</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">all_even</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+
+</code></pre>
+</div>
 
 <h1 id="tutorial-4"><a href="#header-1"></a>Tutorial 4</h1>
 <h2 id="-week-of-jan-26-31-2017"><a href="#header-2"></a> (Week of Jan 26-31, 2017)</h2>
 
 <p>For this week’s tutorial we will be focusing on python exercises dealing with <em>functions</em> and <em>recursion</em>. Find the tutorial pdf <a href="lab4.pdf">here</a>.</p>
 
-<p>The solutions can be found <a href="sols-tut4.py">here</a>.</p>
+<p>The solutions are posted <a href="sols-tut4.py">sols-tut4.py</a>:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">number_to_day</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s">"""
+    Takes a number, returns a string representing day of the week
+    :param n:
+    :return Day of the week as a string:
+    """</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Sunday"</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Monday"</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Tuesday"</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Wednesday"</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Thursday"</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Friday"</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Saturday"</span>
+
+
+<span class="k">def</span> <span class="nf">my_max</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="s">"""
+    Returns the maximum of the list
+    :param in_list:
+    :return the maximal element in the in_list:
+    """</span>
+    <span class="n">biggest</span> <span class="o">=</span> <span class="n">in_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">in_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">biggest</span><span class="p">:</span>
+            <span class="n">biggest</span> <span class="o">=</span> <span class="n">l</span>
+    <span class="k">return</span> <span class="n">biggest</span>
+
+
+<span class="k">def</span> <span class="nf">case_count</span><span class="p">(</span><span class="n">in_string</span><span class="p">):</span>
+    <span class="s">"""
+    Counts the number of lower and upper case letters in a string
+    :param in_string:
+    :return list of two numbers, first number how many lowercase letters, second number how many uppercase letters:
+    """</span>
+    <span class="n">uppercase_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">lowercase_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">in_string</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">letter</span> <span class="o">!=</span> <span class="s">" "</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">letter</span> <span class="o">==</span> <span class="n">letter</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+                <span class="n">uppercase_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lowercase_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">lowercase_count</span><span class="p">,</span> <span class="n">uppercase_count</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">make_unique</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="s">"""
+    Removes duplicates from a list, preserving ordering of the first appearance of an element
+    :param in_list:
+    :return a set of unique elements of in_list:
+    """</span>
+    <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">in_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_list</span><span class="p">:</span>
+            <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_list</span>
+
+
+<span class="k">def</span> <span class="nf">is_prime</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s">"""
+    Tests if a number n is prime
+    :param n:
+    :return True/False:
+    """</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+
+
+<span class="k">def</span> <span class="nf">only_even</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="s">"""
+    Creates a new list of even elements of the input list
+    :param in_list:
+    :return a new list of even elements of list:
+    """</span>
+    <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">in_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_list</span>
+
+
+<span class="k">def</span> <span class="nf">make_primes</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="s">"""
+    Makes a list of primes less than n
+    :param n:
+    :return a list of all primes less than n:
+    """</span>
+    <span class="n">out_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_prime</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">out_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out_list</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="c"># Run all the test cases!</span>
+    <span class="c"># This should all return True, otherwise something's wrong!</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 1"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">number_to_day</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s">"Sunday"</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 2"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">my_max</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">my_max</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">==</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">my_max</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 3"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">case_count</span><span class="p">(</span><span class="s">"The Quick Brown Fox"</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 4"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">make_unique</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 5"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">is_prime</span><span class="p">(</span><span class="mi">23</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">is_prime</span><span class="p">(</span><span class="mi">161</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">is_prime</span><span class="p">(</span><span class="mi">211</span><span class="p">))</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 6"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">only_even</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">"Question 7"</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">make_primes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">make_primes</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">47</span><span class="p">])</span>
+
+</code></pre>
+</div>
 
 <h1 id="tutorial-3"><a href="#header-1"></a>Tutorial 3</h1>
 <h2 id="-week-of-jan-19-24-2017"><a href="#header-2"></a> (Week of Jan 19-24, 2017)</h2>
 
 <p>For this week’s tutorial we will be focusing on python exerises dealing with <em>loops</em> and <em>lists</em> – and often, how the two interact.</p>
 
-<p>The tutorial pdf file can be found <a href="lab3.pdf">here</a>, as with last week some questions are much harder than others (Question 5, for instance).
-The solutions can be found <a href="sols-tut3.py">here</a>.</p>
+<p>The tutorial pdf file can be found <a href="lab3.pdf">here</a>, as with last week some questions are much harder than others (Question 5, for instance).</p>
+
+<p>The solutions are posted <a href="sols-tut3.py">sols-tut3.py</a>:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Lab 2 Q8</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+   <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">101</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">+=</span> <span class="n">i</span>
+<span class="k">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">*=</span> <span class="n">i</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="c"># Lab 2 Q 9</span>
+<span class="n">fib</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">fib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fib</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">fib</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">fib</span><span class="p">)</span>
+
+<span class="c"># Lab 3 Q1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">101</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"fizzbuzz"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"fizz"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"buzz"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="c"># Lab 3 Q2 -- one option</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+<span class="c"># Alternative</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">end</span><span class="o">=</span><span class="s">""</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">()</span>
+
+<span class="c"># Lab 3 Q3</span>
+<span class="n">lista</span> <span class="o">=</span> <span class="p">[</span><span class="s">"a"</span><span class="p">,</span><span class="s">"b"</span><span class="p">,</span><span class="s">"c"</span><span class="p">,</span><span class="s">"d"</span><span class="p">,</span><span class="s">"e"</span><span class="p">,</span><span class="s">"f"</span><span class="p">,</span><span class="s">"g"</span><span class="p">,</span><span class="s">"h"</span><span class="p">,</span><span class="s">"g"</span><span class="p">,</span><span class="s">"f"</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">lista</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">"b"</span><span class="p">))</span>
+
+<span class="n">letter</span> <span class="o">=</span> <span class="s">"f"</span>
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">lista</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="n">letter</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">break</span>
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lista</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">lista</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="n">letter</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+<span class="c"># Lab 3 Q4</span>
+
+<span class="n">vector</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+
+<span class="n">vector</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+<span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">middle1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">middle2</span> <span class="o">=</span> <span class="n">middle1</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">middlenumber</span> <span class="o">=</span> <span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="n">middle1</span><span class="p">]</span><span class="o">+</span><span class="n">vector</span><span class="p">[</span><span class="n">middle2</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">middlenumber</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">middle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">vector</span><span class="p">[</span><span class="n">middle</span><span class="p">])</span>
+
+<span class="c"># Lab 3 Q5</span>
+
+<span class="n">population</span> <span class="o">=</span> <span class="mi">120</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">population</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">population</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+
+<span class="c"># Part b</span>
+
+<span class="n">population</span> <span class="o">=</span> <span class="mi">120</span>
+<span class="n">years</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">population</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span><span class="o">&gt;=</span><span class="mf">0.01</span><span class="p">:</span>
+    <span class="n">years</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">population</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">population</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">years</span><span class="p">)</span>
+
+</code></pre>
+</div>
 
 <h1 id="tutorial-2"><a href="#header-1"></a>Tutorial 2</h1>
 <h2 id="-week-of-jan-12-17-2017"><a href="#header-2"></a> (Week of Jan 12-17, 2017)</h2>
@@ -54,7 +395,102 @@ The solutions can be found <a href="sols-tut3.py">here</a>.</p>
 
 <p>The tutorial pdf file can be found <a href="lab2.pdf">here</a>.</p>
 
-<p>The solutions can be found <a href="sols-tut2.py">here</a>.</p>
+<p>The solutions are posted <a href="sols-tut2.py">sols-tut2.py</a>:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c">## Question 1</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="k">print</span><span class="p">(</span><span class="n">height</span><span class="o">*</span><span class="n">length</span><span class="p">)</span>
+
+<span class="c">## Question 2</span>
+<span class="n">base</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="k">print</span><span class="p">(</span><span class="n">base</span><span class="o">*</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c">## Question 3</span>
+<span class="n">first_name</span> <span class="o">=</span> <span class="s">"brydon"</span>
+<span class="n">last_name</span> <span class="o">=</span> <span class="s">"eastman"</span>
+
+<span class="c"># Part a</span>
+<span class="k">print</span><span class="p">(</span><span class="n">first_name</span><span class="o">+</span><span class="s">" "</span><span class="o">+</span><span class="n">last_name</span><span class="p">)</span>
+
+<span class="c"># Part f</span>
+<span class="k">print</span><span class="p">(</span><span class="n">first_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">+</span><span class="s">" "</span><span class="o">+</span><span class="n">last_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+
+<span class="c">## Question 4</span>
+<span class="n">home_country</span> <span class="o">=</span> <span class="s">"Canada"</span>
+<span class="n">birth_country</span> <span class="o">=</span> <span class="s">"America"</span>
+
+<span class="c"># One way</span>
+
+<span class="n">temp</span> <span class="o">=</span> <span class="n">birth_country</span>
+<span class="n">birth_country</span> <span class="o">=</span> <span class="n">home_country</span>
+<span class="n">home_country</span> <span class="o">=</span> <span class="n">temp</span>
+
+<span class="c"># Alterative!</span>
+<span class="n">birth_country</span><span class="p">,</span> <span class="n">home_country</span> <span class="o">=</span> <span class="n">home_country</span><span class="p">,</span> <span class="n">birth_country</span>
+
+<span class="c">## Question 5</span>
+
+<span class="n">vector</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">mean</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+
+
+<span class="c">## Question 6</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s">'a'</span><span class="p">,</span><span class="s">'b'</span><span class="p">,</span><span class="s">'c'</span><span class="p">,</span><span class="s">'d'</span><span class="p">]</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="c"># Note, since lists are immutable, you need the copy!</span>
+<span class="n">alpha</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span> <span class="c"># This changes alpha /in place/ to ['d','c','b','a']</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">alpha</span> <span class="c"># or beta += alpha, whatever you prefer !</span>
+<span class="k">print</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+<span class="c"># Note the similarities between this and question 4!</span>
+
+<span class="c">## Question 7</span>
+<span class="n">act1scene1</span> <span class="o">=</span> <span class="s">"ACT I Scene I Verona A public place Enter Sampson and Gregory with swords and bucklers of the house of Capulet Samp Gregory on my word we ll not carry coals Greg No for then we should be colliers Samp I mean an we be in choler we ll draw Greg Ay while you live draw your neck out of collar Samp I strike quickly being moved Greg But thou art not quickly moved to strike Samp A dog of the house of Montague moves me Greg To move is to stir and to be valiant is to stand Therefore if thou art moved thou runn st away Samp A dog of that house shall move me to stand I will take the wall of any man or maid of Montague s Greg That shows thee a weak slave for the weakest goes to the wall Samp Tis true and therefore women being the weaker vessels are ever thrust to the wall Therefore I will push Montague s men from the wall and thrust his maids to the wall Greg The quarrel is between our masters and us their men Samp Tis all one I will show myself a tyrant When I have fought with the men I will be cruel with the maids I will cut off their heads Greg The heads of the maids Samp Ay the heads of the maids or their maidenheads Take it in what sense thou wilt Greg They must take it in sense that feel it Samp Me they shall feel while I am able to stand and tis known I am a pretty piece of flesh Greg Tis well thou art not fish if thou hadst thou hadst been poor John Draw thy tool Here comes two of the house of Montagues Enter two other Servingmen Abram and Balthasar Samp My naked weapon is out Quarrel I will back thee Greg How turn thy back and run Samp Fear me not Greg No marry I fear thee Samp Let us take the law of our sides let them begin Greg I will frown as I pass by and let them take it as they list Samp Nay as they dare I will bite my thumb at them which is disgrace to them if they bear it Abr Do you bite your thumb at us sir Samp I do bite my thumb sir Abr Do you bite your thumb at us sir Samp aside to Gregory Is the law of our side if I say ay Greg aside to Sampson No Samp No sir I do not bite my thumb at you sir but I bite my thumb sir Greg Do you quarrel sir Abr Quarrel sir No sir Samp But if you do sir am for you I serve as good a man as you Abr No better Samp Well sir Enter Benvolio Greg aside to Sampson Say better Here comes one of my master s kinsmen Samp Yes better sir Abr You lie Samp Draw if you be men Gregory remember thy swashing blow They fight Ben Part fools Beats down their swords Put up your swords You know not what you do Enter Tybalt Tyb What art thou drawn among these heartless hinds Turn thee Benvolio look upon thy death Ben I do but keep the peace Put up thy sword Or manage it to part these men with me Tyb What drawn and talk of peace I hate the word As I hate hell all Montagues and thee Have at thee coward They fight Enter an officer and three or four Citizens with clubs or partisans Officer Clubs bills and partisans Strike beat them down Citizens Down with the Capulets Down with the Montagues Enter Old Capulet in his gown and his Wife Cap What noise is this Give me my long sword ho Wife A crutch a crutch Why call you for a sword Cap My sword I say Old Montague is come And flourishes his blade in spite of me Enter Old Montague and his Wife Mon Thou villain Capulet Hold me not let me go M Wife Thou shalt not stir one foot to seek a foe Enter Prince Escalus with his Train Prince Rebellious subjects enemies to peace Profaners of this neighbour stained steel Will they not hear What ho you men you beasts That quench the fire of your pernicious rage With purple fountains issuing from your veins On pain of torture from those bloody hands Throw your mistempered weapons to the ground And hear the sentence of your moved prince Three civil brawls bred of an airy word By thee old Capulet and Montague Have thrice disturb d the quiet of our streets And made Verona s ancient citizens Cast by their grave beseeming ornaments To wield old partisans in hands as old Cank red with peace to part your cank red hate If ever you disturb our streets again Your lives shall pay the forfeit of the peace For this time all the rest depart away You Capulet shall go along with me And Montague come you this afternoon To know our farther pleasure in this case To old Freetown our common judgment place Once more on pain of death all men depart Exeunt all but Montague his Wife and Benvolio Mon Who set this ancient quarrel new abroach Speak nephew were you by when it began Ben Here were the servants of your adversary And yours close fighting ere I did approach I drew to part them In the instant came The fiery Tybalt with his sword prepar d Which as he breath d defiance to my ears He swung about his head and cut the winds Who nothing hurt withal hiss d him in scorn While we were interchanging thrusts and blows Came more and more and fought on part and part Till the Prince came who parted either part M Wife O where is Romeo Saw you him to day Right glad I am he was not at this fray Ben Madam an hour before the worshipp d sun Peer d forth the golden window of the East A troubled mind drave me to walk abroad Where underneath the grove of sycamore That westward rooteth from the city s side So early walking did I see your son Towards him I made but he was ware of me And stole into the covert of the wood I measuring his affections by my own Which then most sought where most might not be found Being one too many by my weary self Pursu d my humour not Pursuing his And gladly shunn d who gladly fled from me Mon Many a morning hath he there been seen With tears augmenting the fresh morning s dew Adding to clouds more clouds with his deep sighs But all so soon as the all cheering sun Should in the furthest East bean to draw The shady curtains from Aurora s bed Away from light steals home my heavy son And private in his chamber pens himself Shuts up his windows locks fair daylight And makes himself an artificial night Black and portentous must this humour prove Unless good counsel may the cause remove Ben My noble uncle do you know the cause Mon I neither know it nor can learn of him Ben Have you importun d him by any means Mon Both by myself and many other friend But he his own affections counsellor Is to himself I will not say how true But to himself so secret and so close So far from sounding and discovery As is the bud bit with an envious worm Ere he can spread his sweet leaves to the air Or dedicate his beauty to the sun Could we but learn from whence his sorrows grow We would as willingly give cure as know Enter Romeo Ben See where he comes So please you step aside I ll know his grievance or be much denied Mon I would thou wert so happy by thy stay To hear true shrift Come madam let s away Exeunt Montague and Wife Ben Good morrow cousin Rom Is the day so young Ben But new struck nine Rom Ay me sad hours seem long Was that my father that went hence so fast Ben It was What sadness lengthens Romeo s hours Rom Not having that which having makes them short Ben In love Rom Out Ben Of love Rom Out of her favour where I am in love Ben Alas that love so gentle in his view Should be so tyrannous and rough in proof Rom Alas that love whose view is muffled still Should without eyes see pathways to his will Where shall we dine O me What fray was here Yet tell me not for I have heard it all Here s much to do with hate but more with love Why then O brawling love O loving hate O anything of nothing first create O heavy lightness serious vanity Misshapen chaos of well seeming forms Feather of lead bright smoke cold fire sick health Still waking sleep that is not what it is This love feel I that feel no love in this Dost thou not laugh Ben No coz I rather weep Rom Good heart at what Ben At thy good heart s oppression Rom Why such is love s transgression Griefs of mine own lie heavy in my breast Which thou wilt propagate to have it prest With more of thine This love that thou hast shown Doth add more grief to too much of mine own Love is a smoke rais d with the fume of sighs Being purg d a fire sparkling in lovers eyes Being vex d a sea nourish d with lovers tears What is it else A madness most discreet A choking gall and a preserving sweet Farewell my coz Ben Soft I will go along An if you leave me so you do me wrong Rom Tut I have lost myself I am not here This is not Romeo he s some other where Ben Tell me in sadness who is that you love Rom What shall I groan and tell thee Ben Groan Why no But sadly tell me who Rom Bid a sick man in sadness make his will Ah word ill urg d to one that is so ill In sadness cousin I do love a woman Ben I aim d so near when I suppos d you lov d Rom A right good markman And she s fair I love Ben A right fair mark fair coz is soonest hit Rom Well in that hit you miss She ll not be hit With Cupid s arrow She hath Dian s wit And in strong proof of chastity well arm d From Love s weak childish bow she lives unharm d She will not stay the siege of loving terms Nor bide th encounter of assailing eyes Nor ope her lap to saint seducing gold O she s rich in beauty only poor That when she dies with beauty dies her store Ben Then she hath sworn that she will still live chaste Rom She hath and in that sparing makes huge waste For beauty starv d with her severity Cuts beauty off from all posterity She is too fair too wise wisely too fair To merit bliss by making me despair She hath forsworn to love and in that vow Do I live dead that live to tell it now Ben Be rul d by me forget to think of her Rom O teach me how I should forget to think Ben By giving liberty unto thine eyes Examine other beauties Rom Tis the way To call hers exquisite in question more These happy masks that kiss fair ladies brows Being black puts us in mind they hide the fair He that is strucken blind cannot forget The precious treasure of his eyesight lost Show me a mistress that is passing fair What doth her beauty serve but as a note Where I may read who pass d that passing fair Farewell Thou canst not teach me to forget Ben I ll pay that doctrine or else die in debt Exeunt"</span>
+
+<span class="c"># Part a</span>
+<span class="k">print</span><span class="p">(</span><span class="n">act1scene1</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">"Romeo"</span><span class="p">))</span>
+
+<span class="c"># Part b</span>
+<span class="k">print</span><span class="p">(</span><span class="n">act1scene1</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">"quarrel"</span><span class="p">))</span>
+
+<span class="c"># Part c</span>
+<span class="n">index1</span> <span class="o">=</span> <span class="n">act1scene1</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">"Romeo"</span><span class="p">)</span>
+<span class="n">index2</span> <span class="o">=</span> <span class="n">act1scene1</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">"Romeo"</span><span class="p">,</span><span class="n">index1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">inbetween_text</span> <span class="o">=</span> <span class="n">act1scene1</span><span class="p">[</span><span class="n">index1</span><span class="o">++</span><span class="nb">len</span><span class="p">(</span><span class="s">"Romeo"</span><span class="p">):</span><span class="n">index2</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="n">inbetween_text</span><span class="p">)</span>
+
+<span class="c">## Question 8</span>
+<span class="c"># Part a</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="c"># Part b</span>
+<span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+  <span class="nb">sum</span> <span class="o">+=</span> <span class="n">i</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">sum</span><span class="p">)</span>
+
+<span class="c"># Part c</span>
+<span class="n">result</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">):</span>
+  <span class="n">result</span> <span class="o">*=</span> <span class="n">i</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="c">## Question 9</span>
+<span class="n">fib</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+  <span class="n">fib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fib</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">fib</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fib</span><span class="p">)</span>
+
+<span class="c">## Question 10</span>
+<span class="c"># Part a</span>
+<span class="c"># Prints 10,9,8,7,6</span>
+<span class="c"># Part b</span>
+<span class="c"># Prints ['ab','cd','AB','CD']</span>
+
+</code></pre>
+</div>
 
 <h1 id="tutorial-1"><a href="#header-1"></a>Tutorial 1</h1>
 <h2 id="-week-of-jan-5-11-2017"><a href="#header-2"></a> (Week of Jan 5-11, 2017)</h2>
