@@ -29,6 +29,115 @@
 <h2 id="-week-of-feb9-14-2017"><a href="#header-2"></a> (Week of Feb9-14, 2017)</h2>
 <p>For this tutorial, we will be working on dictionaries! Along the way we’ll do some loops, file I/O, if statements, and even some stuff with lists! Find the tutorial file <a href="lab6.pdf">here</a>.</p>
 
+<p>The solutions are posted <a href="sols-tut6.py">sols-tut6.py</a>:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># Q1a</span>
+
+<span class="k">def</span> <span class="nf">add_dictionaries</span><span class="p">(</span><span class="n">dict1</span><span class="p">,</span> <span class="n">dict2</span><span class="p">):</span>
+    <span class="s">""" Concatenates two dictionaries """</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">dict1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dict2</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+<span class="c"># Q1b</span>
+
+<span class="k">def</span> <span class="nf">add_dictionaries</span><span class="p">(</span><span class="n">dict1</span><span class="p">,</span> <span class="n">dict2</span><span class="p">):</span>
+    <span class="s">""" Concatenates two dictionaries, if they have the same keys then values are added """</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">dict1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dict2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dict1</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dict2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+<span class="c"># Q2a</span>
+
+<span class="k">def</span> <span class="nf">no_spaces</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">" "</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">old_value</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">" "</span><span class="p">,</span><span class="s">"_"</span><span class="p">)</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_value</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+<span class="c"># Q2b</span>
+
+<span class="k">def</span> <span class="nf">no_spaces</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">" "</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">old_value</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">new_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">" "</span><span class="p">,</span><span class="s">"_"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">old_value</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+<span class="c"># Q3a</span>
+
+<span class="k">def</span> <span class="nf">string_to_dict</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">letter</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">letter</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+<span class="c"># Q3cd</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">"2600-0.txt"</span><span class="p">)</span>
+<span class="n">wap_content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">wap_dict</span> <span class="o">=</span> <span class="n">string_to_dict</span><span class="p">(</span><span class="n">wap_content</span><span class="p">)</span>
+
+<span class="c"># Q3e</span>
+<span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="s">"abcdefghijklmnopqrstuvwxyz"</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">wap_dict</span><span class="p">[</span><span class="n">letter</span><span class="p">])</span>
+
+<span class="c"># Q4a</span>
+<span class="k">def</span> <span class="nf">dictionary_max</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">biggest</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">biggest</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">biggest</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">break</span>
+        <span class="k">elif</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">biggest</span><span class="p">:</span>
+            <span class="n">biggest</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">biggest</span>
+
+<span class="c"># Q4b</span>
+<span class="k">def</span> <span class="nf">dictionary_max</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">biggest_val</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">biggest_key</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">biggest_val</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">biggest_val</span><span class="p">:</span>
+            <span class="n">biggest_val</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">biggest_key</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">biggest_key</span>
+
+<span class="c"># Q4c</span>
+
+<span class="k">def</span> <span class="nf">dictionary_max</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">biggest_val</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span><span class="o">*</span><span class="n">n</span>
+    <span class="n">biggest_key</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span><span class="o">*</span><span class="n">n</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">biggest_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">biggest_val</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">biggest_val</span> <span class="o">=</span> <span class="n">biggest_val</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">+</span> <span class="n">biggest_val</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">biggest_key</span> <span class="o">=</span> <span class="n">biggest_key</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">biggest_key</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">biggest_key</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">dictionary_max</span><span class="p">(</span><span class="n">wap_dict</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+</code></pre>
+</div>
+
 <h1 id="tutorial-5"><a href="#header-1"></a>Tutorial 5</h1>
 <h2 id="-week-of-feb-2-7-2017"><a href="#header-2"></a> (Week of Feb 2-7, 2017)</h2>
 
