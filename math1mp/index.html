@@ -50,7 +50,35 @@
 <p>Find the tutorial pdf <a href="lab7.pdf">here</a> you will also need <a href="lab7_data.txt">this text file</a>.</p>
 
 <p>The solutions are posted <a href="sols-tut7.py">sols-tut7.py</a>:</p>
-<div class="language-python highlighter-rouge"><pre class="highlight"><code>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">random_matrix_fun</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mi">5</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="n">B</span><span class="p">[:,:</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">B</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="n">w</span><span class="p">,</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+    <span class="n">allRight</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">X</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">X</span><span class="p">[:,</span><span class="n">i</span><span class="p">])):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"At least one eigenvalue is wrong!"</span><span class="p">)</span>
+            <span class="n">allRight</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">allRight</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"All the eigenvalues are correct!"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">w</span><span class="p">]</span>
+
+
+<span class="k">print</span><span class="p">(</span><span class="n">random_matrix_fun</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
 </code></pre>
 </div>
 
