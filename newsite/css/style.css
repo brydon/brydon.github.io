@@ -1,35 +1,9 @@
-@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,900");
-@import url("font-awesome.min.css");
-
 body {
     margin: 0;
     font-family: "Inconsolata";
     height: 100%;
 }
 
-#smnav li {
-    list-style-type: none;
-}
-
-#smnav li a {
-    display: inline-block;
-    overflow: hidden;
-    text-indent: -9999px;
-}
-
-#smnav li a:before {
-    color: #f0f;
-    float: left;
-    font-size: 44px;
-    line-height: 42px;
-    margin: 0;
-    text-indent: 0;
-}
-
-#smnav li a:hover {
-    color: #333;
-    font-size: 20px;
-}
 
 #header h1 {
     -webkit-text-stroke: 1px black;
