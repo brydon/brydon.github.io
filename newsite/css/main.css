@@ -27,8 +27,8 @@
 }
 
 .wrapper .main {
-		min-height: 100%;
-        float:left;
+    min-height: 100%;
+    float:left;
 }
 
 html {
@@ -47,6 +47,7 @@ div#header {
 
 .container {
     max-width: 700px;
+    min-height: 300px;
     margin: auto;
 }
 
