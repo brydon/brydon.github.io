@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Agent Based Simulations of Social Distancing in COVID-19 (SARS-CoV-2).</title>
+<style type="text/css">
+.summary {
+    display: block;
+    float: left;
+    margin-left: 50px;
+    width: 200px;
+    height: 75px;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 20pt;
+}
+
+h3 {
+    font-size: 12pt;
+}
+
+.summary span{
+    width: 100px;
+    float: left;
+}
+
+.graph_div {
+    display: block;
+}
+
+.ns, .ni, .nr, .nd {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.ns { color: grey; }
+.ni { color: red; }
+.nd { color: black; }
+.nr { color: blue; }
+
+.simulation {
+    border: 1px solid black; 
+    display: block;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.container {
+    margin: auto;
+    width: 800px;
+}
+
+.hashtag {
+    font-weight: bold;
+}
+
+.nosim {
+    width:100%;
+    height:505px;
+    background-color: #e3e3e3;
+}
+.button {
+    margin:auto;
+    padding-top:240px;
+    text-align:center;
+    font-weight:bold;
+    font-size: 20pt;
+}
+</style>
+</head>
+
+<body>
+<h1>Stochastic Simulations of Infective Irresponsible Social Distance Behaviour in the presence of a Viral Epidemic</h1>
+<h3>Author: Brydon Eastman, March 2020.</h3>
+
+<p><a href="" title="Washington Post Article">This Washington Post article</a> has gained a lot of well deserved praise recently. The article is a great example of effective science communication. They use interesting tools to extract the key intuition behind how the public health practice of social distancing can help in the fight against epidemics. The simulations they provide showcase the correct intuition and descriptive qualitative behaviour, however they should not be taken as quantitatively authoritative. After all, real life interactions are complex and modelling the behaviour of human society with balls bouncing around a box is quite reductive. These simulations still have worth, however, as they effectively communicate the intuition behind complicated ideas and how these effects can change the numerics of the situation. Also, as a nerd, I was really interested in trying to do these kind of simulations on the user end of a webpage with Javascript. (If any of that interests you too, the simulation and display code are all OpenSource and available in the source file of this document.) Here I tweak their ideas to investigate different effects of social distancing on controlling the virus.</p>
+
+<p> Below I present three simple simulations. In these simulations the balls bouncing around represent people. At the outset, we split the population into two groups: mixers and distancers. Social mixers are the moving balls in the simulations. They represent people who are going about their daily routines, either out of necessity (in the case of healthcare workers, grocers, and other essential workers) or not. The distancers, however, stay in place to help prevent the spread of the disease. The grey colour represents susceptible people, the red colour people infected with the virus, the blue colour represents people who have been infected and are now recovered with immunity, and the black colour represents people who have died from the virus. </p>
+
+<p>In this first simulation I just present the situation where 80% of the population are practicing social distancing and 20% are practicing social mixing. The simulation begins with only a single infectious person (the red dot), and everyone else susceptible (grey dots). The simulation will run until there are no longer any infectious people at all. Every time you load these simulations, you will get a different (unique) result based on the stochastics inherent in the simulations. So keep in mind, every time you refresh the page you will be looking at a unique simulation with unique plots. In general, however, this infective curve (the red one) should look similar to most infective curves presented before. Often there are grey points left over after this simulation. These represent people who throughout the entire course of the outbreak, never themselves got sick. Consider these people throughout the simulation. They often are distancers, not mixers, and they often are surrounded by other distancers.</p>
+
+<div id="sim_1">
+</div>
+
+<p>In the following simulation I still keep the population split where 80% are distancing and 20% are mixing, however I also treat the social distancing behaviour as something that can change. Every time now that a moving ball comes in contact with a stationary ball, there is a chance that that stationary ball starts moving as well. This is meant to represent the situation wherein a person who is carefully isolating themself in their house and never going out comes into contact in some capacity with someone who is not strictly practicing social distancing. This contact could take many forms, for instance it could be a situation where a friend physically stops by your front door to have coffee or it could be seeing a friend post online pictures of themself at a park. In any case, this interaction has a chance of convincing someone of going for a walk themself. In a sense this behaviour of social mixing is catching and is spreading through the population like another virus. In the following simulation individuals have a 5% chance of abandoning their social distancing behaviour and embracing social mixing behaviour after coming in contact with someone who is socially mixing.</p>
+
+<p>This simulation is also stochastic and so the results will be different each time you load this page, but in general this simulation is over quicker than the previous one (see the plot of the grey/red/blue/black lines? The wider it is horizontally, the more time the disease was in the population). The red "hill" that shows up in the plot is also often a lot steeper and taller than in the first simulation. If you've ever heard of the <em>R<sub>0</sub></em> value of an infectious disease, the rule of thumb is: the steeper the red curve, the bigger the <em>R<sub>0</sub></em>. This also illustrates a very key point, the parameters for the first and second simulation where exactly the same, in terms of the infectivity or fatality rate of the disease and even the proportion of mxiers and distancers in the population. The only thing that changed between the two simulations was the behaviour of people (and their will to social distance eroding), and the <em>R<sub>0</sub></em> value was increased. So even for the same disease, the actions of people can effectively inflate the value of this important parameter. (A very exciting way to see this in practice is <a href="https://www.medrxiv.org/content/10.1101/2020.03.27.20045815v1" title="Park et al. 2020">in this pre-print</a> where the authors demonstrate the effect that social distancing in South Korea had on lowering the <em>R<sub>0</sub></em> value down below 1 in some cities).</p>
+
+<div id="sim_2">
+</div>
+
+<p>
+In this final simulation I follow the exact same protocol as in the second simulation except now there is a 10% chance that an individual will abandon their distancing protocl upon coming in contact with a socially mixing individual. The important thing to note from this simulation is that it is often the shortest of the three, it often has the steepest red hill (highest <em>R<sub>0</sub></em>), often has the most deaths, and also often results in a situation where, at the end of the simulation, everyone has abandoned social distancing protocols. Also notice that this red hill is usually so steep as to completely take over the box at its peak. That represents a situation where 100% of the population is infected. This is the opposite of what is meant by <span class="hashtag">#FlattenTheCurve</span> as it instead represents a situation where the healthcare system has been absolutely overwhelemed, and the goal of flattening the curve is to reduce the strain on the healthcare system, so in this regard this simulation often does worse.
+</p>
+
+<div id="sim_3">
+</div>
+
+<p>
+In light of the entire <span class="hashtag">&#35;FlattenTheCurve</span> effort to reduce strain on the healthcare system (if this is a new concept to you, please check out that <a href="" title="Washington Post Article">Washington Post article</a> that inspired this whole experiment), these results demonstrate the importance of strict social distancing during an epidemic outbreak. The more we allow our social distancing protocols to erode by normalizing social mixing behaviour, the worse off we do at our effort to <span class="hashtag">&#35;FlattenTheCurve</span>. We can never achieve a society of 100% social distancers, but what we see time and again in these simulations is that those of us who can social distance act like a shield for the cause of public health. We need to praise that behaviour, recognise it as heroic, and ensure it does not erode over time. 
+</p>
+<p>
+Remember, in the hopeful simulations (the simulations wherein the curve was flatter, the outbreak was less serious, and less people died), the pandemic took a longer time to resolve. In the best case scenario, we are in this for the long haul. In the coming weeks we will hear stories of other countries whos outbreaks were more severe. We will see pictures of their lives returning to normal while continue to practice extensive social distancing. Scroll back up, simulation 3 is always a shorter pandemic than simulation 1. Remember:
+</p>
+
+<blockquote>
+"Everything we do before a pandemic will seem alarmist. Everything we do after will seem inadequate." - Michael Leavitt (2007)
+</blockquote>
+
+<script type="text/javascript">
+
+function mag(x, y) {
+    return Math.sqrt(x*x + y*y);
+}
+
+function experiment(id, sd_rt) {
+    var div = document.getElementById(id);
+    div.innerHTML = '<div class="container" onclick="start_experiment(\'' + id +'\', ' + sd_rt + ')"><div class="nosim"><div class="button">Click to Start the Simulation</div></div></div>';
+}
+
+function start_experiment(id, sd_rt) {
+    function drawPoints(pts) {
+        ctx.clearRect(0, 0, w, h);
+
+        ns.innerHTML = n_s;
+        ni.innerHTML = n_i;
+        nd.innerHTML = n_d;
+        nr.innerHTML = n_r;
+        for (var i=0; i < pts.length; i++) {
+            var x=pts[i].x, y=pts[i].y;
+            ctx.beginPath();
+            if (pts[i].status == 1) {
+                ctx.fillStyle = 'red';
+            } else if (pts[i].status == 2) {
+                ctx.fillStyle = 'blue';
+            } else if (pts[i].status == 3) {
+                ctx.fillStyle = 'black';
+            } else {
+                ctx.fillStyle = 'gray';
+            }
+            ctx.arc(x, y, rad, 0, 2*Math.PI);
+            ctx.fill();
+        }
+        ctx.fillStyle='black';
+    }
+
+    function movePoints(p) {
+        if (n_i > 0 && tstep < max_time) {
+            for (var i=0; i < p.length; i++) {
+                var mv=p[i].mv;
+                if (p[i].status == 1 && tstep - p[i].it > il) {
+                    n_i--;
+                    if (Math.random() <= cfr) { // death
+                        p[i].status = 3;
+                        p[i].mv = false;
+                        p[i].vx = 0;
+                        p[i].vy = 0;
+                        n_d++;
+                    } else {
+                        p[i].status = 2;
+                        n_r++;
+                    }
+                }
+                if (mv) {
+                    var infct=p[i].status;
+                    var newx = p[i].x + p[i].vx;
+                    var newy = p[i].y + p[i].vy;
+                    if (newy < small_y) {
+                         newy = small_y;
+                         p[i].vy *= -1;
+                    } else if (newy > big_y) {
+                         newy = big_y;
+                         p[i].vy *= -1;
+                    }
+                    if (newx < small_x) {
+                         newx = small_x;
+                         p[i].vx *= -1;
+                    } else if (newx > big_x) {
+                         newx = big_x;
+                         p[i].vx *= -1;
+                    }
+                    for (var j=0; j < p.length; j++) {
+                        if (i == j || p[j].status == 3) {
+                            continue;
+                        }
+                        var tx=p[j].x, ty=p[j].y, tinfct=p[j].status;
+
+                        if ((tx-newx)*(tx-newx) + (ty-newy)*(ty-newy) < rad_2_sq) { // collision
+                            var a = Math.atan2(newy-p[i].y, newx-p[i].x);
+                            var d = mag(tx-p[i].x, ty-p[i].y);
+                            newx = p[i].x + Math.cos(a)*(d-2*rad)*.99;
+                            newy = p[i].y + Math.sin(a)*(d-2*rad)*.99; // move them out of each other
+                            var tvy = - (tx - newx);
+                            var tvx = ty - newy;
+                            var tvl = mag(tvy,tvx);
+                            tvy /= tvl;
+                            tvx /= tvl;
+                            //tangent vector made
+                            var rvx = p[i].vx - p[j].vx;
+                            var rvy = p[i].vy - p[j].vy;
+                            var len = rvx * tvx + rvy * tvy;
+                            tvy *= len;
+                            tvx *= len;
+                            rvx -= tvx;
+                            rvy -= tvy;
+
+                            p[i].vx -= rvx;
+                            p[i].vy -= rvy;
+
+                            if (p[j].mv) {
+                                p[j].vx += rvx;
+                                p[j].vy += rvy;
+                            } else {
+                                p[i].vx -= rvx;
+                                p[i].vy -= rvy;
+                                if (Math.random()<sd_rt) {
+                                    p[j].mv = true;
+                                    p[j].vx = rvx;
+                                    p[j].vy = rvy;
+                                }
+                            }
+
+                            magi = mag(p[i].vx, p[i].vy);
+                            magj = mag(p[j].vx, p[j].vy);
+
+                            if (magi > .01) {
+                                p[i].vx *= spd/magi;
+                                p[i].vy *= spd/magi;
+                            }
+
+                            if (magj > .01) {
+                                p[j].vx *= spd/magj;
+                                p[j].vy *= spd/magj;
+                            }
+
+                            if (tinfct==1 && infct==0) {
+                                p[i].status = 1;
+                                p[i].it = tstep;
+                                n_i++;
+                                n_s--;
+                            } else if (tinfct==0 && infct==1) {
+                                p[j].status = 1;
+                                p[j].it = tstep;
+                                n_i++;
+                                n_s--;
+                            }
+                        }
+                    }
+                    p[i].x = newx;
+                    p[i].y = newy;
+                }
+            }
+            update_graph(tstep, n_s, n_i, n_r, n_d);
+            drawPoints(p);
+            tstep++;
+        } else {  // simulation is done 
+            if (!doneScreenFlag) {
+                doneScreenFlag = true;
+                ctx.fillStyle = 'white';
+                ctx.globalAlpha = 0.25;
+                ctx.fillRect(0, 0, w, h);
+                ctx.globalAlpha = 1.0;
+                ctx.fillStyle = 'black';
+                ctx.font = "20pt Times New Roman Bold";
+                ctx.textAlign = 'center'
+                ctx.fillText('Click to Restart', w/2, h/2);
+                div.onclick = function(){experiment(id, sd_rt);start_experiment(id, sd_rt);};
+            }
+        }
+    }
+
+    function update_graph(t, s, i, r, d) {
+        var dx = gw / max_time;
+        var s_f = s / n_pts * gh;
+        var i_f = i / n_pts * gh;
+        var r_f = r / n_pts * gh;
+        var d_f = d / n_pts * gh;
+
+        var tly = 0;
+        gctx.fillStyle = 'gray';
+        gctx.fillRect(dx*t, tly, dx, s_f);
+        tly += s_f;
+
+        gctx.fillStyle = 'black';
+        gctx.fillRect(dx*t, tly, dx, d_f);
+        tly += d_f;
+
+        gctx.fillStyle = 'blue';
+        gctx.fillRect(dx*t, tly, dx, r_f);
+        tly += r_f;
+
+        gctx.fillStyle = 'red';
+        gctx.fillRect(dx*t, tly, dx, i_f);
+        tly += i_f;
+    }
+
+    // Initiate
+    var doneScreenFlag = false;
+
+    var graph_id = 'graph_' + id,
+        sim_id = 'simulation_' + id,
+        ns_id = 'ns_' + id,
+        nd_id = 'nd_' + id,
+        ni_id = 'ni_' + id,
+        nr_id = 'nr_' + id;
+
+    var div = document.getElementById(id);
+
+    div.innerHTML = '<div class="container">\n<div class="summary">\n<span>Healthy</span><span class="ns" id="' + ns_id + '"></span><br/>\n<span>Infected</span><span class="ni" id="' + ni_id + '"></span><br/>\n<span>Recovered</span><span class="nr" id="' + nr_id + '"></span><br/>\n<span>Dead</span><span class="nd" id="' + nd_id + '"></span><br />\n</div>\n<div class="graph_div">\n<canvas id="' + graph_id + '" width="500" height="75"></canvas>\n</div>\n<canvas class="simulation" id="' + sim_id + '" width="800" height="400"></canvas>\n</div>'
+
+    var ns = document.getElementById(ns_id),
+        nd = document.getElementById(nd_id),
+        nr = document.getElementById(nr_id),
+        ni = document.getElementById(ni_id);
+
+    var grph = document.getElementById(graph_id);
+    var gctx = grph.getContext('2d');
+        gw = grph.width,
+        gh = grph.height;
+    var sim = document.getElementById(sim_id);
+    var ctx = sim.getContext('2d'),
+        w = sim.width,
+        rad = 5,
+        max_time = 3000,
+        factor = .20,
+        spd = 2,
+        tstep = 0,
+        il = 1000,
+        n_s = 0,
+        n_i = 0,
+        n_r = 0,
+        n_d = 0,
+        n_pts = 200,
+        cfr = 0.035,
+        p = [],
+        h = sim.height;
+
+    var small_x = rad,
+        big_x = w - rad,
+        small_y = rad,
+        big_y = h - rad,
+        rad_2_sq = (2*rad)*(2*rad);
+
+    for(var i = 0; i < n_pts; i++) {
+        var y = Math.random() * (big_y - small_y) + small_y, 
+            x = Math.random() * (big_x - small_x) + small_x,
+            a = Math.random() * 2 * Math.PI,
+            infct = 0,
+            mv = true;
+        if (Math.random() > factor) {
+            mv = false;
+        }
+        if (i == 0) {
+            n_i++;
+            infct = 1;
+        } else {
+            n_s++;
+        }
+        p.push({x:x, y:y, vx:Math.cos(a)*spd*mv, vy:Math.sin(a)*spd*mv, mv:mv, status:infct, it:0});
+    }
+
+    drawPoints(p);
+
+    //Start it up!
+    setInterval(function(){movePoints(p);}, 33);
+}
+
+experiment('sim_1', 0.);
+experiment('sim_2', 0.05);
+experiment('sim_3', 0.1);
+
+</script>
+</body>
+</html>
