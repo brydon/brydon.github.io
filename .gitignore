@@ -16,3 +16,4 @@ math1mp/script
 math1mp/Gemfile*
 math1mp/*.md
 math1mp/*.gemspec
+covid19sims/venv/*
