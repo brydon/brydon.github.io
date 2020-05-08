@@ -1,0 +1,105 @@
+body {
+  color: #333;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0
+}
+header {
+  width:100%;
+  height: 4.5rem;
+  background-color: #000;
+  overflow:hidden;
+}
+header a#logo {
+  background-size: contain;
+  background: url('uwaterloo-logo.svg') no-repeat 0 50%;
+  width:100%;
+  max-width:13rem;
+  margin:1rem 0;
+  float:left;
+  display:inline-block;
+  height:3rem;
+  text-indent: -999rem;
+}
+header div#nav {
+  float:right;
+}
+header ul.horizontal_nav {
+  list-style-type: none;
+  overflow: hidden;
+}
+header ul.horizontal_nav li {
+  float:left;
+}
+header ul.horizontal_nav li a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+header ul.horizontal_nav li a:hover {
+  background-color: #333;
+}
+#header-content {
+  width:1100px;
+  margin: 0 auto 0 auto;
+}
+#colour-bar {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+#cbarwrap {
+  width:100%;
+  display: flex;
+}
+.cbar {
+  height: 1rem;
+  flex:1;
+}
+.cbar1 {
+  background-color: #ffbeef;
+}
+.cbar2 {
+  background-color: #ff63aa;
+}
+.cbar3 {
+  background-color: #df2498;
+}
+.cbar4 {
+  background-color: #c60078;
+}
+#content {
+  background-color: #fff;
+  width:100%;
+  font-size:11pt;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+#content-inner {
+  margin: 0 auto 0 auto;
+  min-height: 300px;
+  width: 1100px;
+}
+
+#footer {
+  background-color:#666;
+  width:100%;
+  min-height: 11rem;
+  color: #fff;
+  overflow:hidden;
+}
+#footer-inner {
+  width: 1100px;
+  margin: 0 auto 0 auto;
+}
+div#last-updated {
+  width:100%;
+  background-color: #bbb;
+  padding: 0 1rem 0 1rem;
+  text-align:right;
+  font-weight:bold;
+}
