@@ -61,16 +61,19 @@ header ul.horizontal_nav li a:hover {
   flex:1;
 }
 .cbar1 {
-  background-color: #ffbeef;
+  background-color: #FFB112;
 }
 .cbar2 {
-  background-color: #ff63aa;
+  background-color: #E88A10;
 }
 .cbar3 {
-  background-color: #df2498;
+  background-color: #FF7D1E;
 }
 .cbar4 {
-  background-color: #c60078;
+  background-color: #E84B10;
+}
+.cbar5 {
+  background-color: #FF2F12;
 }
 #content {
   background-color: #fff;
