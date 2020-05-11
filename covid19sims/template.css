@@ -7,6 +7,9 @@ body {
   padding: 0;
   overflow-x: hidden;
 }
+svg path:hover {
+  fill: #900;
+}
 header {
   width:100%;
   height: 4.5rem;
