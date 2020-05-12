@@ -113,3 +113,9 @@ div#last-updated {
 #bokeh-content-inner {
   min-height:900px;
 }
+#footer p#disclaimer {
+  font-size: 10pt;
+}
+#content-inner hr {
+  border: 1px solid #555;
+}
