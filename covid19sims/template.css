@@ -110,3 +110,6 @@ div#last-updated {
   text-align:right;
   font-weight:bold;
 }
+#bokeh-content-inner {
+  min-height:900px;
+}
