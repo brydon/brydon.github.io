@@ -1,0 +1,200 @@
+body {
+    font-family: "Inconsolata";
+}
+
+body a {
+    color: #633;
+}
+
+body a:hover {
+    color: #C66;
+}
+
+p {
+    margin-left: 15px;
+}
+
+
+.nobg {
+    background: transparent !important;
+}
+
+.header-bg {
+  /* background-image: url("images/chalkboard.png");*/
+  background-image: url("images/banner1.jpg");
+  background-repeat: repeat;
+  height: 300px;
+  margin-top: 0;
+  padding-top: 0;
+  padding-left:8%;
+  color: white;
+  border-color:black;
+  border-style:solid;
+  margin-bottom: 25px;
+}
+
+/** NAVBAR CSS Start **/
+
+.navbar-toggler {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    transition: .5s ease-in-out;
+}
+
+.navbar-toggler,
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler-icon:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+    position: relative;
+}
+
+.navbar-toggler span {
+    margin: 0;
+    padding: 0;
+}
+
+.toggler-icon {
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background: #d3531a;
+    border-radius: 1px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+}
+
+.middle-bar {
+    margin-top: 0px;
+}
+
+
+/* State when the navbar is collapsed */
+
+.navbar-toggler.collapsed .top-bar {
+    position: absolute;
+    top: 0px;
+    transform: rotate(0deg);
+}
+
+.navbar-toggler.collapsed .middle-bar {
+    opacity: 1;
+    position: absolute;
+    top: 10px;
+    filter: alpha(opacity=100);
+}
+
+.navbar-toggler.collapsed .bottom-bar {
+    position: absolute;
+    top: 20px;
+    transform: rotate(0deg);
+}
+
+/* when navigation is clicked */
+
+.navbar-toggler .top-bar {
+    top: inherit;
+    transform: rotate(135deg);
+}
+
+.navbar-toggler .middle-bar {
+    opacity: 0;
+    top: inherit;
+    filter: alpha(opacity=0);
+}
+
+.navbar-toggler .bottom-bar {
+    top: inherit;
+    transform: rotate(-135deg);
+}
+
+/* Color of 3 lines */
+
+.navbar-toggler.collapsed .toggler-icon {
+    background: linear-gradient( 263deg, rgba(252,74,74,1) 0%, rgba(123,165,173,1) 100% );
+}
+
+/** NAVBAR CSS End **/
+
+
+/** ME CSS Begin **/
+.me p {
+    margin: 0;
+    padding: 0;
+}
+
+
+@media (min-width: 768px) {
+    .me {
+        max-width: 325px;
+    }
+}
+/** ME CSS End **/
+
+
+/** Footer CSS Begin **/
+footer a.fa {
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
+	border: 0;
+	
+    color:#000;
+}
+
+
+footer li a:hover {
+    color:#666;
+}
+
+
+footer a span {
+	display: none;
+}
+
+
+footer a:before {
+	-moz-transition: all 0.5s ease-in-out;
+	-webkit-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	-ms-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
+	display: block;
+	font-size: 1.5em;
+	height: 2em;
+	line-height: 2em;
+	position: relative;
+	text-align: center;
+	top: 0;
+	width: 2em;
+    border-radius: 100%;
+    border: solid 1px white;
+}
+
+footer a:hover:before {
+    color:#666;
+    border-radius: 100%;
+    border: solid 1px #666;
+}
+
+footer a:active {
+	font-size: 0.95em;
+	background: none;
+    border:0;
+}
+
+footer a:active:before {
+    color: #666;
+    border:0;
+}
+
+footer li {
+    display: inline-block;
+}
+
+/** Footer CSS End **/
