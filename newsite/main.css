@@ -139,6 +139,10 @@ p {
     padding: 0;
 }
 
+.me {
+    margin-bottom:15px;
+}
+
 
 @media (min-width: 768px) {
     .me {
