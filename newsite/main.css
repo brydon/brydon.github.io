@@ -19,6 +19,7 @@ p {
     background: transparent !important;
 }
 
+
 #nameplate {
     display: flex;
     justify-content: center;
@@ -34,13 +35,11 @@ p {
 }
 
 .header-bg {
-  /* background-image: url("images/chalkboard.png");*/
   background-image: url("images/banner1.jpg");
   height: 300px;
   margin-top: 0;
   padding-top: 0;
   color: white;
-  border-bottom: 10px solid black;
   margin-bottom: 25px;
 }
 
