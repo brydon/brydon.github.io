@@ -19,17 +19,28 @@ p {
     background: transparent !important;
 }
 
+#nameplate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+#nameplate h1 {
+    font-family: serif;
+    border: 1px solid white;
+    padding: 3%;
+}
+
 .header-bg {
   /* background-image: url("images/chalkboard.png");*/
   background-image: url("images/banner1.jpg");
-  background-repeat: repeat;
   height: 300px;
   margin-top: 0;
   padding-top: 0;
-  padding-left:8%;
   color: white;
-  border-color:black;
-  border-style:solid;
+  border-bottom: 10px solid black;
   margin-bottom: 25px;
 }
 
