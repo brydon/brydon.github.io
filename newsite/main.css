@@ -1,3 +1,7 @@
+:root {
+    --bs-dark-rgb: 34, 38, 55;
+}
+
 body {
     font-family: "Inconsolata";
 }
@@ -19,6 +23,29 @@ p {
     background: transparent !important;
 }
 
+div.paper-container {
+    float: left;
+}
+
+div.clear-paper-container {
+    float: none;
+    clear: both;
+}
+
+img.paper {
+    border: 1px solid #222637;
+    width: 95% !important;
+    margin: 2.5%;
+    height: auto;
+}
+
+img.paper:hover {
+    border: 1px solid #fc4a4a;
+}
+
+ul.papers li {
+    display: block;
+}
 
 #nameplate {
     display: flex;
