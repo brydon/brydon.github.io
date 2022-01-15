@@ -42,6 +42,9 @@
                                 <a class="nav-link" href="blog.html">Blog</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="code.html">Code</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="about.html">About</a>
                             </li>
                             <li class="nav-item">
@@ -63,15 +66,233 @@
 
         <div class="container-fluid text-center">
             <div class="row justify-content-md-center">
-                <div class="col-md-5 text-start">
+                <div class="col-md-10 text-start">
                     <h1>Research</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lobortis ipsum nec egestas sagittis. Ut non nibh lectus. Morbi vitae facilisis elit, cursus pharetra leo. In dapibus quis odio in laoreet. Sed sagittis efficitur ultrices. Phasellus eget odio sit amet mi pellentesque sagittis lacinia at leo. Nullam et nibh quis ligula consectetur dictum a sed ipsum. Nullam condimentum a turpis vitae finibus. Donec a turpis dolor. Sed accumsan turpis nulla, vitae molestie leo semper ut. Nullam egestas magna sit amet urna convallis, tempus sollicitudin sapien sagittis. Maecenas id pretium risus. Nam mauris lectus, porttitor quis lectus quis, fermentum tristique enim. Sed ornare, leo sed maximus convallis, sem diam hendrerit risus, sit amet hendrerit tortor dui molestie orci. Praesent rhoncus velit mauris, id ultrices risus efficitur vitae.</p>
-                    
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lobortis ipsum nec egestas sagittis. Ut non nibh lectus. Morbi vitae facilisis elit, cursus pharetra leo. In dapibus quis odio in laoreet. Sed sagittis efficitur ultrices. Phasellus eget odio sit amet mi pellentesque sagittis lacinia at leo. Nullam et nibh quis ligula consectetur dictum a sed ipsum. Nullam condimentum a turpis vitae finibus. Donec a turpis dolor. Sed accumsan turpis nulla, vitae molestie leo semper ut. Nullam egestas magna sit amet urna convallis, tempus sollicitudin sapien sagittis. Maecenas id pretium risus. Nam mauris lectus, porttitor quis lectus quis, fermentum tristique enim. Sed ornare, leo sed maximus convallis, sem diam hendrerit risus, sit amet hendrerit tortor dui molestie orci. Praesent rhoncus velit mauris, id ultrices risus efficitur vitae.</p>
+                    <p>
+                    Broadly, my research interests involve computational biology and general mathematical modelling of biological processes, systems, and phenomena. In particular, I am currently interested in applying machine learning/artificial intellgience technqiues in tandem with differential equations and stochastic models to answer questions of cancer stem cell evolution and treatment response in the study of human cancers. I find biological systems to be fascinating in their complexity and hope to elucidate their behaviour by using stochastic machine learning techniques coupled with traditional models. After all, nature has <a href="https://xkcd.com/1605/" title="Relevant XKCD">no compunction to regulate towards easy description</a> even if it does so in aggregate. 
+                    </p>
+                    <h1>Theses</h1>
+                    <ul class="papers">
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://macsphere.mcmaster.ca/bitstream/11375/22231/4/eastman_brydon_w_september2017_masters.pdf"><img class="img-thumbnail paper" src="images/masters_thesis.jpg" alt="Master's Thesis" title="Click to view" /></a>
+                            </div> 
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>Sensitivity to predator response functions in the chemostat </strong> Master's Thesis <em>Aug 7, 2017</em>
+                                </p>
+                                <p><strong>Brydon Eastman</strong></p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#mastersThesisSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="mastersThesisSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                    </ul>
                     
                     <h1>Publications</h1>
-                    
-                    <p> Vestibulum malesuada facilisis nunc, ac rutrum lorem faucibus a. Cras nec euismod mauris, quis egestas libero. Nunc non facilisis diam. Interdum et malesuada fames ac ante ipsum primis in faucibus. In hac habitasse platea dictumst. Vestibulum imperdiet tortor ut dui tristique rhoncus. Vestibulum quam risus, congue finibus vestibulum sed, interdum a ipsum. Sed est augue, iaculis sed varius ac, tincidunt quis justo. In pulvinar mattis fringilla. Praesent euismod mauris eu lectus posuere, sit amet volutpat enim luctus.</p>
+                    <p>
+                        You can view these publications by clicking the images of the papers. Most of these are open-access, but if you have any issues accessing the PDFs for any reason <a href="contact.html" title="Contact Me">contact me</a> and I would be more than happy to assist. For each of these publications I include a summary that can be viewed. These summaries are written with the intention that an undergraduate student could gain a birds-eye-view of the content of the research article.
+                    </p>
+                
+                    <ul class="papers">
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://www.nature.com/articles/s41598-021-97028-6" title="Link to the Reinforcement Learning Paper"><img class="img-thumbnail paper" src="images/rl.jpg" alt="RL Paper" title="Click to view" /></a> 
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>Reinforcement learning derived chemotherapeutic schedules for robust patient-specific therapy</strong> Nature Scientific Reports <em>Sep 9, 2021</em>
+                                </p>
+                                <p>
+                                    <strong>Brydon Eastman</strong>, Michelle Pzedborski, Mohammad Kohandel
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#rlSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="rlSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0249456"><img class="img-thumbnail paper" src="images/covidPONE.jpg" alt="COVID PONE Paper" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>Modeling the impact of public response on the COVID-19 pandemic in Ontario</strong> PLoS One <em>Apr 14, 2021</em>
+                                </p>
+                                <p>
+                                    <strong>Brydon Eastman</strong>, Cameron Meaney, Michelle Pzedborski, Mohammad Kohandel
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#poneCovidSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="poneCovidSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://ojs.lib.uwo.ca/index.php/mase/article/download/10842/11065"><img class="img-thumbnail paper" src="images/predPrey.jpg" alt="Chemostat Predator Prey Paper" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>A Predator-Prey Model in the Chemostat with Holling Type II Response Function</strong> Mathematics in Applied Sciences and Engineering <em>Nov 1, 2020</em>
+                                </p>
+                                <p>
+                                Tedra Bolger, <strong>Brydon Eastman</strong>, Madeleine Hill, Gail S. K. Wolkowicz
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#maseSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="maseSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://www.sciencedirect.com/science/article/abs/pii/S0022519320302393"><img class="img-thumbnail paper" src="images/phenoPlasticity.jpg" alt="Phenotypic Plasticity Paper" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>The effects of phenotypic plasticity on the fixation probability of mutant cancer stem cells</strong> Journal of Theoretical Biology <em>Oct 21, 2020</em>
+                                </p>
+                                <p>
+                                    <strong>Brydon Eastman</strong>, Dominik Wodarz, Mohammad Kohandel
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#jtbSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="jtbSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://scripts.iucr.org/cgi-bin/paper?S0108767318099063"><img class="img-thumbnail paper" src="images/NMR.jpg" alt="NMR Paper" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>From Solid-State NMR to Crystal Structures through Combinatorial Tiling Theory</strong> Int. Union Crystallography <em>Jan 1, 2018</em>
+                                </p>
+                                <p>
+                                    Darren Brouwer, Janelle Vanderhout, Chelsey Hurst, <strong>Brydon Eastman</strong>
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#NMRSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="NMRSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://www.degruyter.com/document/doi/10.1515/spma-2016-0003/pdf"><img class="img-thumbnail paper" src="images/pentaCompanionMatrices.jpg" alt="Pentadiagonal Companion Matrices Paper" title="Click to view" /></a> 
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>Pentadiagonal Companion Matrices</strong> Special Matrices <em>Oct 28, 2015</em>
+                                </p>
+                                <p>
+                                    <strong>Brydon Eastman</strong> and Kevin N. Vander Meulen
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#pentaMatrixSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+
+                                <div class="collapse" id="pentaMatrixSummary">
+                                   <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                   </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://journals.uwyo.edu/index.php/ela/article/view/1463"><img class="img-thumbnail paper" src="images/sparseSAPs.jpg" alt="Sparse SAP Paper" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>Sparse Spectrally Arbitrary Patterns</strong> The Electronic Journal of Linear Algebra <em>Apr 28, 2015</em>
+                                </p>
+                                <p>
+                                    <strong>Brydon Eastman</strong>, Bryan Shader, Kevin N. Vander Meulen
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#sapSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="sapSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://www.sciencedirect.com/science/article/pii/S0024379514005953"><img class="img-thumbnail paper" src="images/compMatrixPatterns.jpg" alt="Companion Matrix Paper" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <p>
+                                    <strong>Companion Matrix Patterns</strong> Linear Algebra and its Applications <em>Feb 1, 2014</em>
+                                </p>
+                                <p>
+                                    <strong>Brydon Eastman</strong>, I.-J. Kim, B.L. Shader, K.N. Vander Meulen
+                                </p>
+                                <p>
+                                    <a data-bs-toggle="collapse" href="#compMatrixSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                </p>
+                                <div class="collapse" id="compMatrixSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        
+                        <!--
+                        <li>
+                            <div class="float-start col-md-2">
+                                <a href="https://www.sciencedirect.com/science/article/pii/S0024379517305967"><img class="img-thumbnail paper" src="images/corrigCompMatrixPatterns.jpg" alt="Companion Matrix Corrigendum" title="Click to view" /></a>
+                            </div>
+                            <div class="float-start col-md-8">
+                                <strong>Corrigendum to "Companion Matrix Patterns"</strong> Linear Algebra and its Applications <em>Feb 1, 2018</em>
+                                <a data-bs-toggle="collapse" href="#compMatrixCorrigSummary" role="button" aria-expanded="false" aria-controls="collapseExample">View Summary</a>
+                                <div class="collapse" id="compMatrixCorrigSummary">
+                                    <div class="card card-body">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        -->
+                    </ul>
                     
                     <h1>Presentations</h1>
                     
