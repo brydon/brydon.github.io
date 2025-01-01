@@ -18,3 +18,5 @@ math1mp/*.md
 math1mp/*.gemspec
 covid19sims/venv/*
 covid19sims/update/*
+venv/*
+*/venv/*
