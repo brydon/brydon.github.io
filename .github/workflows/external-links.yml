@@ -1,0 +1,21 @@
+name: External links
+
+on:
+  schedule:
+    - cron: "17 15 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Check external links
+        uses: lycheeverse/lychee-action@v2.9.0
+        with:
+          args: --cache --no-progress './*.html' './*.md'

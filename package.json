@@ -1,0 +1,11 @@
+{
+    "name": "brydoneastman-github-io",
+    "private": true,
+    "scripts": {
+        "lint:html": "html-validate *.html"
+    },
+    "devDependencies": {
+        "html-validate": "11.10.0"
+    },
+    "packageManager": "pnpm@11.19.0"
+}
