@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=5000]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-yaml
+
+  - repo: local
+    hooks:
+      - id: check-site-links
+        name: check local site links
+        entry: python scripts/check_site.py
+        language: system
+        pass_filenames: false
+        always_run: true
