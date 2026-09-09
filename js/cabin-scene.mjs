@@ -394,6 +394,9 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     kettleArea(){return hearthKettle.hitArea();},
     kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
+    cubeState(){return interiorDetails.cubeState();},
+    setCubeState(state){interiorDetails.setCubeState(state);},
+    cubeArea(){return interiorDetails.cubeArea();},
     portraitArea(){
       coupleFrame.updateWorldMatrix(true,false);
       return [[-.66,.525,.06],[.66,.525,.06],[.66,-.525,.06],[-.66,-.525,.06]].map(p=>coupleFrame.localToWorld(new THREE.Vector3(...p)).toArray());

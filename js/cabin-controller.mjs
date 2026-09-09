@@ -128,6 +128,17 @@ $('couple-portrait').addEventListener('click',()=>{
   portrait.alt='Pixel-art portrait of Brydon and his wife smiling in front of the Golden Gate Bridge.';
   $('discovery-copy').append(portrait);
 });
+let cubeGame,cubeLoading=false;
+$('bookshelf-cube').addEventListener('click',async()=>{
+  if(view!=='inside'||melting||!scene||cubeLoading)return;
+  scene.clearKeys();cubeLoading=true;
+  try{
+    if(!cubeGame){const {createCubeGame}=await import('./cube-game.mjs');cubeGame=createCubeGame($('cube-game'),{initialState:scene.cubeState(),onChange:state=>scene.setCubeState(state)});}
+    if(view==='inside'&&!melting&&!document.querySelector('dialog[open]')){scene.clearKeys();cubeGame.open();}
+  }catch(error){
+    console.error('Cube failed to load:',error);$('toast').textContent='The cube couldn’t load. Please try again.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);
+  }finally{cubeLoading=false;}
+});
 function readMug(){discover('The warm mug','<p>Letters have appeared in the glaze:</p><p><code>take the</code></p>');}
 $('receipt').addEventListener('click',()=>{
   if(view!=='inside'||melting||!scene)return;
@@ -201,6 +212,7 @@ async function init(){
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('couple-portrait',scene.portraitArea(),inside&&!melting);
+      area('bookshelf-cube',scene.cubeArea(),inside&&!melting,true);
       area('receipt',[[-.25,1.46,-.91],[.13,1.46,-.91],[.13,1.18,-.91],[-.25,1.18,-.91]],inside&&!melting);
       for(const note of CABIN_NOTES)area(note.id,note.vertices,inside&&!melting);
       requestAnimationFrame(updateHotspots);
