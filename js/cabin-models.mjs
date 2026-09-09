@@ -155,6 +155,18 @@ export function createDog(){
 }
 
 /** A low-poly 2015 Iron 883: peanut tank, V-twin, mag wheels, twin chrome pipes. */
+/*
+                              ___
+                             / _/
+                    ____    / /
+                 __/ __ \_____/|
+                /_  /  \__   / |
+              .-._\_/_____\_/_.-.
+             ( (_) )       ( (_) )
+              '---'         '---'
+
+        883 cc. No particularly urgent destination.
+*/
 export function createIron883(){
   const bike=new THREE.Group();bike.name='Black 2015 Iron 883';
   const black='#202825',rubber='#171e1c',chrome='#b3c2bd',steel='#677873';

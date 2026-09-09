@@ -92,6 +92,18 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
   }};
 }
 
+/*
+                    /\
+                ___/  \_
+              /    o    >
+             /  /\_____/
+            /__/  /   /
+              /__/___/
+                /  /
+         ======'=='========
+
+        This branch has excellent tweet coverage.
+*/
 export function createBlueJay(scene){
   const branch=model(scene);branch.group.name='Blue jay pine branch';branch.group.position.set(5.9,1.08,1);
   branch.pipe([[0,0,0],[-.08,.18,.38],[-.25,.40,.85],[-.45,.52,1.3],[-.68,.58,1.5]],.041,'#69523a');

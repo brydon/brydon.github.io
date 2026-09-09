@@ -1,3 +1,17 @@
+/*
+                 )   (
+                  ( )
+               .-------.
+                \ | | / )
+                 \| |/--'
+                  \ /
+               .---V---.
+              /         \
+              \_________/
+             [  300.0 g  ]
+
+        The bloom is a perfectly good reason to do nothing for a bit.
+*/
 import * as THREE from './vendor/three.module.min.js';
 import {createCoffeeState,coffeeAction,advanceCoffee,coffeeProgress,brewWater,waterIsFlowing} from './coffee.mjs';
 

@@ -1,3 +1,18 @@
+/*
+                    |
+                 ___|___
+                /       \
+               /_________\
+                   \./
+
+             .-.         .-.
+             \  \  | |  /  /
+              '._\(o o)/_.'
+                  /   \
+                  '---'
+
+        The moth has strong opinions about this light theme.
+*/
 .cabin-page{height:100dvh;min-height:440px;overflow:hidden;display:flex;flex-direction:column;color:#efe9d6;background:radial-gradient(ellipse at 66% 40%,#395451 0%,#233e3f 43%,#152d30 100%)}
 .cabin-page .site-header{height:82px;background:transparent;border-bottom:1px solid #f7f2e612;padding:0 42px;flex-shrink:0}.cabin-page .site-header nav{gap:25px}.cabin-page .site-header nav a{font-size:12px}.cabin-page #menu-toggle{margin-left:auto;color:var(--paper);background:none;border:1px solid #ffffff35;padding:9px 12px;font-size:12px}.cabin-page #mobile-menu{top:82px}
 #cabin-stage{flex:1;position:relative;min-height:0;isolation:isolate;overflow:hidden}#cabin-canvas{position:absolute;width:100%;height:100%;inset:0;display:block;image-rendering:pixelated;outline:0}
