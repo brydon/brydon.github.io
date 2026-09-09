@@ -14,7 +14,7 @@ const ease = t => t*t*(3-2*t);
 const mix = (a,b,t) => a+(b-a)*t;
 
 /** One small scene, with an authored entrance instead of a movement controller. */
-export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, onError, onComputer}) {
+export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, onError, onComputer, onKettle}) {
   const renderer = new THREE.WebGLRenderer({canvas, antialias:false, alpha:true, powerPreference:'low-power'});
   renderer.setPixelRatio(1);
   renderer.shadowMap.enabled = true;
@@ -188,7 +188,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   cylinder(.11,.1,.23,-.02,1.3,-1.03,'#d8c59e',cabin,10);
   const handle=mesh(new THREE.TorusGeometry(.08,.025,5,10),'#d8c59e',cabin);handle.position.set(-.14,1.33,-1.03);
   const interiorDetails=furnishCabin(cabin);
-  const hearthKettle=createHearthKettle(cabin);
+  const hearthKettle=createHearthKettle(cabin,onKettle);
   const blueJay=createBlueJay(scene);
   // Small interior window behind the desk.
   box(1.2,.9,.06,.95,2.27,-1.9,'#483f30',cabin);box(1.03,.74,.015,.95,2.27,-1.86,'#82b0ac',cabin,true);

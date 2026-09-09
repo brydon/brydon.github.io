@@ -1,12 +1,16 @@
 import {isEvening} from './lighting.mjs';
+import {createCabinAudio} from './cabin-audio.mjs';
 const $=id=>document.getElementById(id);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let scene,view='outside',computerRequested=false,audio,melting=false,engaged=false,replacementQueued=false;
+const soundWorld={inside:false,boiling:false,burning:false,aurora:false};
+function soundState(values){Object.assign(soundWorld,values);audio?.setWorld(values);}
 const storage={get(key){try{return localStorage.getItem('switchback:'+key);}catch{return null;}},set(key,value){try{localStorage.setItem('switchback:'+key,value);}catch{/* Preferences are optional. */}}};
 const pages=new Set(['home','research','code','about','teaching','blog','contact','terminal']);
 function engage(){if(engaged)return;engaged=true;document.body.classList.add('has-arrived');setTimeout(()=>$('cabin-intro').hidden=true,450);}
 function enter(){if(melting)return;if(!scene){location.href='/home.html';return;}if(view!=='outside')return;engage();view='entering';document.body.classList.add('is-entering');$('enter-cabin').disabled=true;$('cabin-location').textContent='';scene.enter();}
 function outside(){
+  soundState({inside:false,boiling:false});
   const revealed=view==='revealing';view='outside';computerRequested=false;document.body.classList.remove('is-entering','is-inside','at-computer','is-revealing');
   $('cabin-intro').hidden=engaged||melting;$('enter-cabin').disabled=false;$('cabin-camera').hidden=false;$('leave-cabin').hidden=true;$('computer-back').hidden=true;
   $('cabin-location').textContent=melting?'DOG SAFE. CABIN WARRANTY VOID.':revealed?'THE LONG WAY HOME':'A LITTLE PLACE IN THE MOUNTAINS';
@@ -19,7 +23,7 @@ function outside(){
   else if(!engaged)$('enter-cabin').focus({preventScroll:true});
   if(revealed){$('toast').textContent='You took the long way. Welcome to the midnight valley.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,8000);}
 }
-function entered(){view=computerRequested?'focusing':'inside';document.body.classList.add('is-inside');$('cabin-intro').hidden=true;$('cabin-camera').hidden=computerRequested;$('leave-cabin').hidden=false;$('leave-cabin').disabled=false;$('cabin-location').textContent='AFTER HOURS';}
+function entered(){soundState({inside:true});view=computerRequested?'focusing':'inside';document.body.classList.add('is-inside');$('cabin-intro').hidden=true;$('cabin-camera').hidden=computerRequested;$('leave-cabin').hidden=false;$('leave-cabin').disabled=false;$('cabin-location').textContent='AFTER HOURS';}
 function leave(){if(view==='computer'||view==='focusing'){room();return;}if(view!=='inside'||!scene)return;view='exiting';$('leave-cabin').disabled=true;document.body.classList.remove('is-inside');scene.exit();}
 function computer(page){
   if(melting||view==='revealing'||(page!==undefined&&!pages.has(page)))return;
@@ -41,7 +45,7 @@ function room(){if(!scene)return;scene.room();computerRequested=false;view='unfo
 $('enter-cabin').addEventListener('click',enter);$('leave-cabin').addEventListener('click',leave);$('computer-back').addEventListener('click',room);
 $('rebuild-cabin').addEventListener('click',()=>location.assign('/'));
 $('cabin-door').addEventListener('click',()=>view==='inside'?leave():enter());
-$('pet-dog').addEventListener('click',()=>{if(view==='inside')scene?.pet();});
+$('pet-dog').addEventListener('click',()=>{if(view==='inside'){scene?.pet();audio?.pet();}});
 $('desk-terminal').addEventListener('click',()=>computer());
 $('blue-jay').addEventListener('click',engage);
 for(const[button,direction,axis]of[['look-left',-1,'x'],['look-right',1,'x'],['look-up',1,'y'],['look-down',-1,'y']])$(button).addEventListener('click',()=>scene?.turn(direction,axis));
@@ -60,12 +64,12 @@ function evening(on,persist=true){scene?.night(on);document.body.classList.toggl
 $('night-toggle').addEventListener('click',()=>evening($('night-toggle').getAttribute('aria-pressed')!=='true'));
 async function toggleSound(){
   try{
-    if(!audio){const context=new(window.AudioContext||window.webkitAudioContext)();const buffer=context.createBuffer(1,context.sampleRate*4,context.sampleRate),data=buffer.getChannelData(0);let last=0;for(let i=0;i<data.length;i++){last=(last+Math.random()*.04-.02)/1.02;data[i]=last*3.5;}const source=context.createBufferSource();source.buffer=buffer;source.loop=true;const filter=context.createBiquadFilter();filter.type='lowpass';filter.frequency.value=600;const gain=context.createGain();gain.gain.value=.11;source.connect(filter).connect(gain).connect(context.destination);source.start();audio={context};}
-    const on=$('sound-toggle').getAttribute('aria-pressed')!=='true';await(on?audio.context.resume():audio.context.suspend());$('sound-toggle').setAttribute('aria-pressed',String(on));$('sound-toggle').textContent=on?'Sound on':'Sound off';$('sound-toggle').setAttribute('aria-label',on?'Turn ambient sound off':'Turn ambient sound on');
+    if(!audio){audio=createCabinAudio(new(window.AudioContext||window.webkitAudioContext)());audio.setWorld(soundWorld);}
+    const on=$('sound-toggle').getAttribute('aria-pressed')!=='true';await audio.setEnabled(on);$('sound-toggle').setAttribute('aria-pressed',String(on));$('sound-toggle').textContent=on?'Sound on':'Sound off';$('sound-toggle').setAttribute('aria-label',on?'Turn ambient sound off':'Turn ambient sound on');
   }catch{$('toast').textContent='Ambient sound isn’t available in this browser.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);}
 }
 $('sound-toggle').addEventListener('click',toggleSound);
-document.addEventListener('visibilitychange',()=>{scene?.clearKeys();if(!audio)return;if(document.hidden)audio.context.suspend();else if($('sound-toggle').getAttribute('aria-pressed')==='true')audio.context.resume();});
+document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
 function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
 $('chalkboard').addEventListener('click',()=>{
   if(view!=='inside'||!scene)return;
@@ -86,14 +90,15 @@ window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==$('computer-frame')?.contentWindow||event.data?.source!=='switchback-desktop')return;
   if(event.data.type==='room')room();
   if(event.data.type==='discovery'&&scene&&!melting){
+    soundState({aurora:true});
     storage.set('overlook','found');scene.unlock();evening(true,false);view='revealing';computerRequested=false;document.body.classList.add('is-revealing');$('computer-back').hidden=true;$('leave-cabin').hidden=true;$('cabin-camera').hidden=true;$('cabin-location').textContent='THE VALLEY HAS ONE MORE THING TO SHOW YOU';scene.reveal();
   }
   if(event.data.type==='effect'&&scene&&!melting){
-    if(event.data.value==='pet')scene.pet();
+    if(event.data.value==='pet'){scene.pet();audio?.pet();}
     if(event.data.value==='administrator'){storage.set('administrator','found');scene.administrator();room();}
     if(event.data.value==='meltdown'){
       melting=true;view='burning';scene.clearKeys();$('computer-back').hidden=true;$('leave-cabin').hidden=true;$('cabin-camera').hidden=true;$('cabin-location').textContent='DOG EVACUATED. CABIN WARRANTY VOID.';
-      setTimeout(()=>scene?.explode(),650);
+      setTimeout(()=>{soundState({burning:true,boiling:false});scene?.explode();audio?.explode();},650);
     }
   }
 });
@@ -101,7 +106,7 @@ function sceneError(){$('scene-loading').hidden=true;$('scene-fallback').hidden=
 async function init(){
   try{
     const {createCabinScene}=await import('./cabin-scene.mjs');
-    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError});
+    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling})});
     $('scene-loading').hidden=true;if(storage.get('overlook')==='found')scene.unlock();if(storage.get('administrator')==='found')scene.administrator();const preference=storage.get('eveningOverride');evening(preference===null?isEvening():preference==='true',false);
     function area(id,vertices,enabled){
       const button=$(id);button.hidden=!enabled;if(!enabled)return;
@@ -111,6 +116,7 @@ async function init(){
     }
     function updateHotspots(){
       if(!scene)return;
+      audio?.update();
       const inside=view==='inside',outside=view==='outside'&&!melting;
       area('desk-terminal',[[-.02,2.0025,-1.291],[1.14,2.0025,-1.291],[1.14,1.2775,-1.291],[-.02,1.2775,-1.291]],inside);
       area('cabin-door',[[-.15,2.62,2.18],[1.15,2.62,2.18],[1.15,.43,2.18],[-.15,.43,2.18]],inside||outside);

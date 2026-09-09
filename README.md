@@ -24,6 +24,7 @@ Open `http://127.0.0.1:8765`. After changing templates or shared reading content
 - The counter has a V60, glass server, digital scale, gooseneck kettle and hand grinder. A second kettle warms over the hearth; linger inside for a minute and it boils over. Leaving resets it; background tabs pause the timer.
 - The blue jay perched in a pine tree opens [Brydon’s Twitter](https://twitter.com/brhydon) in a new tab.
 - The chalkboard contains personalized research diagrams; click it for a readable view. Mathematical sources and drawing conventions are in `docs/chalkboard-notes.md`.
+- Sound is synthesized locally with Web Audio: kettle whistle and boiling hiss, dog yips, explosion and fire crackle, and an original slow chord/bell cue when the aurora unlocks. The sound toggle gates every effect; background tabs suspend audio.
 - Reduced motion skips camera travel and disables environmental animation.
 - Look closely at the coffee mug, motorcycle and outdoor fire. The old Base64 note and a harder SHA-256 discovery are tucked away.
 
@@ -45,5 +46,11 @@ Every scene subject is geometry, including Brydon, the motorcycle and the dog. T
 `pnpm build` creates `dist/`. `pnpm check` runs animation and puzzle tests, HTML validation and local-link checks. Ordinary reading pages work without WebGL or JavaScript. Course resources, PDFs and static demos remain available.
 
 This is a local proof of concept on the isolated `codex/switchback` branch. It has not been published.
+
+## Hosting
+
+GitHub Pages can serve this site directly. The existing repository serves the root of `master` at `https://brydon.ai/`; generated HTML, JavaScript modules and vendor dependencies are checked in, and `.nojekyll` is retained. Run `pnpm build` before publishing source changes. Node and Python are development/build tools, not production servers. Alternatively, any static host can publish `dist/` at a domain root with HTTPS. A project subdirectory would require updating the root-relative asset URLs.
+
+Audio is generated in the browser and starts only when the visitor turns sound on. WebGL, native iframe content, local preferences, and SHA-256 puzzles also run client-side. There is no database, server runtime or API key to provision.
 
 The hidden discoveries now include a persistent midnight world, a separate image-only Base64 puzzle and unlisted terminal jokes. The fictional meltdown opens a replacement-shopping search in a new tab and keeps the charred cabin burning until **Rebuild cabin** is selected.

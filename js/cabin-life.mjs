@@ -11,7 +11,7 @@ function model(parent){
   return {group,mesh,pipe};
 }
 
-export function createHearthKettle(cabin){
+export function createHearthKettle(cabin,onBoil=()=>{}){
   const {group,mesh,pipe}=model(cabin);group.name='The kettle is on';group.position.set(-1.97,.47,.95);group.rotation.y=Math.PI/2;
   // A swing arm holds the kettle over the open flames.
   pipe([[-.4,.13,.02],[-.4,.98,.02],[-.38,1.02,.02],[.06,1.02,.02]],.021,'#313a32');
@@ -32,10 +32,11 @@ export function createHearthKettle(cabin){
   const droplets=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.012,0),new THREE.MeshStandardMaterial({color:'#aacccd',transparent:true,opacity:.7,roughness:.2}),24);
   droplets.frustumCulled=false;group.add(droplets);
   const puddle=mesh(new THREE.CylinderGeometry(.26,.26,.008,18),'#638e87',.08,.078,.31);puddle.material=new THREE.MeshStandardMaterial({color:'#789f96',transparent:true,opacity:.48,roughness:.18});
-  const dummy=new THREE.Object3D();let elapsed=0;
+  const dummy=new THREE.Object3D();let elapsed=0,wasBoiling=false;
   return {animate(time,seconds,inside,reduced,visible=true,burning=false){
     elapsed=advanceKettleTimer(elapsed,seconds,{inside,visible});
     const boiling=elapsed>=BOIL_SECONDS&&!burning,amount=Math.min(1,Math.max(0,elapsed-BOIL_SECONDS)/3);
+    if(boiling!==wasBoiling){wasBoiling=boiling;onBoil(boiling);}
     steam.visible=!burning;droplets.visible=boiling;puddle.visible=boiling;
     puddle.scale.set(.55+amount*.9,1,.7+amount*.9);
     lid.position.y=.27+(boiling?(reduced?.025:Math.abs(Math.sin(time*.049))*.043):0);
