@@ -6,6 +6,7 @@ import {createCabinEffects} from './cabin-effects.mjs';
 import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
+import {createRewardSign} from './cabin-reward.mjs';
 import {createHearthKettle,createBlueJay} from './cabin-life.mjs';
 import {drawResearchBoard} from './chalkboard.mjs';
 import {CSS3DObject,CSS3DRenderer} from './vendor/CSS3DRenderer.js';
@@ -187,8 +188,6 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   for(let i=0;i<5;i++)box(.09,.016,.02,.28+i*.12,1.246,-.95,'#b7bba6',cabin);
   box(.42,.04,.5,1.37,1.225,-1.02,'#dfd0a3',cabin);
   box(.39,.01,.46,1.37,1.25,-1.02,'#f2e8cd',cabin);
-  cylinder(.11,.1,.23,-.02,1.3,-1.03,'#d8c59e',cabin,10);
-  const handle=mesh(new THREE.TorusGeometry(.08,.025,5,10),'#d8c59e',cabin);handle.position.set(-.14,1.33,-1.03);
   const interiorDetails=furnishCabin(cabin);
   const hearthKettle=createHearthKettle(cabin,onKettle);
   const blueJay=createBlueJay(scene);
@@ -242,6 +241,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const bike=createIron883();bike.position.set(3.65,.045,.8);bike.rotation.y=-Math.PI/2+.1;scene.add(bike);
   const dog=createDog();dog.position.set(.53,.52,-.05);dog.rotation.y=-.08;dog.scale.setScalar(.85);scene.add(dog);
   const worldEffects=createCabinEffects(scene,cabin,dog);
+  const rewardSign=createRewardSign(scene);
   const person=createBrydon();scene.add(person);person.position.set(1.5,.41,3.45);const arms=person.userData.arms;
   const porchHelmet=createHelmet();porchHelmet.position.set(1.7,.62,2.7);porchHelmet.rotation.y=.35;scene.add(porchHelmet);
   // Subtle ground-contact shadows supplement the models' cast shadows.
@@ -348,7 +348,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   positionCamera();requestAnimationFrame(animate);
   return {
     enter(){approachDoor(()=>{desired=1;targetPanX=0;targetPanY=0;});}, exit(){desired=0;focusDesired=0;focusProgress=0;computerNotified=false;panKeys.clear();},
-    visit(place,onArrive){const via=[avatarPosition[0],.07,4.15];walkRoute(place==='bike'?[via,[3.15,.07,3.5],[3.23,.07,2.25]]:[via,[-2.7,.07,4.15]],onArrive);},
+    visit(place,onArrive){const via=[avatarPosition[0],.07,4.15];walkRoute(place==='bike'?[via,[3.15,.07,3.5],[3.23,.07,2.25]]:place==='sign'?[via,[2.45,.07,5.55]]:[via,[-2.7,.07,4.15]],onArrive);},
     evacuate(onArrive){walkRoute([[.55,.07,4.3],[.55,.07,5.05]],onArrive);},
     computer(page){if(page)pendingPage=page;approachDoor(()=>{desired=1;focusDesired=1;targetPanX=0;targetPanY=0;panKeys.clear();});if(page)computerFrame.contentWindow?.postMessage({source:'switchback-cabin',type:'page',value:page},location.origin);},
     room(){focusDesired=0;panKeys.clear();},
@@ -356,7 +356,9 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     clearKeys(){panKeys.clear();},
     turn(direction,axis='x'){if(focusDesired)return;if(inside){if(axis==='y')targetPanY=THREE.MathUtils.clamp(targetPanY+direction*.3,-.6,.7);else targetPanX=THREE.MathUtils.clamp(targetPanX+direction*.16,-1,1);}else if(desired===0)angleStep=THREE.MathUtils.clamp(angleStep+direction*.7,-4,4);},
     night(on){night=on;windowNight.visible=night;sun.intensity=night?(afterglow?.14:.5):3.4;hemisphere.intensity=night?(afterglow?.78:1.2):2.4;renderer.toneMappingExposure=night?1.1:1.35;worldEffects.night(on);},
-    unlock(){afterglow=true;worldEffects.unlock();scene.fog.color.set('#172a39');},
+    unlock(){afterglow=true;worldEffects.unlock();rewardSign.unlock();scene.fog.color.set('#172a39');},
+    rewardArea(){return rewardSign.hitArea();},
+    rewardVisible(){return rewardSign.visible;},
     reveal(){focusDesired=0;revealing=true;targetPanX=0;targetPanY=.15;panKeys.clear();},
     pet(){worldEffects.pet();},
     takeKettleOff(){return hearthKettle.takeOff();},
@@ -365,9 +367,11 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
       if(object==='kettle'&&!hearthKettle.isOffHeat())return hearthKettle.takeOff();
       const accepted=coffeeStation.action(object,{offHeat:hearthKettle.isOffHeat()});
       if(accepted&&object==='kettle'){targetPanX=.32;targetPanY=-.3;panKeys.clear();}
+      if(accepted&&object==='mug'){targetPanX=0;targetPanY=-.3;panKeys.clear();}
       return accepted;
     },
     coffeeAreas(){return coffeeStation.hitAreas();},
+    coffeeClueRevealed(){return coffeeStation.clueRevealed();},
     kettleArea(){return hearthKettle.hitArea();},
     kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},

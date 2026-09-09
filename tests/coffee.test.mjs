@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createCoffeeState,coffeeAction,advanceCoffee,coffeeProgress,COFFEE_DURATION,brewWater} from '../js/coffee.mjs';
+import {createCoffeeState,coffeeAction,advanceCoffee,coffeeProgress,coffeeClueRevealed,servingFraction,servingMotion,COFFEE_DURATION,brewWater} from '../js/coffee.mjs';
 
 test('coffee requires grinding, dosing, boiled water off the heat, and a final pour',()=>{
   for(const pourObject of ['v60','gooseneck']){
@@ -15,6 +15,40 @@ test('coffee requires grinding, dosing, boiled water off the heat, and a final p
     advanceCoffee(state,COFFEE_DURATION.filling);assert.equal(state.phase,'hot');
     assert.equal(coffeeAction(state,pourObject),true);advanceCoffee(state,COFFEE_DURATION.pouring);
     assert.equal(state.phase,'brewed');assert.equal(coffeeAction(state,'grinder'),false);
+  }
+});
+test('the mug clue requires a completed brew and a separate completed serving',()=>{
+  const state=createCoffeeState();
+  for(const [object,duration] of [['grinder','grinding'],['v60','loading'],['kettle','filling'],['gooseneck','pouring']]){
+    assert.equal(coffeeAction(state,'mug'),false);assert.equal(coffeeClueRevealed(state),false);
+    assert.equal(coffeeAction(state,object,{offHeat:true}),true);
+    assert.equal(coffeeAction(state,'mug'),false);
+    advanceCoffee(state,COFFEE_DURATION[duration]);
+  }
+  assert.equal(state.phase,'brewed');assert.equal(coffeeClueRevealed(state),false);
+  assert.equal(coffeeAction(state,'mug'),true);
+  for(const object of ['mug','grinder','v60','gooseneck','kettle'])assert.equal(coffeeAction(state,object,{offHeat:true}),false);
+  advanceCoffee(state,COFFEE_DURATION.serving*.8);assert.equal(coffeeClueRevealed(state),false);
+  const progress=coffeeProgress(state);advanceCoffee(state,60,{visible:false});assert.equal(coffeeProgress(state),progress);
+  advanceCoffee(state,COFFEE_DURATION.serving*.2);assert.equal(coffeeClueRevealed(state),true);
+  advanceCoffee(state,60);assert.equal(coffeeClueRevealed(state),true);assert.equal(coffeeAction(state,'mug'),false);
+});
+test('serving conserves the coffee and a fire cannot finish revealing the mug',()=>{
+  for(const phase of ['serving','served']){
+    const state={phase,elapsed:COFFEE_DURATION.serving*.8};advanceCoffee(state,60,{burning:true});
+    assert.equal(state.phase,'broken');assert.equal(coffeeClueRevealed(state),false);assert.equal(coffeeAction(state,'mug'),false);
+  }
+  assert.equal(servingFraction(.4),0);assert.equal(servingFraction(.75),1);
+  for(let i=0;i<=100;i++){const fill=servingFraction(i/100),cup=fill*240,server=300-cup;assert.ok(cup>=0&&cup<=240);assert.ok(server>=60);assert.equal(cup+server,300);}
+});
+test('the dripper returns only after the server is back on its scale',()=>{
+  assert.deepEqual(servingMotion(0),{filter:0,server:0,tilt:0});
+  assert.deepEqual(servingMotion(1),{filter:0,server:0,tilt:0});
+  for(let i=1;i<1000;i++){
+    const p=i/1000,motion=servingMotion(p);
+    for(const value of Object.values(motion))assert.ok(value>=0&&value<=1);
+    if(motion.server>0)assert.equal(motion.filter,1,'the filter must stay out of the server’s path');
+    if(p>.91&&p<1){assert.equal(motion.server,0);assert.ok(motion.filter>0&&motion.filter<1);}
   }
 });
 test('coffee pauses in the background and a burning cabin cancels the sequence',()=>{

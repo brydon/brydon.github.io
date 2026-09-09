@@ -62,7 +62,7 @@ export function createCabinAudio(context,samples){
     const coffeeActive=state.inside&&!state.burning,grinding=coffeeActive&&state.coffee==='grinding',dosing=coffeeActive&&state.coffee==='loading';
     ramp(grounds.level.gain,grinding?.06:dosing?.028:0,.055);ramp(grounds.eq.frequency,grinding?1050:2600,.05);
     ramp(burr.level.gain,grinding?.12:0,.07);
-    ramp(water.level.gain,coffeeActive&&['filling','pouring'].includes(state.coffee)?.036:0,.1);
+    ramp(water.level.gain,coffeeActive&&['filling','pouring','serving'].includes(state.coffee)?.036:0,.1);
     if(state.burning)ramp(musicBus.gain,0,.25);
   }
   return {
