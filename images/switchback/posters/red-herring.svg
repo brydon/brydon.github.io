@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="580" height="620" viewBox="0 0 580 620">
+  <title>A fish fact</title>
+  <!-- Fish fact: https://fishbase.se/glossary/Glossary.php?language=english&amp;q=Red+herring&amp;sc=is -->
+  <rect width="580" height="620" fill="#f4da79"/>
+  <path d="M0 0H580V55H0Z" fill="#e2c66b"/>
+  <g fill="#423928" font-family="monospace" font-size="28">
+    <text x="43" y="120" font-size="36" font-weight="bold">FISH FACT</text>
+    <text x="43" y="187">A red herring can</text>
+    <text x="43" y="230">spend two or three</text>
+    <text x="43" y="273">weeks being</text>
+    <text x="43" y="316">cold-smoked.</text>
+    <text x="43" y="401">That is a very</text>
+    <text x="43" y="444">patient fish.</text>
+  </g>
+  <g fill="none" stroke="#9e4535" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M186 535Q270 476 354 535Q270 594 186 535L142 503V567ZM316 513Q295 535 316 557M239 511L268 494 277 506"/>
+    <circle cx="328" cy="530" r="3" fill="#9e4535"/>
+  </g>
+</svg>

@@ -4,6 +4,7 @@ import {prepareAudioSamples} from './audio-preload.mjs';
 import {CABIN_NOTES} from './cabin-notes.mjs';
 import {projectedVolumeBounds} from './hit-area.mjs';
 import {REWARD_CODE} from './cabin-reward.mjs';
+import {RED_HERRING_FACT,RED_HERRING_ASIDE} from './poster-history.mjs';
 const $=id=>document.getElementById(id);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let scene,view='outside',computerRequested=false,audio,melting=false,engaged=false,replacementQueued=false;
@@ -60,6 +61,10 @@ function room(){if(!scene)return;scene.room();computerRequested=false;view='unfo
 $('enter-cabin').addEventListener('click',enter);$('leave-cabin').addEventListener('click',leave);$('computer-back').addEventListener('click',room);
 $('rebuild-cabin').addEventListener('click',()=>location.assign('/'));
 $('cabin-door').addEventListener('click',()=>view==='inside'?leave():enter());
+$('wall-poster').addEventListener('click',()=>{
+  if(view==='inside'&&!melting&&scene?.posterTap()==='note')discover('A fish fact',`<p>${RED_HERRING_FACT}</p><p>${RED_HERRING_ASIDE}</p><p><small><a href="https://fishbase.se/glossary/Glossary.php?language=english&q=Red+herring&sc=is" target="_blank" rel="noopener noreferrer">FishBase</a></small></p>`);
+});
+$('wall-poster').addEventListener('keydown',event=>{if(event.repeat&&(event.key==='Enter'||event.key===' '))event.preventDefault();});
 $('pet-dog').addEventListener('click',()=>{if(view==='inside'){scene?.pet();audio?.pet();}});
 $('hearth-kettle').addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.coffeeAction('kettle');});
 for(const object of ['grinder','v60','gooseneck'])$('coffee-'+object).addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.coffeeAction(object);});
@@ -177,6 +182,10 @@ async function init(){
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
       area('reward-sign',scene.rewardArea(),outside&&scene.rewardVisible());
       area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
+      const poster=scene.posterArea();
+      area('wall-poster',poster?.vertices??[],inside&&!melting&&!!poster);
+      $('wall-poster').disabled=!!poster?.disabled;
+      if(poster)$('wall-poster').setAttribute('aria-label',poster.kind==='note'?'Read the sticky note':'Touch the '+poster.name+' poster');
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
       area('hearth-kettle',scene.kettleArea(),inside&&(soundWorld.boiling||scene.kettleOffHeat())&&!melting,true);
       $('hearth-kettle').setAttribute('aria-label',scene.kettleOffHeat()?'Fill the gooseneck with hot water':'Take the boiling kettle off the fire');
