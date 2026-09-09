@@ -144,10 +144,12 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   for(const y of [-.705,.705])box(1.69,.10,.19,0,y,0,'#a7814d',sideWindow);
   box(.052,1.33,.10,0,0,.07,'#78623f',sideWindow);box(1.5,.046,.10,0,-.02,.07,'#78623f',sideWindow);box(1.83,.095,.33,0,-.77,.1,'#bd965f',sideWindow);
   const glass=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.3),new THREE.MeshBasicMaterial({color:'#93b6c0',transparent:true,opacity:.08,side:THREE.DoubleSide,depthWrite:false}));sideWindow.add(glass);
-  const windowNight=new THREE.Group();scene.add(windowNight);
-  const windowMoon=new THREE.Mesh(new THREE.SphereGeometry(.72,16,12),new THREE.MeshBasicMaterial({color:'#ece8ca',toneMapped:false}));windowMoon.position.set(13.5,4.6,-15.1);windowNight.add(windowMoon);
+  // Put the sky beyond the ridgeline, with enough elevation to clear its peaks.
+  // Scaling both distance and geometry keeps the moon's apparent size familiar.
+  const windowNight=new THREE.Group();windowNight.name='Distant night sky';windowNight.scale.setScalar(3);windowNight.position.y=2;scene.add(windowNight);
+  const windowMoon=new THREE.Mesh(new THREE.SphereGeometry(.72,16,12),new THREE.MeshBasicMaterial({color:'#ece8ca',toneMapped:false,fog:false}));windowMoon.position.set(13.5,3,-16.6);windowNight.add(windowMoon);
   for(let i=0;i<32;i++){
-    const star=new THREE.Mesh(new THREE.IcosahedronGeometry(.025,0),new THREE.MeshBasicMaterial({color:'#dae6d7',toneMapped:false}));star.position.set(10+Math.sin(i*18.2)*6,4+(Math.cos(i*13)*.5+.5)*8,-13+Math.sin(i*3.7)*8);windowNight.add(star);
+    const star=new THREE.Mesh(new THREE.IcosahedronGeometry(.025,0),new THREE.MeshBasicMaterial({color:'#dae6d7',toneMapped:false,fog:false}));star.position.set(10+Math.sin(i*18.2)*6,4+(Math.cos(i*13)*.5+.5)*8,-20+Math.sin(i*3.7)*2);windowNight.add(star);
   }
   // Hinged door and welcoming lamp.
   const door=new THREE.Group();door.position.set(-.13,.42,2.14);cabin.add(door);
