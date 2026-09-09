@@ -6,7 +6,9 @@ but cannot be clicked until the old one lands. Each layer starts with no saved
 clicks, and holding Enter does not count as repeated taps.
 
 The order is Cohere → Thinking Machines → OpenAI → Minerva AI → University of
-Waterloo → McMaster University → Redeemer University → the bare wall. Fallen
+Waterloo → McMaster University → Redeemer University → a small sticky note on the wall. The note shares a fish
+fact: red herring can be cold-smoked for two or three weeks, followed by “That is
+a very patient fish.” It is readable by clicking after the last frame lands. Fallen
 frames remain face-up in a small pile. Reloading restores the posters; room visits
 do not. There is no visible counter or new hint text. Reduced-motion mode skips
 the wobble and fall movement while preserving the sequence and brief input lock.
@@ -40,5 +42,7 @@ All source material below was retrieved on 2026-09-09.
 ## Verification
 
 `tests/posters.test.mjs` covers click expiry, fall locking, every reveal in order,
-reduced motion, the moving hit area, the final empty wall, and settled frame
+reduced motion, the moving hit area, the final sticky note, and settled frame
 geometry. Run `pnpm build` and `pnpm check` before publishing.
+
+The sticky note’s fact comes from the [FishBase glossary](https://fishbase.se/glossary/Glossary.php?language=english&q=Red+herring&sc=is). Its fish doodle and paper layout are original SVG artwork.

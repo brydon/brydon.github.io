@@ -2,6 +2,7 @@ import * as THREE from './vendor/three.module.min.js';
 import {advanceEntrance} from './entrance.mjs';
 import {createDog,createIron883,createBrydon,createHelmet} from './cabin-models.mjs';
 import {furnishCabin} from './cabin-interior.mjs';
+import {createPosterStack} from './cabin-posters.mjs';
 import {createCabinEffects} from './cabin-effects.mjs';
 import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
 import {createGearWall} from './cabin-gear.mjs';
@@ -189,6 +190,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   box(.42,.04,.5,1.37,1.225,-1.02,'#dfd0a3',cabin);
   box(.39,.01,.46,1.37,1.25,-1.02,'#f2e8cd',cabin);
   const interiorDetails=furnishCabin(cabin);
+  const posters=createPosterStack(cabin);
   const hearthKettle=createHearthKettle(cabin,onKettle);
   const blueJay=createBlueJay(scene);
   // Small interior window behind the desk.
@@ -338,6 +340,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
         flag.rotation.y=Math.sin(time*.0012)*.13-.2;
         smoke.forEach((p,i)=>{const phase=(time*.00016+i*.2)%1;p.position.set(-2.1+phase*.5,5.3+phase*2.3,.95+phase*.18);p.scale.setScalar(.6+phase*1.9);p.material.opacity=(1-phase)*.15;});
       }
+      posters.animate(dt,reducedMotion.matches);
       worldEffects.animate(time,reducedMotion.matches);
       hearthKettle.animate(time,elapsedSeconds,inside&&desired===1,reducedMotion.matches,true,brokenComputer);
       coffeeStation.animate(time,elapsedSeconds,reducedMotion.matches,brokenComputer);
@@ -373,6 +376,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
       if(accepted&&object==='mug'){targetPanX=0;targetPanY=-.3;panKeys.clear();}
       return accepted;
     },
+    posterTap(){if(inside&&!brokenComputer)return posters.tap(performance.now());return false;},
+    posterArea(){return posters.hotspot();},
     coffeeAreas(){return coffeeStation.hitAreas();},
     coffeeClueRevealed(){return coffeeStation.clueRevealed();},
     kettleArea(){return hearthKettle.hitArea();},

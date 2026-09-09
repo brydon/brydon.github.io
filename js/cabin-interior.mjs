@@ -81,14 +81,6 @@ export function furnishCabin(cabin){
   }
   cylinder(hearth,.058,.06,.16,.43,1.31,.08,'#decc94');mesh(hearth,new THREE.ConeGeometry(.023,.08,5),'#ffcd78',.43,1.435,.08,true);
 
-  // The blank interior wall beside the hearth, facing away from the porch.
-  const poster=new THREE.Group();poster.name='Framed Cohere poster';poster.position.set(-1.05,1.82,1.90);poster.rotation.y=Math.PI;poster.scale.setScalar(.47);cabin.add(poster);
-  box(poster,1.16,1.59,.025,0,0,0,'#354037');
-  const posterTexture=new THREE.TextureLoader().load('/images/switchback/cohere-poster.svg');posterTexture.colorSpace=THREE.SRGBColorSpace;posterTexture.anisotropy=8;
-  const print=new THREE.Mesh(new THREE.PlaneGeometry(1.10,1.5125),new THREE.MeshStandardMaterial({map:posterTexture,roughness:.96,metalness:0}));print.position.z=.017;print.receiveShadow=true;poster.add(print);
-  for(const x of [-.567,.567])box(poster,.034,1.59,.038,x,0,.013,'#354037');
-  for(const y of [-.778,.778])box(poster,1.16,.034,.038,0,y,.013,'#354037');
-
   // A thick woven rug, with borders, geometric medallions and individual fringe.
   const rug=new THREE.Group();rug.name='Woven cabin rug';rug.position.set(.13,.482,.56);cabin.add(rug);
   box(rug,2.8,.026,1.87,0,0,0,'#683e32');
