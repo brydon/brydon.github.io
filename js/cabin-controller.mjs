@@ -92,7 +92,7 @@ async function toggleSound(){
 }
 $('sound-toggle').addEventListener('click',toggleSound);
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
-function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
 $('chalkboard').addEventListener('click',()=>{
   if(view!=='inside'||!scene)return;
   discover('Working notes','');$('discovery').classList.add('chalkboard-discovery');
@@ -100,12 +100,14 @@ $('chalkboard').addEventListener('click',()=>{
   board.alt='Chalk diagrams of Delaney chambers and a hexagonal tiling, the circulant C12(1,3,4), a sparse companion matrix with its matching intercyclic digraph, and a schematic supercritical Hopf bifurcation for the chemostat.';
   $('discovery-copy').append(board);
 });
-$('receipt').addEventListener('click',()=>discover('Under the coffee mug','<p>A ring of coffee. A scrap of paper. A small beginning:</p><p><code>01 / TAKE THE</code></p><p>The next line went out for a ride.</p>'));
+$('receipt').addEventListener('click',()=>discover('Under the coffee mug','<p>On a coffee-stained scrap of paper:</p><p><code>take the</code></p>'));
 function visit(place,title,copy){if(!scene||view!=='outside'||melting)return;engage();view='walking';scene.visit(place,()=>{view='outside';discover(title,copy);});}
-$('bridge-note').addEventListener('click',()=>visit('bike','The luggage tag','<p>There’s something written on the back:</p><p><code>02 / LONG WAY</code></p><p>Follow the warmth for the last line.</p>'));
-$('camp-note').addEventListener('click',()=>visit('fire','Around the fire','<p>Someone left a mark in the stone:</p><p><code>03 / HOME</code></p><p>The old computer inside can check your answer.</p>'));
-$('desk-flags').addEventListener('click',()=>discover('Two places. One home.','<p>Canada and Sri Lanka, side by side.</p><p>A tiny note folded between the pens:</p><p>“For my wife. Wherever we end up, you’re home.”</p><p>♡</p>'));
-$('service-note').addEventListener('click',()=>discover('Service record 064','<p>A faded label. The printer took its secrets seriously.</p><a href="/images/switchback/service-064.png" target="_blank" rel="noopener noreferrer"><img class="service-scan" src="/images/switchback/service-064.png" width="384" height="176" alt="A worn service label containing a Base64 message printed in pixels"></a><p>The terminal might know what to do with it.</p>'));
+$('bridge-note').addEventListener('click',()=>visit('bike','The luggage tag','<p>Pressed into the leather:</p><p><code>long way</code></p>'));
+$('camp-note').addEventListener('click',()=>visit('fire','A carving in the stone','<p><code>home</code></p>'));
+$('service-note').addEventListener('click',()=>{
+  discover('A scrap of paper','<a href="/images/switchback/service-064.png" target="_blank" rel="noopener noreferrer"><img class="service-scan" src="/images/switchback/service-064.png" width="384" height="176" alt="A scrap of paper with printed characters"></a>');
+  $('discovery').classList.add('bitmap-discovery');
+});
 document.querySelector('[data-close="discovery"]').addEventListener('click',()=>$('discovery').close());
 $('discovery').addEventListener('click',event=>{const dialog=$('discovery');if(event.target!==dialog)return;const b=dialog.getBoundingClientRect();if(event.clientX<b.left||event.clientX>b.right||event.clientY<b.top||event.clientY>b.bottom)dialog.close();});
 window.addEventListener('message',event=>{
@@ -149,7 +151,6 @@ async function init(){
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
       area('hearth-kettle',[[-1.60,1.43,1.31],[-1.60,1.43,.64],[-1.60,.92,.64],[-1.60,.92,1.31]],inside&&soundWorld.boiling&&!melting);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
-      area('desk-flags',[[1.29,2.03,-1.5],[2.14,2.03,-1.5],[2.14,1.22,-1.5],[1.29,1.22,-1.5]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('receipt',[[-.15,1.46,-.96],[.14,1.46,-.96],[.14,1.2,-.96],[-.15,1.2,-.96]],inside);
       requestAnimationFrame(updateHotspots);

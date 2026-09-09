@@ -11,14 +11,14 @@ export async function command(input){
   case'help':return{text:'help                 this page\nls [-a]              look around\ncat <file>           read a file\nbase64 -d <file>      decode a note\nsha256 <words>       hash a phrase\nclear                clear the screen\nexit                 back to the valley'};
   case'ls':return{text:arg==='-a'?'README.txt   friend.b64   .route.sha256   .service.png':'README.txt   friend.b64'};
   case'cat':
-   if(arg==='README.txt')return{text:'SWITCHBACK / CABIN\n2015 Iron 883. Black paint. Plenty of road left.\n\nAn old note survived the move. Some files prefer the dark.\nThe coffee mug, luggage tag, and fire ring have a story to tell.'};
+   if(arg==='README.txt')return{text:'SWITCHBACK / CABIN\n\nSpare cables in the bottom drawer.\nClose the door behind you.\nThe dog has already picked a spot.'};
    if(arg==='friend.b64')return{text:FRIEND_NOTE};
-   if(arg==='.service.png')return{text:'An old service label. No text layer. Good luck with the transcription.',image:'/images/switchback/service-064.png'};
-   if(arg==='.route.sha256')return{text:ROUTE_DIGEST+'\n\nThree places. One phrase. Coffee mug → luggage tag → fire ring.\nLowercase. Single spaces. No punctuation.\nA digest is a fingerprint, not an encoding.\nTry: unlock <phrase>'};
+   if(arg==='.service.png')return{image:'/images/switchback/service-064.png'};
+   if(arg==='.route.sha256')return{text:ROUTE_DIGEST};
    return{text:'No such file. Try ls.'};
   case'base64':return{text:arg==='-d friend.b64'?atob(FRIEND_NOTE):'Usage: base64 -d friend.b64'};
   case'sha256':return{text:arg?await sha256(arg):'Usage: sha256 <words>'};
-  case'unlock':return await isRoute(arg)?{text:'Fingerprint matches.\nThe long way leads somewhere good. Look outside.',unlocked:true}:{text:'No match. The valley has the words; the digest confirms them.'};
+  case'unlock':return await isRoute(arg)?{text:'Fingerprint matches.\nThe long way leads somewhere good. Look outside.',unlocked:true}:{text:'No match.'};
   case'whoami':return{text:'guest\nThe dog has root. We do not question the arrangement.'};
   case'pwd':return{text:'/home/brydon/somewhere-with-a-view'};
   case'uname':return{text:'SwitchbackOS 1.0 / pine64 / wood-fired kernel'};
