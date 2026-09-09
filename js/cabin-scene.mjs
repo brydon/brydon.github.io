@@ -212,15 +212,18 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   await createGearWall(cabin);
   box(.64,.09,1.05,1.94,1.05,.23,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.23,'#425a50',cabin);
   const coffeeStation=createCoffeeStation(cabin,onCoffee);
-  // Canadian flag, made from a small double-sided mesh rather than text/emoji.
+  // Red details sit on both faces of the opaque white flag cloth.
   cylinder(.025,.035,2.3,2.68,2.31,2.8,'#b8aa87',scene,6);
   const flag=new THREE.Group();flag.position.set(2.68,3.18,2.8);scene.add(flag);
   const flagMat=new THREE.MeshBasicMaterial({color:'#fff6df',side:THREE.DoubleSide});
   const field=new THREE.Mesh(new THREE.PlaneGeometry(1.02,.51),flagMat);field.position.x=.51;flag.add(field);
-  for(const x of [.115,.905]){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(.23,.51),new THREE.MeshBasicMaterial({color:'#c33b34',side:THREE.DoubleSide}));stripe.position.set(x,0,.006);flag.add(stripe);}
+  const flagRed=new THREE.MeshBasicMaterial({color:'#c33b34',side:THREE.DoubleSide});
+  const stripeGeometry=new THREE.PlaneGeometry(.23,.51);
+  for(const side of [-1,1])for(const x of [.115,.905]){const stripe=new THREE.Mesh(stripeGeometry,flagRed);stripe.position.set(x,0,side*.006);flag.add(stripe);}
   const leaf=new THREE.Shape();const leafPoints=[[0,-.2],[.018,-.09],[.13,-.1],[.1,-.04],[.22,.055],[.14,.065],[.15,.15],[.08,.105],[.055,.205],[0,.15],[-.055,.205],[-.08,.105],[-.15,.15],[-.14,.065],[-.22,.055],[-.1,-.04],[-.13,-.1],[-.018,-.09]];
   leafPoints.forEach(([x,y],i)=>i?leaf.lineTo(x,y):leaf.moveTo(x,y));leaf.closePath();
-  const maple=new THREE.Mesh(new THREE.ShapeGeometry(leaf),new THREE.MeshBasicMaterial({color:'#c33b34',side:THREE.DoubleSide}));maple.position.set(.51,-.01,.013);flag.add(maple);
+  const leafGeometry=new THREE.ShapeGeometry(leaf);
+  for(const side of [-1,1]){const maple=new THREE.Mesh(leafGeometry,flagRed);maple.position.set(.51,-.01,side*.013);flag.add(maple);}
 
   // Fire ring and a couple of seats outside.
   const fire=new THREE.Group();fire.position.set(-3.55,.1,3.45);scene.add(fire);
