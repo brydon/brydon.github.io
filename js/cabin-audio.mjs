@@ -1,13 +1,13 @@
 /** Original procedural sound design. No recordings, music downloads or backend. */
-export function createCabinAudio(context){
+export function createCabinAudio(context,samples){
   const master=context.createGain();master.gain.value=.60;
   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-15;limiter.knee.value=18;limiter.ratio.value=5;limiter.attack.value=.006;limiter.release.value=.25;master.connect(limiter).connect(context.destination);
   const state={inside:false,boiling:false,burning:false,aurora:false};
   let enabled=false,nextCrackle=0,lastBark=-10,scoreUntil=0;
   const voices=new Set();let seed=805;
   const random=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
-  const white=context.createBuffer(1,context.sampleRate*4,context.sampleRate),brown=context.createBuffer(1,context.sampleRate*4,context.sampleRate);
-  let last=0;for(let i=0;i<white.length;i++){const n=random()*2-1;white.getChannelData(0)[i]=n;last=(last+.025*n)/1.025;brown.getChannelData(0)[i]=last*4;}
+  function buffer(channels){const result=context.createBuffer(channels.length,channels[0].length,samples.sampleRate);channels.forEach((data,i)=>result.copyToChannel(data,i));return result;}
+  const white=buffer([samples.white]),brown=buffer([samples.brown]);
   function gain(value=0,output=master){const node=context.createGain();node.gain.value=value;node.connect(output);return node;}
   function filter(type,freq,q=1){const node=context.createBiquadFilter();node.type=type;node.frequency.value=freq;node.Q.value=q;return node;}
   function track(node,outputs=[]){voices.add(node);node.onended=()=>{voices.delete(node);node.disconnect();outputs.forEach(n=>n.disconnect());};return node;}
@@ -18,8 +18,7 @@ export function createCabinAudio(context){
   whistle.frequency.value=1568;overtone.frequency.value=3136;whistle.connect(whistleLevel);overtone.connect(overtoneLevel);whistle.start();overtone.start();
   const vibrato=context.createOscillator(),vibratoDepth=context.createGain();vibrato.frequency.value=6.5;vibratoDepth.gain.value=12;vibrato.connect(vibratoDepth).connect(whistle.frequency);vibrato.start();
   const musicBus=gain(0),dry=gain(.7,musicBus),wet=gain(.23,musicBus),reverb=context.createConvolver();
-  const impulse=context.createBuffer(2,context.sampleRate*2.5,context.sampleRate);
-  for(let ch=0;ch<2;ch++){const data=impulse.getChannelData(ch);for(let i=0;i<data.length;i++)data[i]=(random()*2-1)*Math.pow(1-i/data.length,3.5);}
+  const impulse=buffer(samples.impulse);
   reverb.buffer=impulse;reverb.connect(wet);
   const musicInput=context.createGain();musicInput.connect(dry);musicInput.connect(reverb);
   function tone(freq,at,duration,volume,type='sine',output=master,attack=.025,detune=0){

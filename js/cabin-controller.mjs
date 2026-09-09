@@ -1,8 +1,10 @@
 import {isEvening} from './lighting.mjs';
 import {createCabinAudio} from './cabin-audio.mjs';
+import {prepareAudioSamples} from './audio-preload.mjs';
 const $=id=>document.getElementById(id);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let scene,view='outside',computerRequested=false,audio,melting=false,engaged=false,replacementQueued=false;
+let audioContext,audioReady;
 const soundWorld={inside:false,boiling:false,burning:false,aurora:false};
 function soundState(values){Object.assign(soundWorld,values);audio?.setWorld(values);}
 const storage={get(key){try{return localStorage.getItem('switchback:'+key);}catch{return null;}},set(key,value){try{localStorage.setItem('switchback:'+key,value);}catch{/* Preferences are optional. */}}};
@@ -62,11 +64,29 @@ document.addEventListener('keydown',event=>{
 document.addEventListener('keyup',event=>scene?.key(event.key.toLowerCase(),false));window.addEventListener('blur',()=>scene?.clearKeys());
 function evening(on,persist=true){scene?.night(on);document.body.classList.toggle('afterglow',on&&storage.get('overlook')==='found');$('night-toggle').setAttribute('aria-pressed',String(on));$('night-toggle').textContent=on?'Daylight':'Evening';$('night-toggle').setAttribute('aria-label',on?'Switch to daylight':'Switch to evening');if(persist)storage.set('eveningOverride',String(on));}
 $('night-toggle').addEventListener('click',()=>evening($('night-toggle').getAttribute('aria-pressed')!=='true'));
+function prepareSound(){
+  if(!audioReady){
+    const context=new(window.AudioContext||window.webkitAudioContext)();audioContext=context;
+    // Idle preparation remains silent, including in browsers allowing autoplay.
+    audioReady=Promise.all([prepareAudioSamples(context.sampleRate),context.suspend()]).then(([samples])=>{
+      audio=createCabinAudio(context,samples);audio.setWorld(soundWorld);return audio;
+    }).catch(error=>{audio=null;audioReady=null;audioContext=null;context.close().catch(()=>{});throw error;});
+  }
+  return audioReady;
+}
 async function toggleSound(){
+  const button=$('sound-toggle');if(button.disabled)return;button.disabled=true;
+  const on=button.getAttribute('aria-pressed')!=='true';
   try{
-    if(!audio){audio=createCabinAudio(new(window.AudioContext||window.webkitAudioContext)());audio.setWorld(soundWorld);}
-    const on=$('sound-toggle').getAttribute('aria-pressed')!=='true';await audio.setEnabled(on);$('sound-toggle').setAttribute('aria-pressed',String(on));$('sound-toggle').textContent=on?'Sound on':'Sound off';$('sound-toggle').setAttribute('aria-label',on?'Turn ambient sound off':'Turn ambient sound on');
+    if(on&&!audio)button.textContent='Starting sound…';
+    const ready=prepareSound();
+    // Resume in the actual click handler so an early click keeps its user gesture.
+    const resumed=on?audioContext.resume():Promise.resolve();
+    const [prepared]=await Promise.all([ready,resumed]);await prepared.setEnabled(on);
+    if(document.hidden)await prepared.visibility(false);
+    button.setAttribute('aria-pressed',String(on));button.textContent=on?'Sound on':'Sound off';button.setAttribute('aria-label',on?'Turn ambient sound off':'Turn ambient sound on');
   }catch{$('toast').textContent='Ambient sound isn’t available in this browser.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);}
+  finally{button.disabled=false;button.textContent=button.getAttribute('aria-pressed')==='true'?'Sound on':'Sound off';}
 }
 $('sound-toggle').addEventListener('click',toggleSound);
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
@@ -131,6 +151,8 @@ async function init(){
       requestAnimationFrame(updateHotspots);
     }
     updateHotspots();
+    const warmSound=()=>{Promise.resolve().then(prepareSound).catch(()=>{});};
+    if('requestIdleCallback' in window)window.requestIdleCallback(warmSound,{timeout:2000});else setTimeout(warmSound,250);
     const page=new URLSearchParams(location.hash.slice(1)).get('place');if(pages.has(page))computer(page);
   }catch(error){console.error('Cabin failed to load:',error);sceneError();}
 }

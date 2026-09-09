@@ -53,4 +53,6 @@ GitHub Pages can serve this site directly. The existing repository serves the ro
 
 Audio is generated in the browser and starts only when the visitor turns sound on. WebGL, native iframe content, local preferences, and SHA-256 puzzles also run client-side. There is no database, server runtime or API key to provision.
 
+Noise and reverb buffers are prepared in a background worker and cached in memory. The audio graph warms once while the page is idle, with its context suspended until sound is enabled. If workers are unavailable, generation yields in small chunks; an early sound click waits without blocking the scene.
+
 The hidden discoveries now include a persistent midnight world, a separate image-only Base64 puzzle and unlisted terminal jokes. The fictional meltdown opens a replacement-shopping search in a new tab and keeps the charred cabin burning until **Rebuild cabin** is selected.
