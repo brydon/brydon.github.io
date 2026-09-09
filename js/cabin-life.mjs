@@ -19,7 +19,7 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
   mesh(new THREE.CylinderGeometry(.044,.053,.10,8),'#313a32',-.4,.115,.02);
   pipe([[-.4,.13,.02],[-.4,.98,.02],[-.38,1.02,.02],[.06,1.02,.02]],.021,'#313a32',rig);
   pipe([[.04,1.01,.02],[.04,.91,.02],[.07,.89,.02],[.10,.92,.02]],.011,'#72776a',rig);
-  const body=new THREE.Group();body.position.set(.08,.49,.13);rig.add(body);
+  const body=new THREE.Group();body.name='Hearth kettle body';body.position.set(.08,.49,.13);rig.add(body);
   const profile=[[0,0],[.13,0],[.185,.055],[.198,.145],[.16,.23],[.105,.26]].map(([x,y])=>new THREE.Vector2(x,y));
   mesh(new THREE.LatheGeometry(profile,16),'#587374',0,0,0,body);
   mesh(new THREE.CylinderGeometry(.145,.162,.025,16),'#334e4b',0,.013,0,body);
@@ -35,10 +35,29 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
   const droplets=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.012,0),new THREE.MeshStandardMaterial({color:'#aacccd',transparent:true,opacity:.7,roughness:.2}),24);
   droplets.frustumCulled=false;rig.add(droplets);
   const puddle=mesh(new THREE.CylinderGeometry(.26,.26,.008,18),'#638e87',.08,.078,.31);puddle.material=new THREE.MeshStandardMaterial({color:'#789f96',transparent:true,opacity:.48,roughness:.18});
-  const dummy=new THREE.Object3D();let elapsed=0,wasBoiling=false,offHeat=false,cooling=0,swingProgress=0;
+  const dummy=new THREE.Object3D();let elapsed=0,wasBoiling=false,offHeat=false,cooling=0,swingProgress=0,transferring=false;
+  const restingPosition=body.position.clone(),restingRotation=body.quaternion.clone(),home=new THREE.Vector3(),homeRotation=new THREE.Quaternion();
+  const stream=new THREE.Mesh(new THREE.CylinderGeometry(.008,.006,1,8),new THREE.MeshStandardMaterial({color:'#b4d9d5',transparent:true,opacity:.72,roughness:.1}));stream.name='Hot water transfer';stream.visible=false;cabin.add(stream);
+  const up=new THREE.Vector3(0,1,0),tip=new THREE.Vector3(),direction=new THREE.Vector3();
+  const ease=x=>{x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
   return {takeOff(){
     if(!wasBoiling||offHeat)return false;
     offHeat=true;wasBoiling=false;group.name='The kettle is off the fire';onBoil(false);return true;
+  },isOffHeat(){return offHeat;},
+  hitArea(){body.updateWorldMatrix(true,false);return [[-.39,.47,.22],[.23,.47,.22],[.23,-.03,.22],[-.39,-.03,.22]].map(p=>body.localToWorld(new THREE.Vector3(...p)).toArray());},
+  fill(progress,target){
+    if(progress===null){
+      if(transferring){rig.attach(body);body.position.copy(restingPosition);body.quaternion.copy(restingRotation);transferring=false;}
+      stream.visible=false;return;
+    }
+    if(!offHeat)return;
+    if(!transferring){cabin.attach(body);home.copy(body.position);homeRotation.copy(body.quaternion);transferring=true;}
+    const destination=cabin.worldToLocal(target.clone()),end=destination.clone().add(new THREE.Vector3(.08,.30,.453));
+    const t=progress<.23?ease(progress/.23):progress>.80?1-ease((progress-.80)/.20):1;
+    const path=new THREE.CubicBezierCurve3(home,home.clone().add(new THREE.Vector3(0,1,-.8)),end.clone().add(new THREE.Vector3(0,.4,-.8)),end);
+    body.position.copy(path.getPoint(t));body.quaternion.copy(homeRotation).slerp(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,-Math.PI/2,.5)),t);
+    steam.visible=false;stream.visible=progress>=.23&&progress<=.80;
+    if(stream.visible){body.updateWorldMatrix(true,false);tip.set(-.362,.281,.08);body.localToWorld(tip);cabin.worldToLocal(tip);direction.subVectors(destination,tip);stream.position.copy(tip).add(destination).multiplyScalar(.5);stream.scale.y=direction.length();stream.quaternion.setFromUnitVectors(up,direction.normalize());}
   },animate(time,seconds,inside,reduced,visible=true,burning=false){
     elapsed=offHeat?0:advanceKettleTimer(elapsed,seconds,{inside,visible});
     if(offHeat&&visible){

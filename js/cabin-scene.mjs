@@ -14,7 +14,7 @@ const ease = t => t*t*(3-2*t);
 const mix = (a,b,t) => a+(b-a)*t;
 
 /** One small scene, with an authored entrance instead of a movement controller. */
-export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, onError, onComputer, onKettle}) {
+export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, onError, onComputer, onKettle, onCoffee}) {
   const renderer = new THREE.WebGLRenderer({canvas, antialias:false, alpha:true, powerPreference:'low-power'});
   renderer.setPixelRatio(1);
   renderer.shadowMap.enabled = true;
@@ -212,7 +212,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
 
   await createGearWall(cabin);
   box(.64,.09,1.05,1.94,1.05,.23,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.23,'#425a50',cabin);
-  createCoffeeStation(cabin);
+  const coffeeStation=createCoffeeStation(cabin,onCoffee);
   // Canadian flag, made from a small double-sided mesh rather than text/emoji.
   cylinder(.025,.035,2.3,2.68,2.31,2.8,'#b8aa87',scene,6);
   const flag=new THREE.Group();flag.position.set(2.68,3.18,2.8);scene.add(flag);
@@ -337,6 +337,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
       }
       worldEffects.animate(time,reducedMotion.matches);
       hearthKettle.animate(time,elapsedSeconds,inside&&desired===1,reducedMotion.matches,true,brokenComputer);
+      coffeeStation.animate(time,elapsedSeconds,reducedMotion.matches,brokenComputer);
+      hearthKettle.fill(coffeeStation.phase==='filling'?coffeeStation.progress:null,coffeeStation.fillTarget());
       blueJay.animate(time,reducedMotion.matches);
       htmlRenderer.render(htmlScene,camera);renderer.render(scene,camera);
     }
@@ -358,6 +360,16 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     reveal(){focusDesired=0;revealing=true;targetPanX=0;targetPanY=.15;panKeys.clear();},
     pet(){worldEffects.pet();},
     takeKettleOff(){return hearthKettle.takeOff();},
+    coffeeAction(object){
+      if(brokenComputer)return false;
+      if(object==='kettle'&&!hearthKettle.isOffHeat())return hearthKettle.takeOff();
+      const accepted=coffeeStation.action(object,{offHeat:hearthKettle.isOffHeat()});
+      if(accepted&&object==='kettle'){targetPanX=.32;targetPanY=-.3;panKeys.clear();}
+      return accepted;
+    },
+    coffeeAreas(){return coffeeStation.hitAreas();},
+    kettleArea(){return hearthKettle.hitArea();},
+    kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
     administrator(){worldEffects.administrator();},
     explode(){brokenComputer=true;monitor.visible=false;monitorBody.visible=false;focusDesired=0;revealing=true;targetPanX=0;targetPanY=0;worldEffects.explode();},

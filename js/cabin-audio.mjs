@@ -2,7 +2,7 @@
 export function createCabinAudio(context,samples){
   const master=context.createGain();master.gain.value=.60;
   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-15;limiter.knee.value=18;limiter.ratio.value=5;limiter.attack.value=.006;limiter.release.value=.25;master.connect(limiter).connect(context.destination);
-  const state={inside:false,boiling:false,burning:false,aurora:false};
+  const state={inside:false,boiling:false,burning:false,aurora:false,coffee:'idle'};
   let enabled=false,nextCrackle=0,lastBark=-10,lastChirp=-10,lastKey=-10,scoreUntil=0;
   const voices=new Set();let seed=805;
   const random=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
@@ -14,6 +14,7 @@ export function createCabinAudio(context,samples){
   function noise(buffer,type,freq,volume){const source=context.createBufferSource(),eq=filter(type,freq,.7),level=gain(volume);source.buffer=buffer;source.loop=true;source.connect(eq).connect(level);source.start();return {source,eq,level};}
   function ramp(param,value,seconds=.45){param.setTargetAtTime(value,context.currentTime,seconds);}
   const forest=noise(brown,'lowpass',800,.025),fire=noise(brown,'lowpass',1200,0),hiss=noise(white,'bandpass',3400,0);
+  const grounds=noise(white,'bandpass',1050,0),water=noise(white,'bandpass',1850,0),burr=noise(brown,'bandpass',230,0);
   const whistleLevel=gain(0),whistle=context.createOscillator(),overtone=context.createOscillator(),overtoneLevel=gain(.14,whistleLevel);
   whistle.frequency.value=1568;overtone.frequency.value=3136;whistle.connect(whistleLevel);overtone.connect(overtoneLevel);whistle.start();overtone.start();
   const vibrato=context.createOscillator(),vibratoDepth=context.createGain();vibrato.frequency.value=6.5;vibratoDepth.gain.value=12;vibrato.connect(vibratoDepth).connect(whistle.frequency);vibrato.start();
@@ -48,6 +49,10 @@ export function createCabinAudio(context,samples){
     ramp(fire.eq.frequency,state.burning?1800:850);
     ramp(hiss.level.gain,state.boiling&&!state.burning?.025:0,.4);
     ramp(whistleLevel.gain,state.boiling&&!state.burning?.035:0,.6);
+    const coffeeActive=state.inside&&!state.burning,grinding=coffeeActive&&state.coffee==='grinding',dosing=coffeeActive&&state.coffee==='loading';
+    ramp(grounds.level.gain,grinding?.06:dosing?.028:0,.055);ramp(grounds.eq.frequency,grinding?1050:2600,.05);
+    ramp(burr.level.gain,grinding?.12:0,.07);
+    ramp(water.level.gain,coffeeActive&&['filling','pouring'].includes(state.coffee)?.036:0,.1);
     if(state.burning)ramp(musicBus.gain,0,.25);
   }
   return {
@@ -100,6 +105,6 @@ export function createCabinAudio(context,samples){
       const now=context.currentTime;nextCrackle=now+(state.burning?.055+random()*.11:.35+random()*.8);
       if(state.inside||state.burning)burst(now+.01,.018+random()*.06,state.burning?.022+random()*.04:.006+random()*.008,700+random()*2100,'bandpass');
     },
-    dispose(){enabled=false;[forest.source,fire.source,hiss.source,whistle,overtone,vibrato,...voices].forEach(node=>{try{node.stop();}catch{/* Already ended. */}});master.disconnect();context.close?.();}
+    dispose(){enabled=false;[forest.source,fire.source,hiss.source,grounds.source,water.source,burr.source,whistle,overtone,vibrato,...voices].forEach(node=>{try{node.stop();}catch{/* Already ended. */}});master.disconnect();context.close?.();}
   };
 }

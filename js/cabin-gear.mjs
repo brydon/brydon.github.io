@@ -9,6 +9,9 @@ export async function createGearWall(cabin){
   function rod(parent,a,b,r,color){const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),delta=end.clone().sub(start);const object=mesh(parent,new THREE.CylinderGeometry(r,r,delta.length(),7),color);object.position.copy(start.add(end).multiplyScalar(.5));object.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return object;}
   const board=new THREE.Group();board.name='Climbing gear pegboard';board.position.set(2.23,2.12,1.01);board.rotation.y=-Math.PI/2;cabin.add(board);
   const backing=new THREE.Mesh(new THREE.BoxGeometry(1.53,1.43,.065),wood);board.add(backing);
+  // An ordinary packing note, pinned among the gear.
+  box(board,.23,.26,.009,.60,.53,.13,'#d5c098');box(board,.055,.027,.015,.60,.665,.14,'#a59772');
+  for(let i=0;i<4;i++)box(board,.14-i*.012,.009,.003,.59,.60-i*.044,.137,'#81765b');
   for(const x of [-.79,.79])box(board,.045,1.5,.09,x,0,0,'#6a563e');for(const y of [-.737,.737])box(board,1.62,.045,.09,0,y,0,'#6a563e');
   const holes=new THREE.InstancedMesh(new THREE.CylinderGeometry(.012,.012,.004,6),new THREE.MeshBasicMaterial({color:'#514936'}),130),matrix=new THREE.Matrix4(),q=new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI/2,0,0));
   let index=0;for(let x=0;x<13;x++)for(let y=0;y<10;y++){matrix.compose(new THREE.Vector3(-.68+x*.113,-.61+y*.135,.035),q,new THREE.Vector3(1,1,1));holes.setMatrixAt(index++,matrix);}board.add(holes);

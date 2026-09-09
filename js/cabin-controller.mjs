@@ -1,12 +1,19 @@
 import {isEvening} from './lighting.mjs';
 import {createCabinAudio} from './cabin-audio.mjs';
 import {prepareAudioSamples} from './audio-preload.mjs';
+import {CABIN_NOTES} from './cabin-notes.mjs';
 const $=id=>document.getElementById(id);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let scene,view='outside',computerRequested=false,audio,melting=false,engaged=false,replacementQueued=false;
 let audioContext,audioReady;
-const soundWorld={inside:false,boiling:false,burning:false,aurora:false};
-function soundState(values){Object.assign(soundWorld,values);audio?.setWorld(values);}
+const soundWorld={inside:false,boiling:false,burning:false,aurora:false,coffee:'idle'};
+function soundState(values){
+  Object.assign(soundWorld,values);audio?.setWorld(values);
+  if(values.coffee){
+    const description={idle:'The grinder and filter are empty.',grinding:'The hand grinder is turning.',ground:'Ground coffee fills the catch cup.',loading:'Ground coffee is falling into the filter.',ready:'18 grams of fresh grounds are in the filter. The gooseneck is empty.',filling:'Hot water is filling the gooseneck.',hot:'Steam rises from the filled gooseneck.',pouring:'Water is pouring into the V60.',bloom:'The wet grounds are blooming.',brewed:'300 grams of coffee brewed. Steam rises from the server.',broken:'The coffee equipment is out of service.'}[values.coffee];
+    for(const object of ['grinder','v60','gooseneck'])$('coffee-'+object).setAttribute('aria-description',description);
+  }
+}
 const storage={get(key){try{return localStorage.getItem('switchback:'+key);}catch{return null;}},set(key,value){try{localStorage.setItem('switchback:'+key,value);}catch{/* Preferences are optional. */}}};
 const pages=new Set(['home','research','code','about','teaching','blog','contact','terminal']);
 function engage(){if(engaged)return;engaged=true;document.body.classList.add('has-arrived');setTimeout(()=>$('cabin-intro').hidden=true,450);}
@@ -48,7 +55,8 @@ $('enter-cabin').addEventListener('click',enter);$('leave-cabin').addEventListen
 $('rebuild-cabin').addEventListener('click',()=>location.assign('/'));
 $('cabin-door').addEventListener('click',()=>view==='inside'?leave():enter());
 $('pet-dog').addEventListener('click',()=>{if(view==='inside'){scene?.pet();audio?.pet();}});
-$('hearth-kettle').addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.takeKettleOff();});
+$('hearth-kettle').addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.coffeeAction('kettle');});
+for(const object of ['grinder','v60','gooseneck'])$('coffee-'+object).addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.coffeeAction(object);});
 $('desk-terminal').addEventListener('click',()=>computer());
 $('blue-jay').addEventListener('click',engage);
 for(const event of ['pointerenter','focus'])$('blue-jay').addEventListener(event,()=>{if(view==='outside'&&!melting)audio?.chirp();});
@@ -92,7 +100,8 @@ async function toggleSound(){
 }
 $('sound-toggle').addEventListener('click',toggleSound);
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
-function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery','recipe-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+for(const note of CABIN_NOTES)$(note.id).addEventListener('click',()=>{if(view==='inside'&&!melting){discover(note.title,note.copy);if(note.id==='coffee-recipe')$('discovery').classList.add('recipe-discovery');}});
 $('chalkboard').addEventListener('click',()=>{
   if(view!=='inside'||!scene)return;
   discover('Working notes','');$('discovery').classList.add('chalkboard-discovery');
@@ -131,7 +140,7 @@ function sceneError(){$('scene-loading').hidden=true;$('scene-fallback').hidden=
 async function init(){
   try{
     const {createCabinScene}=await import('./cabin-scene.mjs');
-    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling})});
+    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling}),onCoffee:coffee=>soundState({coffee})});
     $('scene-loading').hidden=true;if(storage.get('overlook')==='found')scene.unlock();if(storage.get('administrator')==='found')scene.administrator();const preference=storage.get('eveningOverride');evening(preference===null?isEvening():preference==='true',false);
     function area(id,vertices,enabled){
       const button=$(id);button.hidden=!enabled;if(!enabled)return;
@@ -149,10 +158,13 @@ async function init(){
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
       area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
-      area('hearth-kettle',[[-1.60,1.43,1.31],[-1.60,1.43,.64],[-1.60,.92,.64],[-1.60,.92,1.31]],inside&&soundWorld.boiling&&!melting);
+      area('hearth-kettle',scene.kettleArea(),inside&&(soundWorld.boiling||scene.kettleOffHeat())&&!melting);
+      $('hearth-kettle').setAttribute('aria-label',scene.kettleOffHeat()?'Fill the gooseneck with hot water':'Take the boiling kettle off the fire');
+      for(const [object,vertices]of Object.entries(scene.coffeeAreas()))area('coffee-'+object,vertices,inside&&!melting);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('receipt',[[-.15,1.46,-.96],[.14,1.46,-.96],[.14,1.2,-.96],[-.15,1.2,-.96]],inside);
+      for(const note of CABIN_NOTES)area(note.id,note.vertices,inside&&!melting);
       requestAnimationFrame(updateHotspots);
     }
     updateHotspots();
