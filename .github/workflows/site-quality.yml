@@ -29,6 +29,12 @@ jobs:
       - name: Install HTML validator
         run: pnpm install --frozen-lockfile
 
+      - name: Build static site
+        run: pnpm build
+
+      - name: Check cabin transitions and puzzles
+        run: pnpm test
+
       - name: Validate HTML
         run: pnpm lint:html
 

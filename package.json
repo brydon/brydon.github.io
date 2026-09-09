@@ -1,11 +1,21 @@
 {
-    "name": "brydoneastman-github-io",
-    "private": true,
-    "scripts": {
-        "lint:html": "html-validate *.html"
-    },
-    "devDependencies": {
-        "html-validate": "11.10.0"
-    },
-    "packageManager": "pnpm@11.19.0"
+  "name": "brydoneastman-github-io",
+  "private": true,
+  "scripts": {
+    "lint:html": "html-validate *.html",
+    "build": "node scripts/build.mjs --dist",
+    "dev": "node scripts/build.mjs && python3 -m http.server 8765 --bind 127.0.0.1",
+    "test": "node --test tests/*.test.mjs",
+    "check": "pnpm test && pnpm lint:html && python3 scripts/check_site.py"
+  },
+  "devDependencies": {
+    "html-validate": "11.10.0"
+  },
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "three": "^0.185.1"
+  }
 }

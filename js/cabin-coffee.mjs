@@ -1,0 +1,95 @@
+import * as THREE from './vendor/three.module.min.js';
+import {createCoffeeState,coffeeAction,advanceCoffee,coffeeProgress,brewWater,waterIsFlowing} from './coffee.mjs';
+
+export function createCoffeeStation(cabin,onChange=()=>{}){
+  const station=new THREE.Group();station.name='V60 pour-over station';station.position.set(1.94,1.10,.23);station.rotation.y=-Math.PI/2;cabin.add(station);
+  const materials=new Map(),state=createCoffeeState();
+  function mesh(geometry,color,x=0,y=0,z=0,parent=station){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.6,flatShading:true}));const object=new THREE.Mesh(geometry,materials.get(color));object.position.set(x,y,z);object.castShadow=true;parent.add(object);return object;}
+  const box=(w,h,d,x,y,z,c,p)=>mesh(new THREE.BoxGeometry(w,h,d),c,x,y,z,p);
+  const cylinder=(top,bottom,height,x,y,z,c,sides=16,p)=>mesh(new THREE.CylinderGeometry(top,bottom,height,sides),c,x,y,z,p);
+  function pipe(points,radius,color,p){return mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(v=>new THREE.Vector3(...v))),28,radius,7,false),color,0,0,0,p);}
+  function label(width,height,color,background){const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const c=canvas.getContext('2d'),texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return {material:new THREE.MeshBasicMaterial({map:texture,toneMapped:false}),draw(text){c.fillStyle=background;c.fillRect(0,0,width,height);c.fillStyle=color;c.font=Math.round(height*.48)+'px monospace';c.textAlign='center';c.fillText(text,width/2,height*.69);texture.needsUpdate=true;}};}
+  box(.4,.032,.37,-.21,.018,.045,'#293b35');box(.355,.008,.26,-.21,.04,.018,'#3e4b42');
+  const readout=label(256,40,'#a2c894','#152921');
+  box(.245,.027,.004,-.21,.021,.233,'#162922').material=readout.material;
+  for(const x of [-.365,-.055])cylinder(.012,.012,.006,x,.022,.235,'#6c7d65',10).rotation.x=Math.PI/2;
+  const glass=new THREE.MeshPhysicalMaterial({color:'#d9e6dc',transparent:true,opacity:.28,roughness:.12,side:THREE.DoubleSide,depthWrite:false});
+  const profile=[[0,0],[.094,.002],[.123,.027],[.135,.09],[.123,.14],[.085,.19],[.073,.225],[.084,.231]].map(([x,y])=>new THREE.Vector2(x,y));
+  const carafe=mesh(new THREE.LatheGeometry(profile,24),'#d9e6dc',-.21,.045,.015);carafe.material=glass;carafe.castShadow=false;
+  const coffee=cylinder(.119,.104,.075,-.21,.103,.015,'#533322',24),coffeeSurface=cylinder(.119,.119,.004,-.21,.142,.015,'#70502f',24);
+  pipe([[-.095,.215,.015],[-.02,.205,.015],[.005,.145,.015],[-.035,.095,.015],[-.095,.11,.015]],.013,'#c6d5cb').material=glass;
+  cylinder(.101,.101,.018,-.21,.281,.015,'#e9ddc6',24);
+  const dripper=mesh(new THREE.CylinderGeometry(.157,.037,.20,24,1,true),'#e7dbc4',-.21,.393,.015);dripper.material=new THREE.MeshStandardMaterial({color:'#e7dbc4',side:THREE.DoubleSide,roughness:.38});
+  const paper=mesh(new THREE.CylinderGeometry(.143,.027,.19,24,1,true),'#f0e4c9',-.21,.411,.015);paper.material=new THREE.MeshStandardMaterial({color:'#f0e4c9',side:THREE.DoubleSide,roughness:.98});
+  const grounds=cylinder(.114,.04,.028,-.21,.454,.015,'#6a4630',24);
+  for(let i=0;i<12;i++){
+    const points=[];for(let j=0;j<7;j++){const t=j/6,a=i*Math.PI/6+t*.28,r=.04+t*.119;points.push([-.21+Math.cos(a)*r,.294+t*.199,.015+Math.sin(a)*r]);}
+    pipe(points,.006,'#cfc1a7');
+  }
+  pipe([[-.06,.451,.015],[.006,.445,.015],[.019,.388,.015],[-.047,.358,.015]],.016,'#e7dbc4');
+
+  // Every movable part is geometry. Open rims and separate lids make filling readable.
+  const goose=new THREE.Group();goose.position.set(.27,.116,.025);station.add(goose);const gooseHome=goose.position.clone();
+  cylinder(.105,.13,.20,0,0,0,'#344540',20,goose);
+  const collar=mesh(new THREE.CylinderGeometry(.089,.105,.055,20,1,true),'#43554b',0,.128,0,goose);collar.material.side=THREE.DoubleSide;
+  cylinder(.084,.084,.003,0,.139,0,'#152d2b',20,goose);
+  const gooseLid=new THREE.Group();gooseLid.position.y=.161;goose.add(gooseLid);
+  cylinder(.102,.102,.011,0,0,0,'#283b34',20,gooseLid);cylinder(.026,.031,.036,0,.023,0,'#775638',10,gooseLid);
+  pipe([[-.10,-.035,0],[-.165,-.019,0],[-.187,.129,0],[-.255,.211,0],[-.296,.211,0],[-.305,.187,0]],.012,'#657c70',goose);
+  pipe([[.095,.122,0],[.184,.129,0],[.212,.052,0],[.176,-.042,0],[.11,-.037,0]],.025,'#25372f',goose);
+
+  const grinder=new THREE.Group();grinder.position.set(.47,0,.23);station.add(grinder);
+  cylinder(.045,.045,.19,0,.157,0,'#9b9e88',14,grinder);
+  // Faceted vertical grip grooves and an open catch cup below the burrs.
+  for(let i=0;i<10;i++){const a=i*Math.PI/5;box(.008,.14,.007,Math.cos(a)*.044,.15,Math.sin(a)*.044,'#747f70',grinder);}
+  cylinder(.038,.045,.03,0,.264,0,'#d0c4a1',14,grinder);
+  const crank=new THREE.Group();crank.position.y=.28;grinder.add(crank);
+  pipe([[0,0,0],[0,.025,0],[.135,.025,0]],.007,'#7e8b78',crank);cylinder(.021,.024,.04,.135,.005,0,'#87643f',8,crank);
+  const catchCup=new THREE.Group();catchCup.position.copy(grinder.position);station.add(catchCup);const cupHome=catchCup.position.clone();
+  const cup=mesh(new THREE.CylinderGeometry(.046,.043,.065,14,1,true),'#666c59',0,.036,0,catchCup);cup.material.side=THREE.DoubleSide;
+  cylinder(.04,.04,.006,0,.006,0,'#666c59',14,catchCup);
+  const cupGrounds=cylinder(.039,.039,.008,0,.054,0,'#593d28',14,catchCup);
+  const dust=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.005,0),materials.get('#593d28'),24);station.add(dust);
+  box(.23,.004,.23,.054,.004,.255,'#e1cea3');
+  const recipeTexture=new THREE.TextureLoader().load('/images/switchback/gesha-recipe.png');recipeTexture.colorSpace=THREE.SRGBColorSpace;
+  const recipe=new THREE.Mesh(new THREE.PlaneGeometry(.225,.225),new THREE.MeshBasicMaterial({map:recipeTexture,toneMapped:false}));recipe.rotation.x=-Math.PI/2;recipe.position.set(.054,.007,.255);station.add(recipe);
+
+  const steam=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshBasicMaterial({color:'#dce7d8',transparent:true,opacity:.22,depthWrite:false}),14);steam.frustumCulled=false;station.add(steam);
+  const water=new THREE.Mesh(new THREE.CylinderGeometry(.004,.003,1,7),new THREE.MeshStandardMaterial({color:'#b4d9d5',transparent:true,opacity:.72,roughness:.1}));water.visible=false;station.add(water);
+  const dummy=new THREE.Object3D(),tip=new THREE.Vector3(),landing=new THREE.Vector3(-.21,.468,.015),direction=new THREE.Vector3(),up=new THREE.Vector3(0,1,0);
+  const ease=x=>{x=THREE.MathUtils.clamp(x,0,1);return x*x*(3-2*x);};
+  let lastReadout='',lastSound='';
+  function notify(){const p=coffeeProgress(state),flow=state.phase==='pouring'&&!waterIsFlowing(p)?'bloom':state.phase;if(flow!==lastSound){lastSound=flow;onChange(flow);}}
+  function worldPoint(x,y,z){return station.localToWorld(new THREE.Vector3(x,y,z));}
+  function quad(x,y,z,w,h){return [[x-w/2,y+h/2,z],[x+w/2,y+h/2,z],[x+w/2,y-h/2,z],[x-w/2,y-h/2,z]].map(p=>worldPoint(...p).toArray());}
+  return {
+    action(object,options){const accepted=coffeeAction(state,object,options);if(accepted)notify();return accepted;},
+    get phase(){return state.phase;},get progress(){return coffeeProgress(state);},
+    fillTarget(){return worldPoint(.27,.277,.025);},
+    hitAreas(){return {grinder:quad(.47,.17,.285,.13,.34),v60:quad(-.21,.414,.17,.33,.25),gooseneck:quad(.27,.15,.14,.30,.30)};},
+    animate(time,seconds,reduced=false,burning=false){
+      advanceCoffee(state,seconds,{burning});notify();const phase=state.phase,p=coffeeProgress(state),pour=phase==='pouring',fill=phase==='filling',loading=phase==='loading';
+      const volume=phase==='brewed'?300:pour?brewWater(p):0;
+      crank.rotation.y=phase==='grinding'?(reduced?0:state.elapsed*15):0;
+      grinder.rotation.z=phase==='grinding'&&!reduced?Math.sin(time*.045)*.014:0;
+      const lift=loading?ease(p/.27)*(1-ease((p-.80)/.20)):0;
+      catchCup.position.copy(cupHome).lerp(new THREE.Vector3(-.17,.60,.015),lift);catchCup.rotation.z=-2.3*lift;
+      cupGrounds.visible=phase==='ground'||(loading&&p<.55);
+      grounds.visible=['ready','filling','hot','pouring','brewed'].includes(phase)||(loading&&p>.4);
+      grounds.material.color.set(pour||phase==='brewed'?'#392b21':'#6a4630');
+      dust.visible=loading&&p>.3&&p<.79;
+      if(dust.visible)for(let i=0;i<24;i++){const f=(time*.004+i/24)%1;dummy.position.set(-.21+Math.sin(i*3)*.036,.64-f*.18,.015+Math.cos(i*2)*.035);dummy.scale.setScalar(1);dummy.updateMatrix();dust.setMatrixAt(i,dummy.matrix);}dust.instanceMatrix.needsUpdate=dust.visible;
+      const raised=pour?ease(p/.12)*(1-ease((p-.90)/.10)):0;
+      goose.position.copy(gooseHome).lerp(new THREE.Vector3(.14,.65,.015),raised);goose.rotation.z=.65*raised;
+      if(pour&&!reduced){goose.position.x+=Math.sin(time*.0018)*.008*raised;goose.position.z+=Math.cos(time*.0018)*.008*raised;}
+      const lidLift=fill?ease(p/.18)*(1-ease((p-.84)/.16)):0;gooseLid.position.set(.13*lidLift,.161+.11*lidLift,0);gooseLid.rotation.z=-.45*lidLift;
+      water.visible=pour&&waterIsFlowing(p);station.updateWorldMatrix(true,true);
+      if(water.visible){tip.set(-.305,.187,0);goose.localToWorld(tip);station.worldToLocal(tip);direction.subVectors(landing,tip);water.position.copy(tip).add(landing).multiplyScalar(.5);water.scale.y=direction.length();water.quaternion.setFromUnitVectors(up,direction.normalize());}
+      const fraction=volume/300;coffee.visible=coffeeSurface.visible=volume>0;coffee.scale.y=Math.max(.015,fraction);coffee.position.y=.052+.043*fraction;coffeeSurface.position.y=.055+.085*fraction;coffeeSurface.scale.setScalar(.84+.16*fraction);
+      steam.visible=['hot','pouring','brewed'].includes(phase);const origin=phase==='brewed'?new THREE.Vector3(-.21,.52,.015):goose.position.clone().add(new THREE.Vector3(0,.21,0));
+      if(steam.visible)for(let i=0;i<14;i++){const f=reduced?i/14:(time*.00045+i/14)%1;dummy.position.copy(origin).add(new THREE.Vector3(Math.sin(i*2+f*3)*.055*f,f*.36,Math.cos(i*3)*.045*f));dummy.scale.setScalar(.008+Math.sin(f*Math.PI)*.032);dummy.updateMatrix();steam.setMatrixAt(i,dummy.matrix);}steam.instanceMatrix.needsUpdate=steam.visible;
+      const mass=phase==='brewed'?300:pour?volume:grounds.visible?18:0,clock=pour?Math.floor(state.elapsed):phase==='brewed'?16:0;
+      const text=mass.toFixed(1).padStart(5,'0')+'g  0:'+String(clock).padStart(2,'0');if(text!==lastReadout){readout.draw(text);lastReadout=text;}
+    }
+  };
+}
