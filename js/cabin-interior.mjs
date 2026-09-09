@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
+import {createDeskChair} from './cabin-chair.mjs';
 
 /** Furniture is built from solids; canvas artwork is only used on book spines. */
 export function furnishCabin(cabin){
@@ -92,12 +93,7 @@ export function furnishCabin(cabin){
   for(let i=0;i<27;i++)for(const z of [-1,1]){const fringe=box(rug,.022,.016,.13,-1.3+i*.1,.001,z*.985,'#c4b085');fringe.rotation.y=(i%3-1)*.12;}
   for(let i=0;i<24;i++)box(rug,2.64,.003,.008,0,.055,-.82+i*.071,'#95613f').material=new THREE.MeshStandardMaterial({color:'#bd9366',transparent:true,opacity:.12,roughness:1});
 
-  // A pulled-out desk chair, with a folded wool throw over its back.
-  const chair=new THREE.Group();chair.position.set(1.4,.47,-.35);chair.rotation.y=-.4;cabin.add(chair);
-  box(chair,.53,.10,.49,0,.41,0,'#466054');box(chair,.53,.48,.085,0,.7,.2,'#466054');
-  for(const x of [-.2,.2])for(const z of [-.17,.17])box(chair,.06,.41,.06,x,.2,z,'#674a30');
-  box(chair,.27,.28,.019,-.075,.69,.251,'#cdb68e');box(chair,.27,.035,.17,-.075,.835,.19,'#cdb68e');
-  for(let i=0;i<4;i++)box(chair,.022,.27,.008,-.18+i*.065,.69,.265,'#967b59');
+  createDeskChair(cabin);
   plant(cabin,1.88,1.13,-.49,.65);
   // Desk lamp, pencil cup, and a scatter of folded field notes.
   cylinder(cabin,.11,.13,.028,1.61,1.214,-1.34,'#333e33');cylinder(cabin,.016,.016,.44,1.61,1.44,-1.34,'#535b44');
