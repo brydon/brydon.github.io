@@ -1,3 +1,13 @@
+/*
+           .               *
+        ~~~\____       ____/~~~
+            ~~~~\_____/~~~~
+          /\               /\
+         /  \     /\      /  \
+        /    \___/  \____/    \
+
+        A small soundtrack for a very large sky.
+*/
 /** Original procedural sound design. No recordings, music downloads or backend. */
 export function createCabinAudio(context,samples){
   const master=context.createGain();master.gain.value=.60;
