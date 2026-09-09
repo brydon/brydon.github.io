@@ -57,6 +57,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/switchback.css">
   <link rel="stylesheet" href="/styles/cabin.css">
+  <link rel="stylesheet" href="/styles/cube.css">
 </head>
 <body class="cabin-page">
   <a class="skip-link" href="/home.html">Skip to the reading version</a>
@@ -87,6 +88,7 @@
     <button type="button" class="scene-secret" id="coffee-gooseneck" aria-label="Pour from the gooseneck" hidden></button>
     <button type="button" class="scene-secret" id="chalkboard" aria-label="Inspect the chalkboard" hidden></button>
     <button type="button" class="scene-secret" id="couple-portrait" aria-label="Look at the framed picture" hidden></button>
+    <button type="button" class="scene-secret" id="bookshelf-cube" aria-label="Pick up the Rubik’s cube" hidden></button>
     <button type="button" class="scene-secret" id="receipt" aria-label="Inspect the desk mug" hidden></button>
     <button type="button" class="scene-secret" id="service-note" aria-label="Inspect the faded service label" hidden>·</button>
     <button type="button" class="scene-secret" id="coffee-recipe" aria-label="Read the pour-over recipe" hidden></button>
@@ -108,6 +110,22 @@
     <div class="cabin-settings"><button type="button" id="sound-toggle" aria-pressed="false" aria-label="Turn ambient sound on">Sound off</button><button type="button" id="night-toggle" aria-pressed="false" aria-label="Switch to evening">Evening</button></div>
   </footer>
   <dialog id="discovery" aria-labelledby="discovery-title"><div class="reader-bar"><span class="eyebrow">A SMALL DISCOVERY</span><button type="button" data-close="discovery" aria-label="Close discovery">×</button></div><div class="discovery-body"><h2 id="discovery-title">A small discovery</h2><div id="discovery-copy"></div></div></dialog>
+  <dialog id="cube-game" aria-labelledby="cube-title" aria-describedby="cube-instructions">
+    <div class="cube-header"><div><span class="eyebrow">FROM THE BOOKSHELF</span><h2 id="cube-title">One more turn.</h2></div><button type="button" id="cube-close" aria-label="Put the cube back">×</button></div>
+    <div class="cube-layout">
+      <div class="cube-play">
+        <div class="cube-stage"><canvas id="cube-canvas" tabindex="0" role="img" aria-label="Interactive Rubik’s cube"></canvas></div>
+        <div class="cube-play-footer"><p id="cube-status" role="status">Six colours. A little patience.</p><div class="cube-stats"><span id="cube-moves">0 turns</span><span id="cube-time" role="timer" aria-label="Time spent solving">00:00</span></div><p id="cube-history">Your turns will appear here.</p><p class="cube-instructions" id="cube-instructions">Drag to look around. Tap a face to turn it.<br><kbd>U R F D L B</kbd> turn faces. <kbd>Shift</kbd> reverses, <kbd>Z</kbd> undoes. Arrows rotate the view.<br>Practice starts solved. Your progress stays until you reload.</p></div>
+      </div>
+      <section class="cube-controls" aria-labelledby="cube-controls-title">
+        <h3 id="cube-controls-title">Turn a face</h3><p class="cube-help">↺ counterclockwise &nbsp; ↻ clockwise<br>As seen looking straight at that face.</p>
+        <div class="cube-faces"></div>
+        <div class="cube-actions"><button type="button" id="cube-undo" aria-disabled="true">Undo</button><button type="button" id="cube-scramble">Scramble</button><button type="button" id="cube-practice" aria-label="Practice with a solved cube">Practice</button><button type="button" id="cube-view">Reset view</button></div>
+
+      </section>
+    </div>
+    <details class="cube-reference"><summary>Sticker map &amp; colours</summary><p>Each face viewed from the outside, top row first. Letters identify sticker colours: U white · R red · F green · D yellow · L orange · B blue.</p><div class="cube-map"></div></details>
+  </dialog>
   <div id="toast" role="status" hidden></div>
   <!-- A service manual is tucked away at /.well-known/switchback.txt. -->
 <!--

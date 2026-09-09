@@ -1,4 +1,6 @@
 import * as THREE from './vendor/three.module.min.js';
+import {createCubeModel} from './cube-model.mjs';
+import {scrambleCube} from './cube-state.mjs';
 import {createDeskChair} from './cabin-chair.mjs';
 
 /** Solid furniture with printed artwork on book spines and the wall poster. */
@@ -27,7 +29,7 @@ export function furnishCabin(cabin){
   for(const y of [.08,.61,1.14,1.67,2.27])box(library,1.61,.09,.49,0,y,.015,'#b0854c');
   box(library,1.73,.13,.53,0,2.36,.01,'#785133');
   const colors=['#4c6867','#a96b42','#b8a77b','#697442','#7c4741','#526177'];
-  for(let row=0;row<4;row++)for(let i=0;i<(row===2?6:9);i++){
+  for(let row=0;row<4;row++)for(let i=0;i<(row>=2?6:9);i++){
     const height=.32+((i*3+row)%4)*.033,x=-.63+i*.151,y=.17+row*.53+height/2;
     const book=new THREE.Group();book.position.set(x,y,.022);library.add(book);
     if(i===8)book.rotation.z=-.09;
@@ -36,6 +38,9 @@ export function furnishCabin(cabin){
     box(book,.122,height,.026,0,0,.153,colors[(i+row*2)%colors.length]);
     for(const sy of [-height*.32,height*.32])box(book,.093,.016,.007,0,sy,.17,'#d1bc84');
   }
+  let shelfCubeState=scrambleCube();
+  const shelfCube=createCubeModel(shelfCubeState);
+  shelfCube.group.position.set(.43,1.7962,.095);shelfCube.group.scale.setScalar(.055);shelfCube.group.rotation.y=-.25;library.add(shelfCube.group);
   // A few readable volumes and a tiny framed mountain photograph.
   ['MATH','ML','SYSTEMS'].forEach((title,i)=>{
     const book=box(library,.5,.075,.29,.41,1.25+i*.09,.035,colors[i]);book.rotation.y=i*.035;
@@ -105,5 +110,13 @@ export function furnishCabin(cabin){
   cylinder(cabin,.018,.018,.8,-.05,3.03,-.2,'#384035');cylinder(cabin,.10,.29,.23,-.05,2.55,-.2,'#374637');
   const bulb=mesh(cabin,new THREE.SphereGeometry(.09,10,7),'#ffe1a5',-.05,2.46,-.2,true);bulb.scale.y=.55;
   const roomGlow=new THREE.PointLight('#ffd1a0',3.5,7,2);roomGlow.position.set(-.05,2.36,-.2);cabin.add(roomGlow);
-  return {animate(time){flames.forEach((flame,i)=>{flame.scale.y=.88+Math.sin(time*.008+i*2.1)*.16;flame.scale.x=.96+Math.sin(time*.011+i)*.06;});glow.intensity=1.8+Math.sin(time*.007)*.18+Math.sin(time*.021)*.1;}};
+  return {
+    cubeState(){return shelfCubeState;},
+    setCubeState(state){shelfCubeState=state;shelfCube.sync(state);},
+    cubeArea(){
+      shelfCube.group.updateWorldMatrix(true,false);
+      const vertices=[];for(const x of [-1.5,1.5])for(const y of [-1.5,1.5])for(const z of [-1.5,1.5])vertices.push(shelfCube.group.localToWorld(new THREE.Vector3(x,y,z)).toArray());
+      return vertices;
+    },
+    animate(time){flames.forEach((flame,i)=>{flame.scale.y=.88+Math.sin(time*.008+i*2.1)*.16;flame.scale.x=.96+Math.sin(time*.011+i)*.06;});glow.intensity=1.8+Math.sin(time*.007)*.18+Math.sin(time*.021)*.1;}};
 }
