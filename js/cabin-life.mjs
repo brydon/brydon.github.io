@@ -14,9 +14,12 @@ function model(parent){
 export function createHearthKettle(cabin,onBoil=()=>{}){
   const {group,mesh,pipe}=model(cabin);group.name='The kettle is on';group.position.set(-1.97,.47,.95);group.rotation.y=Math.PI/2;
   // A swing arm holds the kettle over the open flames.
-  pipe([[-.4,.13,.02],[-.4,.98,.02],[-.38,1.02,.02],[.06,1.02,.02]],.021,'#313a32');
-  pipe([[.04,1.01,.02],[.04,.91,.02],[.07,.89,.02],[.10,.92,.02]],.011,'#72776a');
-  const body=new THREE.Group();body.position.set(.08,.49,.13);group.add(body);
+  const swing=new THREE.Group();swing.position.set(-.4,0,.02);group.add(swing);
+  const rig=new THREE.Group();rig.position.set(.4,0,-.02);swing.add(rig);
+  mesh(new THREE.CylinderGeometry(.044,.053,.10,8),'#313a32',-.4,.115,.02);
+  pipe([[-.4,.13,.02],[-.4,.98,.02],[-.38,1.02,.02],[.06,1.02,.02]],.021,'#313a32',rig);
+  pipe([[.04,1.01,.02],[.04,.91,.02],[.07,.89,.02],[.10,.92,.02]],.011,'#72776a',rig);
+  const body=new THREE.Group();body.position.set(.08,.49,.13);rig.add(body);
   const profile=[[0,0],[.13,0],[.185,.055],[.198,.145],[.16,.23],[.105,.26]].map(([x,y])=>new THREE.Vector2(x,y));
   mesh(new THREE.LatheGeometry(profile,16),'#587374',0,0,0,body);
   mesh(new THREE.CylinderGeometry(.145,.162,.025,16),'#334e4b',0,.013,0,body);
@@ -28,16 +31,24 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
   // The spout has an actual dark mouth, so it reads as a kettle from the room.
   const mouth=mesh(new THREE.CircleGeometry(.026,10),'#243831',-.362,.281,.08,body);mouth.rotation.y=-Math.PI/2;mouth.rotation.x=-.3;
   const steam=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshBasicMaterial({color:'#e1e9dd',transparent:true,opacity:.14,depthWrite:false}),18);
-  steam.frustumCulled=false;group.add(steam);
+  steam.frustumCulled=false;rig.add(steam);
   const droplets=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.012,0),new THREE.MeshStandardMaterial({color:'#aacccd',transparent:true,opacity:.7,roughness:.2}),24);
-  droplets.frustumCulled=false;group.add(droplets);
+  droplets.frustumCulled=false;rig.add(droplets);
   const puddle=mesh(new THREE.CylinderGeometry(.26,.26,.008,18),'#638e87',.08,.078,.31);puddle.material=new THREE.MeshStandardMaterial({color:'#789f96',transparent:true,opacity:.48,roughness:.18});
-  const dummy=new THREE.Object3D();let elapsed=0,wasBoiling=false;
-  return {animate(time,seconds,inside,reduced,visible=true,burning=false){
-    elapsed=advanceKettleTimer(elapsed,seconds,{inside,visible});
+  const dummy=new THREE.Object3D();let elapsed=0,wasBoiling=false,offHeat=false,cooling=0,swingProgress=0;
+  return {takeOff(){
+    if(!wasBoiling||offHeat)return false;
+    offHeat=true;wasBoiling=false;group.name='The kettle is off the fire';onBoil(false);return true;
+  },animate(time,seconds,inside,reduced,visible=true,burning=false){
+    elapsed=offHeat?0:advanceKettleTimer(elapsed,seconds,{inside,visible});
+    if(offHeat&&visible){
+      const dt=Math.min(.05,Math.max(0,seconds));
+      swingProgress=reduced?1:Math.min(1,swingProgress+dt/.9);cooling=Math.min(1,cooling+dt/3);
+      swing.rotation.y=-Math.PI*.56*swingProgress*swingProgress*(3-2*swingProgress);
+    }
     const boiling=elapsed>=BOIL_SECONDS&&!burning,amount=Math.min(1,Math.max(0,elapsed-BOIL_SECONDS)/3);
     if(boiling!==wasBoiling){wasBoiling=boiling;onBoil(boiling);}
-    steam.visible=!burning;droplets.visible=boiling;puddle.visible=boiling;
+    steam.visible=!burning&&cooling<1;steam.material.opacity=.14*(1-cooling);droplets.visible=boiling;puddle.visible=boiling;
     puddle.scale.set(.55+amount*.9,1,.7+amount*.9);
     lid.position.y=.27+(boiling?(reduced?.025:Math.abs(Math.sin(time*.049))*.043):0);
     lid.rotation.z=boiling&&!reduced?Math.sin(time*.063)*.12:0;

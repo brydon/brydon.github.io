@@ -48,6 +48,7 @@ $('enter-cabin').addEventListener('click',enter);$('leave-cabin').addEventListen
 $('rebuild-cabin').addEventListener('click',()=>location.assign('/'));
 $('cabin-door').addEventListener('click',()=>view==='inside'?leave():enter());
 $('pet-dog').addEventListener('click',()=>{if(view==='inside'){scene?.pet();audio?.pet();}});
+$('hearth-kettle').addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.takeKettleOff();});
 $('desk-terminal').addEventListener('click',()=>computer());
 $('blue-jay').addEventListener('click',engage);
 for(const[button,direction,axis]of[['look-left',-1,'x'],['look-right',1,'x'],['look-up',1,'y'],['look-down',-1,'y']])$(button).addEventListener('click',()=>scene?.turn(direction,axis));
@@ -144,6 +145,7 @@ async function init(){
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
       area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
+      area('hearth-kettle',[[-1.60,1.43,1.31],[-1.60,1.43,.64],[-1.60,.92,.64],[-1.60,.92,1.31]],inside&&soundWorld.boiling&&!melting);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('desk-flags',[[1.29,2.03,-1.5],[2.14,2.03,-1.5],[2.14,1.22,-1.5],[1.29,1.22,-1.5]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
