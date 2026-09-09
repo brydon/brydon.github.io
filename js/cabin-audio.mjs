@@ -3,7 +3,7 @@ export function createCabinAudio(context,samples){
   const master=context.createGain();master.gain.value=.60;
   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-15;limiter.knee.value=18;limiter.ratio.value=5;limiter.attack.value=.006;limiter.release.value=.25;master.connect(limiter).connect(context.destination);
   const state={inside:false,boiling:false,burning:false,aurora:false};
-  let enabled=false,nextCrackle=0,lastBark=-10,lastChirp=-10,scoreUntil=0;
+  let enabled=false,nextCrackle=0,lastBark=-10,lastChirp=-10,lastKey=-10,scoreUntil=0;
   const voices=new Set();let seed=805;
   const random=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
   function buffer(channels){const result=context.createBuffer(channels.length,channels[0].length,samples.sampleRate);channels.forEach((data,i)=>result.copyToChannel(data,i));return result;}
@@ -68,6 +68,14 @@ export function createCabinAudio(context,samples){
         }
       }
       return true;
+    },
+    key(heavy=false){
+      if(!enabled||context.state!=='running'||!state.inside||state.burning||context.currentTime-lastKey<.028)return false;
+      const at=context.currentTime;lastKey=at;
+      // A soft keycap click, a little wooden body, and a quieter return stroke.
+      burst(at,heavy?.042:.026,heavy?.022:.014,1700+random()*400,'bandpass');
+      tone(heavy?155:195+random()*35,at,heavy?.05:.032,heavy?.035:.022,'sine',master,.003);
+      burst(at+.025,.016,.004,2400,'highpass');return true;
     },
     pet(){
       if(!enabled||context.state!=='running'||context.currentTime-lastBark<1.3)return;

@@ -111,6 +111,7 @@ $('discovery').addEventListener('click',event=>{const dialog=$('discovery');if(e
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==$('computer-frame')?.contentWindow||event.data?.source!=='switchback-desktop')return;
   if(event.data.type==='room')room();
+  if(event.data.type==='key'&&view==='computer'&&!melting&&(event.data.value==='tap'||event.data.value==='enter'))audio?.key(event.data.value==='enter');
   if(event.data.type==='discovery'&&scene&&!melting){
     soundState({aurora:true});
     storage.set('overlook','found');scene.unlock();evening(true,false);view='revealing';computerRequested=false;document.body.classList.add('is-revealing');$('computer-back').hidden=true;$('leave-cabin').hidden=true;$('cabin-camera').hidden=true;$('cabin-location').textContent='THE VALLEY HAS ONE MORE THING TO SHOW YOU';scene.reveal();

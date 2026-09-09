@@ -11,8 +11,13 @@ function show(page){
   if(page==='terminal')$('desktop-terminal-input').focus();
 }
 document.addEventListener('click',event=>{const button=event.target.closest('[data-page]');if(button)show(button.dataset.page);});
+document.addEventListener('click',event=>{const control=event.target.closest('button,a');if(control&&!control.disabled)send('key',control.closest('#desktop-terminal-form')?'enter':'tap');});
+document.addEventListener('input',event=>{if(event.target.matches('input,textarea')&&!event.isComposing)send('key','tap');});
 $('back-to-room').addEventListener('click',()=>send('room'));
-document.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();send('room');}});
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){event.preventDefault();send('room');}
+  else if(!event.metaKey&&!event.ctrlKey&&!event.altKey&&!event.isComposing&&['Enter','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))send('key',event.key==='Enter'?'enter':'tap');
+});
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==parent||event.data?.source!=='switchback-cabin')return;
   if(event.data.type==='page'&&typeof event.data.value==='string'&&/^[a-z]+$/.test(event.data.value))show(event.data.value);

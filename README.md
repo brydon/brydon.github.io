@@ -18,6 +18,7 @@ Open `http://127.0.0.1:8765`. After changing templates or shared reading content
 - **Come on in** dismisses the welcome. From then on, click the door to enter or leave. The banner stays dismissed.
 - Hold **WASD** or **arrow keys** to look around. On-screen arrow buttons also work.
 - Click the physical monitor / **E** to approach it. Its website is real, selectable HTML, with page navigation and a terminal.
+- With sound enabled, computer navigation and terminal typing have soft mechanical key clicks; Enter has a slightly deeper tap.
 - The computer’s **Room** button / **Escape** leaves the monitor. Pan around and click the door to leave the cabin; Escape also works.
 - Click objects directly. Outside, Brydon walks to the motorcycle or fire before a discovery opens. Pet the dog for a little response.
 - Lighting defaults to the visitor’s local time (daylight 07:00–18:59), with a remembered manual override. Sound is opt-in.
