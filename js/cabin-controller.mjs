@@ -43,6 +43,7 @@ $('rebuild-cabin').addEventListener('click',()=>location.assign('/'));
 $('cabin-door').addEventListener('click',()=>view==='inside'?leave():enter());
 $('pet-dog').addEventListener('click',()=>{if(view==='inside')scene?.pet();});
 $('desk-terminal').addEventListener('click',()=>computer());
+$('blue-jay').addEventListener('click',engage);
 for(const[button,direction,axis]of[['look-left',-1,'x'],['look-right',1,'x'],['look-up',1,'y'],['look-down',-1,'y']])$(button).addEventListener('click',()=>scene?.turn(direction,axis));
 $('menu-toggle').addEventListener('click',()=>{const show=$('mobile-menu').hidden;$('mobile-menu').hidden=!show;$('menu-toggle').setAttribute('aria-expanded',String(show));});
 document.addEventListener('click',event=>{const link=event.target.closest('[data-place]');if(!link||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||event.button!==0)return;event.preventDefault();$('mobile-menu').hidden=true;$('menu-toggle').setAttribute('aria-expanded','false');computer(link.dataset.place);});
@@ -108,6 +109,7 @@ async function init(){
       area('cabin-door',[[-.15,2.62,2.18],[1.15,2.62,2.18],[1.15,.43,2.18],[-.15,.43,2.18]],inside||outside);
       area('bridge-note',[[3.91,1.47,-.6],[3.91,1.47,2.2],[3.91,.08,2.2],[3.91,.08,-.6]],outside);
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
+      area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('desk-flags',[[1.29,2.03,-1.5],[2.14,2.03,-1.5],[2.14,1.22,-1.5],[1.29,1.22,-1.5]],inside);

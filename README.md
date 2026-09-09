@@ -21,6 +21,8 @@ Open `http://127.0.0.1:8765`. After changing templates or shared reading content
 - The computer’s **Room** button / **Escape** leaves the monitor. Pan around and click the door to leave the cabin; Escape also works.
 - Click objects directly. Outside, Brydon walks to the motorcycle or fire before a discovery opens. Pet the dog for a little response.
 - Lighting defaults to the visitor’s local time (daylight 07:00–18:59), with a remembered manual override. Sound is opt-in.
+- The counter has a V60, glass server, digital scale, gooseneck kettle and hand grinder. A second kettle warms over the hearth; linger inside for a minute and it boils over. Leaving resets it; background tabs pause the timer.
+- The blue jay perched in a pine tree opens [Brydon’s Twitter](https://twitter.com/brhydon) in a new tab.
 - Reduced motion skips camera travel and disables environmental animation.
 - Look closely at the coffee mug, motorcycle and outdoor fire. The old Base64 note and a harder SHA-256 discovery are tucked away.
 
@@ -31,6 +33,7 @@ Every scene subject is geometry, including Brydon, the motorcycle and the dog. T
 - `js/cabin-scene.mjs` — landscape, cabin shell, desk monitor, lighting and camera.
 - `js/cabin-models.mjs` — Brydon, Iron 883, helmet and dog geometry.
 - `js/cabin-interior.mjs` — bookshelf, open fireplace, woven rug and furniture.
+- `js/cabin-coffee.mjs`, `js/cabin-life.mjs` — pour-over equipment, boiling hearth kettle and blue jay.
 - `js/cabin-controller.mjs` — navigation, keyboard controls, sound and discoveries.
 - `desktop.html`, `js/desktop.mjs`, `styles/desktop.css` — website on the CSS3D monitor iframe.
 - `js/puzzles.mjs` — finite terminal commands, Base64 note and SHA-256 verification.

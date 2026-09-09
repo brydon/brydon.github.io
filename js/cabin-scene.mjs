@@ -6,6 +6,7 @@ import {createCabinEffects} from './cabin-effects.mjs';
 import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
+import {createHearthKettle,createBlueJay} from './cabin-life.mjs';
 import {CSS3DObject,CSS3DRenderer} from './vendor/CSS3DRenderer.js';
 
 const ease = t => t*t*(3-2*t);
@@ -186,6 +187,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   cylinder(.11,.1,.23,-.02,1.3,-1.03,'#d8c59e',cabin,10);
   const handle=mesh(new THREE.TorusGeometry(.08,.025,5,10),'#d8c59e',cabin);handle.position.set(-.14,1.33,-1.03);
   const interiorDetails=furnishCabin(cabin);
+  const hearthKettle=createHearthKettle(cabin);
+  const blueJay=createBlueJay(scene);
   // Small interior window behind the desk.
   box(1.2,.9,.06,.95,2.27,-1.9,'#483f30',cabin);box(1.03,.74,.015,.95,2.27,-1.86,'#82b0ac',cabin,true);
   box(.05,.75,.02,.95,2.27,-1.84,'#514632',cabin);box(1.05,.05,.02,.95,2.27,-1.84,'#514632',cabin);
@@ -249,6 +252,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   let width=1,height=1,inside=false,progress=0,desired=0,angleStep=0,orbit=0,night=false,disposed=false,last=0;
   let focusProgress=0,focusDesired=0,panX=0,panY=0,targetPanX=0,targetPanY=0,computerNotified=false;const panKeys=new Set();
   let entryNotified=false;
+  const resetFrameClock=()=>{last=0;};document.addEventListener('visibilitychange',resetFrameClock);
   let afterglow=false,revealing=false,brokenComputer=false;
   let journey=null,journeyCallback=null,avatarPosition=[1.5,.41,3.45],avatarHeading=0;
   function walkRoute(points,onArrive){journey=createWalk(avatarPosition,points,avatarHeading);journeyCallback=onArrive;panKeys.clear();}
@@ -304,7 +308,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     person.visible=progress<.67;bike.visible=progress<.83;
   }
   function animate(time){
-    if(disposed)return;const dt=Math.min((time-last)/1000||0,.05);last=time;
+    if(disposed)return;const elapsedSeconds=last?Math.max(0,(time-last)/1000):0,dt=Math.min(elapsedSeconds,.05);last=time;
     if(!document.hidden){
       progress=advanceEntrance(progress,desired,dt,reducedMotion.matches);
       if(journey){
@@ -334,6 +338,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
         smoke.forEach((p,i)=>{const phase=(time*.00016+i*.2)%1;p.position.set(-2.1+phase*.5,5.3+phase*2.3,.95+phase*.18);p.scale.setScalar(.6+phase*1.9);p.material.opacity=(1-phase)*.15;});
       }
       worldEffects.animate(time,reducedMotion.matches);
+      hearthKettle.animate(time,elapsedSeconds,inside&&desired===1,reducedMotion.matches,true,brokenComputer);
+      blueJay.animate(time,reducedMotion.matches);
       htmlRenderer.render(htmlScene,camera);renderer.render(scene,camera);
     }
     requestAnimationFrame(animate);
@@ -356,6 +362,6 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     administrator(){worldEffects.administrator();},
     explode(){brokenComputer=true;monitor.visible=false;monitorBody.visible=false;focusDesired=0;revealing=true;targetPanX=0;targetPanY=0;worldEffects.explode();},
     project(x,y,z){look.set(x,y,z).project(camera);return{x:(look.x*.5+.5)*width,y:(-.5*look.y+.5)*height,visible:look.z>-1&&look.z<1};},
-    dispose(){disposed=true;resizeObserver.disconnect();scene.traverse(o=>{o.geometry?.dispose();});for(const m of materials.values())m.dispose();renderer.dispose();htmlRenderer.domElement.remove();}
+    dispose(){disposed=true;document.removeEventListener('visibilitychange',resetFrameClock);resizeObserver.disconnect();scene.traverse(o=>{o.geometry?.dispose();});for(const m of materials.values())m.dispose();renderer.dispose();htmlRenderer.domElement.remove();}
   };
 }

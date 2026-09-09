@@ -4,6 +4,7 @@ import {FRIEND_NOTE, command, isRoute, normalize, sha256} from '../js/puzzles.mj
 import {advanceEntrance, ENTRANCE_SECONDS} from '../js/entrance.mjs';
 import {createWalk,advanceWalk,travelHeading} from '../js/walk.mjs';
 import {isEvening} from '../js/lighting.mjs';
+import {advanceKettleTimer,BOIL_SECONDS} from '../js/kettle.mjs';
 
 test('the entrance completes in both directions at different frame rates',()=>{
   for(const fps of [24,30,60,120]){
@@ -64,4 +65,14 @@ test('the avatar turns before moving, arrives exactly, and faces its direction o
 
 test('default lighting follows local morning and evening boundaries',()=>{
   assert.equal(isEvening(6),true);assert.equal(isEvening(7),false);assert.equal(isEvening(12),false);assert.equal(isEvening(18),false);assert.equal(isEvening(19),true);assert.equal(isEvening(0),true);
+});
+
+test('the kettle takes one continuous minute inside, pauses in background, and resets on exit',()=>{
+  let elapsed=0;
+  for(let i=0;i<59;i++)elapsed=advanceKettleTimer(elapsed,1,{inside:true});
+  assert.ok(elapsed<BOIL_SECONDS);
+  assert.equal(advanceKettleTimer(elapsed,120,{inside:true,visible:false}),59);
+  elapsed=advanceKettleTimer(elapsed,1,{inside:true});assert.equal(elapsed,BOIL_SECONDS);
+  elapsed=advanceKettleTimer(elapsed,.1,{inside:false});assert.equal(elapsed,0);
+  assert.equal(advanceKettleTimer(elapsed,1,{inside:true}),1);
 });
