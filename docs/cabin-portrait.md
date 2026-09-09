@@ -3,7 +3,9 @@
 `images/switchback/brydon-and-wife.png` replaces the decorative blue window behind
 the desk. The complete 4:3 artwork is printed inside a 3D walnut frame with a cream
 mat. The frame hangs higher than the old window so both faces are visible above
-the monitor. The real side window and its outdoor view are unchanged.
+the monitor. Its size is reduced to 75% of the initial frame. Clicking it opens
+the complete picture in the discovery dialog with the intentional caption
+“A Lovely Coufle.” The real side window and its outdoor view are unchanged.
 
 Created with the built-in image generation tool on 2026-09-09. Inputs supplied by
 Brydon: the Golden Gate couple picture and `brydon_standing.png` as the man's

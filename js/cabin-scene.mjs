@@ -195,7 +195,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const blueJay=createBlueJay(scene);
   // A favorite picture above the monitor: printed art, cream mat, and walnut frame.
   const coupleFrame=new THREE.Group();coupleFrame.name='Brydon and his wife at the Golden Gate Bridge';
-  coupleFrame.position.set(.96,2.53,-1.855);cabin.add(coupleFrame);
+  coupleFrame.position.set(.96,2.53,-1.855);coupleFrame.scale.setScalar(.75);cabin.add(coupleFrame);
   box(1.32,1.05,.045,0,0,0,'#63442f',coupleFrame);
   box(1.22,.95,.008,0,0,.027,'#ece0c8',coupleFrame);
   const coupleTexture=new THREE.TextureLoader().load('/images/switchback/brydon-and-wife.png');
@@ -394,6 +394,10 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     kettleArea(){return hearthKettle.hitArea();},
     kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
+    portraitArea(){
+      coupleFrame.updateWorldMatrix(true,false);
+      return [[-.66,.525,.06],[.66,.525,.06],[.66,-.525,.06],[-.66,-.525,.06]].map(p=>coupleFrame.localToWorld(new THREE.Vector3(...p)).toArray());
+    },
     administrator(){worldEffects.administrator();},
     explode(){brokenComputer=true;monitor.visible=false;monitorBody.visible=false;focusDesired=0;revealing=true;targetPanX=0;targetPanY=0;worldEffects.explode();},
     project(x,y,z){look.set(x,y,z).project(camera);return{x:(look.x*.5+.5)*width,y:(-.5*look.y+.5)*height,visible:look.z>-1&&look.z<1};},
