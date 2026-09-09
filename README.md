@@ -23,6 +23,8 @@ Open `http://127.0.0.1:8765`. After changing templates or shared reading content
 - Click objects directly. Outside, Brydon walks to the motorcycle or fire before a discovery opens. Pet the dog for a little response.
 - Lighting defaults to the visitor’s local time (daylight 07:00–18:59), with a remembered manual override. Sound is opt-in.
 - The counter has a V60, glass server, digital scale, gooseneck kettle and hand grinder. A second kettle warms over the hearth; linger inside for a minute and it boils over. Click the boiling kettle to swing it off the flames: the whistle fades, steam settles, and it stays off for the rest of the page visit. Until then, leaving resets the heating timer; background tabs pause it.
+- Make a cup: click the grinder, then the V60 to add the grounds. Once the hearth kettle has boiled and been taken off the heat, click it again to fill the gooseneck. Steam shows that the water is ready; click either the gooseneck or V60 to bloom and pour. The scale reaches 300 g, and the glass server fills. Each step has a corresponding sound when sound is enabled. One cup per page load; burning the cabin cancels the brew.
+- The pink Gesha recipe card opens Brydon’s supplied illustration. A packing list and book margin are ordinary, clickable cabin details, separate from the terminal puzzles. The desk chair has a curved mesh back, woven seat, arms and five-wheel base.
 - The blue jay perched in a pine tree chirps on hover or keyboard focus when sound is on, with a short cooldown between greetings. Clicking it opens [Brydon’s Twitter](https://twitter.com/brhydon) in a new tab.
 - The chalkboard contains personalized research diagrams; click it for a readable view. Mathematical sources and drawing conventions are in `docs/chalkboard-notes.md`.
 - Sound is synthesized locally with Web Audio: blue jay chirps, kettle whistle and boiling hiss, dog yips, explosion and fire crackle, and an original slow chord/bell cue when the aurora unlocks. The sound toggle gates every effect; background tabs suspend audio.
@@ -37,6 +39,8 @@ Every scene subject is geometry, including Brydon, the motorcycle and the dog. T
 - `js/cabin-models.mjs` — Brydon, Iron 883, helmet and dog geometry.
 - `js/cabin-interior.mjs` — bookshelf, open fireplace, woven rug and furniture.
 - `js/cabin-coffee.mjs`, `js/cabin-life.mjs` — pour-over equipment, boiling hearth kettle and blue jay.
+- `js/coffee.mjs` — coffee prerequisites, timing and bloom/pour quantities.
+- `js/cabin-chair.mjs`, `js/cabin-notes.mjs` — mesh task chair and ordinary cabin notes.
 - `js/cabin-controller.mjs` — navigation, keyboard controls, sound and discoveries.
 - `desktop.html`, `js/desktop.mjs`, `styles/desktop.css` — website on the CSS3D monitor iframe.
 - `js/puzzles.mjs` — finite terminal commands, Base64 note and SHA-256 verification.
