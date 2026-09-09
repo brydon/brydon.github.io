@@ -3,7 +3,7 @@ export function createCabinAudio(context,samples){
   const master=context.createGain();master.gain.value=.60;
   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-15;limiter.knee.value=18;limiter.ratio.value=5;limiter.attack.value=.006;limiter.release.value=.25;master.connect(limiter).connect(context.destination);
   const state={inside:false,boiling:false,burning:false,aurora:false};
-  let enabled=false,nextCrackle=0,lastBark=-10,scoreUntil=0;
+  let enabled=false,nextCrackle=0,lastBark=-10,lastChirp=-10,scoreUntil=0;
   const voices=new Set();let seed=805;
   const random=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
   function buffer(channels){const result=context.createBuffer(channels.length,channels[0].length,samples.sampleRate);channels.forEach((data,i)=>result.copyToChannel(data,i));return result;}
@@ -55,6 +55,20 @@ export function createCabinAudio(context,samples){
     async setEnabled(on){enabled=on;if(on){await context.resume();sync();if(state.aurora&&!state.burning)music();}else await context.suspend();},
     async visibility(visible){if(!visible)await context.suspend();else if(enabled)await context.resume();},
     setWorld(values){const wasAurora=state.aurora;Object.assign(state,values);sync();if(enabled&&state.aurora&&!wasAurora)music();},
+    chirp(){
+      if(!enabled||context.state!=='running'||state.inside||state.burning||context.currentTime-lastChirp<2.5)return false;
+      lastChirp=context.currentTime;
+      // A small pair of rising-and-falling whistles with a quiet upper partial.
+      for(const [offset,from,peak,to,duration] of [[0,2100,3400,2500,.12],[.17,2600,3900,2100,.17]]){
+        const at=context.currentTime+offset;
+        for(const [harmonic,volume] of [[1,.045],[2,.004]]){
+          const note=tone(from*harmonic,at,duration,volume,'sine',master,.008);
+          note.frequency.exponentialRampToValueAtTime(peak*harmonic,at+.035);
+          note.frequency.exponentialRampToValueAtTime(to*harmonic,at+duration);
+        }
+      }
+      return true;
+    },
     pet(){
       if(!enabled||context.state!=='running'||context.currentTime-lastBark<1.3)return;
       lastBark=context.currentTime;

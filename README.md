@@ -22,9 +22,9 @@ Open `http://127.0.0.1:8765`. After changing templates or shared reading content
 - Click objects directly. Outside, Brydon walks to the motorcycle or fire before a discovery opens. Pet the dog for a little response.
 - Lighting defaults to the visitor’s local time (daylight 07:00–18:59), with a remembered manual override. Sound is opt-in.
 - The counter has a V60, glass server, digital scale, gooseneck kettle and hand grinder. A second kettle warms over the hearth; linger inside for a minute and it boils over. Click the boiling kettle to swing it off the flames: the whistle fades, steam settles, and it stays off for the rest of the page visit. Until then, leaving resets the heating timer; background tabs pause it.
-- The blue jay perched in a pine tree opens [Brydon’s Twitter](https://twitter.com/brhydon) in a new tab.
+- The blue jay perched in a pine tree chirps on hover or keyboard focus when sound is on, with a short cooldown between greetings. Clicking it opens [Brydon’s Twitter](https://twitter.com/brhydon) in a new tab.
 - The chalkboard contains personalized research diagrams; click it for a readable view. Mathematical sources and drawing conventions are in `docs/chalkboard-notes.md`.
-- Sound is synthesized locally with Web Audio: kettle whistle and boiling hiss, dog yips, explosion and fire crackle, and an original slow chord/bell cue when the aurora unlocks. The sound toggle gates every effect; background tabs suspend audio.
+- Sound is synthesized locally with Web Audio: blue jay chirps, kettle whistle and boiling hiss, dog yips, explosion and fire crackle, and an original slow chord/bell cue when the aurora unlocks. The sound toggle gates every effect; background tabs suspend audio.
 - Reduced motion skips camera travel and disables environmental animation.
 - Look closely at the coffee mug, motorcycle and outdoor fire. The old Base64 note and a harder SHA-256 discovery are tucked away.
 

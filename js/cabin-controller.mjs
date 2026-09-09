@@ -51,6 +51,7 @@ $('pet-dog').addEventListener('click',()=>{if(view==='inside'){scene?.pet();audi
 $('hearth-kettle').addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.takeKettleOff();});
 $('desk-terminal').addEventListener('click',()=>computer());
 $('blue-jay').addEventListener('click',engage);
+for(const event of ['pointerenter','focus'])$('blue-jay').addEventListener(event,()=>{if(view==='outside'&&!melting)audio?.chirp();});
 for(const[button,direction,axis]of[['look-left',-1,'x'],['look-right',1,'x'],['look-up',1,'y'],['look-down',-1,'y']])$(button).addEventListener('click',()=>scene?.turn(direction,axis));
 $('menu-toggle').addEventListener('click',()=>{const show=$('mobile-menu').hidden;$('mobile-menu').hidden=!show;$('menu-toggle').setAttribute('aria-expanded',String(show));});
 document.addEventListener('click',event=>{const link=event.target.closest('[data-place]');if(!link||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||event.button!==0)return;event.preventDefault();$('mobile-menu').hidden=true;$('menu-toggle').setAttribute('aria-expanded','false');computer(link.dataset.place);});
