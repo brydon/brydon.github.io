@@ -2,6 +2,7 @@ import {isEvening} from './lighting.mjs';
 import {createCabinAudio} from './cabin-audio.mjs';
 import {prepareAudioSamples} from './audio-preload.mjs';
 import {CABIN_NOTES} from './cabin-notes.mjs';
+import {projectedVolumeBounds} from './hit-area.mjs';
 const $=id=>document.getElementById(id);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let scene,view='outside',computerRequested=false,audio,melting=false,engaged=false,replacementQueued=false;
@@ -142,9 +143,13 @@ async function init(){
     const {createCabinScene}=await import('./cabin-scene.mjs');
     scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling}),onCoffee:coffee=>soundState({coffee})});
     $('scene-loading').hidden=true;if(storage.get('overlook')==='found')scene.unlock();if(storage.get('administrator')==='found')scene.administrator();const preference=storage.get('eveningOverride');evening(preference===null?isEvening():preference==='true',false);
-    function area(id,vertices,enabled){
+    function area(id,vertices,enabled,volume=false){
       const button=$(id);button.hidden=!enabled;if(!enabled)return;
       const corners=vertices.map(p=>scene.project(...p));if(corners.some(p=>!p.visible)){button.hidden=true;return;}
+      if(volume){
+        const bounds=projectedVolumeBounds(corners);if(!bounds){button.hidden=true;return;}
+        Object.assign(button.style,{left:bounds.left+'px',top:bounds.top+'px',width:bounds.width+'px',height:bounds.height+'px',clipPath:'none'});return;
+      }
       const left=Math.min(...corners.map(p=>p.x)),top=Math.min(...corners.map(p=>p.y)),width=Math.max(...corners.map(p=>p.x))-left,height=Math.max(...corners.map(p=>p.y))-top;
       Object.assign(button.style,{left:left+'px',top:top+'px',width:width+'px',height:height+'px',clipPath:'polygon('+corners.map(p=>`${(p.x-left)/width*100}% ${(p.y-top)/height*100}%`).join(',')+')'});
     }
@@ -158,7 +163,7 @@ async function init(){
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
       area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
-      area('hearth-kettle',scene.kettleArea(),inside&&(soundWorld.boiling||scene.kettleOffHeat())&&!melting);
+      area('hearth-kettle',scene.kettleArea(),inside&&(soundWorld.boiling||scene.kettleOffHeat())&&!melting,true);
       $('hearth-kettle').setAttribute('aria-label',scene.kettleOffHeat()?'Fill the gooseneck with hot water':'Take the boiling kettle off the fire');
       for(const [object,vertices]of Object.entries(scene.coffeeAreas()))area('coffee-'+object,vertices,inside&&!melting);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);

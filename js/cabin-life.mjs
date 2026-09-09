@@ -44,7 +44,12 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
     if(!wasBoiling||offHeat)return false;
     offHeat=true;wasBoiling=false;group.name='The kettle is off the fire';onBoil(false);return true;
   },isOffHeat(){return offHeat;},
-  hitArea(){body.updateWorldMatrix(true,false);return [[-.39,.47,.22],[.23,.47,.22],[.23,-.03,.22],[-.39,-.03,.22]].map(p=>body.localToWorld(new THREE.Vector3(...p)).toArray());},
+  hitArea(){
+    body.updateWorldMatrix(true,false);
+    // Enclose the body, handle and spout. A single face turns edge-on as the arm swings.
+    const corners=[];for(const x of [-.42,.25])for(const y of [-.045,.50])for(const z of [-.235,.235])corners.push(body.localToWorld(new THREE.Vector3(x,y,z)).toArray());
+    return corners;
+  },
   fill(progress,target){
     if(progress===null){
       if(transferring){rig.attach(body);body.position.copy(restingPosition);body.quaternion.copy(restingRotation);transferring=false;}
