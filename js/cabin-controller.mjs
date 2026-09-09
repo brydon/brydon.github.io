@@ -111,7 +111,7 @@ async function toggleSound(){
 }
 $('sound-toggle').addEventListener('click',toggleSound);
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
-function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery','recipe-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery','recipe-discovery','portrait-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
 for(const note of CABIN_NOTES)$(note.id).addEventListener('click',()=>{if(view==='inside'&&!melting){discover(note.title,note.copy);if(note.id==='coffee-recipe')$('discovery').classList.add('recipe-discovery');}});
 $('chalkboard').addEventListener('click',()=>{
   if(view!=='inside'||!scene)return;
@@ -119,6 +119,14 @@ $('chalkboard').addEventListener('click',()=>{
   const board=document.createElement('img');board.className='chalkboard-study';board.src=scene.chalkboardImage();board.width=1536;board.height=1220;
   board.alt='Chalk diagrams of Delaney chambers and a hexagonal tiling, the circulant C12(1,3,4), a sparse companion matrix with its matching intercyclic digraph, and a schematic supercritical Hopf bifurcation for the chemostat.';
   $('discovery-copy').append(board);
+});
+$('couple-portrait').addEventListener('click',()=>{
+  if(view!=='inside'||melting||!scene)return;
+  discover('A Lovely Coufle','');$('discovery').classList.add('portrait-discovery');
+  const portrait=document.createElement('img');portrait.className='couple-portrait';
+  portrait.src='/images/switchback/brydon-and-wife.png';portrait.width=1448;portrait.height=1086;
+  portrait.alt='Pixel-art portrait of Brydon and his wife smiling in front of the Golden Gate Bridge.';
+  $('discovery-copy').append(portrait);
 });
 function readMug(){discover('The warm mug','<p>Letters have appeared in the glaze:</p><p><code>take the</code></p>');}
 $('receipt').addEventListener('click',()=>{
@@ -192,6 +200,7 @@ async function init(){
       for(const [object,vertices]of Object.entries(scene.coffeeAreas()))area('coffee-'+object,vertices,inside&&!melting);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
+      area('couple-portrait',scene.portraitArea(),inside&&!melting);
       area('receipt',[[-.25,1.46,-.91],[.13,1.46,-.91],[.13,1.18,-.91],[-.25,1.18,-.91]],inside&&!melting);
       for(const note of CABIN_NOTES)area(note.id,note.vertices,inside&&!melting);
       requestAnimationFrame(updateHotspots);
