@@ -21,3 +21,4 @@ covid19sims/update/*
 venv/*
 */venv/*
 node_modules/
+dist/
