@@ -7,6 +7,7 @@ import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
 import {createHearthKettle,createBlueJay} from './cabin-life.mjs';
+import {drawResearchBoard} from './chalkboard.mjs';
 import {CSS3DObject,CSS3DRenderer} from './vendor/CSS3DRenderer.js';
 
 const ease = t => t*t*(3-2*t);
@@ -194,13 +195,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   box(.05,.75,.02,.95,2.27,-1.84,'#514632',cabin);box(1.05,.05,.02,.95,2.27,-1.84,'#514632',cabin);
 
   // An after-hours wall: equations, books, climbing kit, and the coffee setup.
-  function displayTexture(width,height,draw){const c=document.createElement('canvas');c.width=width;c.height=height;draw(c.getContext('2d'));const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;return texture;}
-  const chalkTexture=displayTexture(512,384,c=>{
-    c.fillStyle='#203932';c.fillRect(0,0,512,384);c.strokeStyle='#c6d2b0';c.lineWidth=3;
-    c.beginPath();c.moveTo(60,205);c.lineTo(455,205);c.moveTo(90,228);c.lineTo(90,43);c.stroke();
-    c.beginPath();for(let i=0;i<330;i++){const x=100+i,y=200-143*Math.exp(-(((i-157)/73)**2));i?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();
-    c.font='italic 39px Georgia';c.fillStyle='#d0d5b7';c.fillText('∫ f(x) dx',139,301);c.font='19px monospace';c.fillStyle='#869f87';c.fillText('what happens if…',70,350);
-  });
+  const chalkCanvas=drawResearchBoard(),chalkTexture=new THREE.CanvasTexture(chalkCanvas);
+  chalkTexture.colorSpace=THREE.SRGBColorSpace;chalkTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
   box(1.38,1.13,.09,-.95,2.16,-1.77,'#a07c46',cabin);
   const chalkboard=box(1.22,.97,.015,-.95,2.16,-1.715,'#203932',cabin);chalkboard.material=new THREE.MeshBasicMaterial({map:chalkTexture,toneMapped:false});
   box(1.43,.09,.22,-.95,1.54,-1.66,'#87623c',cabin);box(.15,.03,.03,-.59,1.60,-1.56,'#dadcc3',cabin);
@@ -359,6 +355,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     unlock(){afterglow=true;worldEffects.unlock();scene.fog.color.set('#172a39');},
     reveal(){focusDesired=0;revealing=true;targetPanX=0;targetPanY=.15;panKeys.clear();},
     pet(){worldEffects.pet();},
+    chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
     administrator(){worldEffects.administrator();},
     explode(){brokenComputer=true;monitor.visible=false;monitorBody.visible=false;focusDesired=0;revealing=true;targetPanX=0;targetPanY=0;worldEffects.explode();},
     project(x,y,z){look.set(x,y,z).project(camera);return{x:(look.x*.5+.5)*width,y:(-.5*look.y+.5)*height,visible:look.z>-1&&look.z<1};},

@@ -66,7 +66,14 @@ async function toggleSound(){
 }
 $('sound-toggle').addEventListener('click',toggleSound);
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();if(!audio)return;if(document.hidden)audio.context.suspend();else if($('sound-toggle').getAttribute('aria-pressed')==='true')audio.context.resume();});
-function discover(title,copy){scene?.clearKeys();$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+$('chalkboard').addEventListener('click',()=>{
+  if(view!=='inside'||!scene)return;
+  discover('Working notes','');$('discovery').classList.add('chalkboard-discovery');
+  const board=document.createElement('img');board.className='chalkboard-study';board.src=scene.chalkboardImage();board.width=1536;board.height=1220;
+  board.alt='Chalk diagrams of Delaney chambers and a hexagonal tiling, the circulant C12(1,3,4), a sparse companion matrix with its matching intercyclic digraph, and a schematic supercritical Hopf bifurcation for the chemostat.';
+  $('discovery-copy').append(board);
+});
 $('receipt').addEventListener('click',()=>discover('Under the coffee mug','<p>A ring of coffee. A scrap of paper. A small beginning:</p><p><code>01 / TAKE THE</code></p><p>The next line went out for a ride.</p>'));
 function visit(place,title,copy){if(!scene||view!=='outside'||melting)return;engage();view='walking';scene.visit(place,()=>{view='outside';discover(title,copy);});}
 $('bridge-note').addEventListener('click',()=>visit('bike','The luggage tag','<p>There’s something written on the back:</p><p><code>02 / LONG WAY</code></p><p>Follow the warmth for the last line.</p>'));
@@ -113,6 +120,7 @@ async function init(){
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('desk-flags',[[1.29,2.03,-1.5],[2.14,2.03,-1.5],[2.14,1.22,-1.5],[1.29,1.22,-1.5]],inside);
+      area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('receipt',[[-.15,1.46,-.96],[.14,1.46,-.96],[.14,1.2,-.96],[-.15,1.2,-.96]],inside);
       requestAnimationFrame(updateHotspots);
     }

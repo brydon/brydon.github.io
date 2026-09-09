@@ -23,6 +23,7 @@ Open `http://127.0.0.1:8765`. After changing templates or shared reading content
 - Lighting defaults to the visitor’s local time (daylight 07:00–18:59), with a remembered manual override. Sound is opt-in.
 - The counter has a V60, glass server, digital scale, gooseneck kettle and hand grinder. A second kettle warms over the hearth; linger inside for a minute and it boils over. Leaving resets it; background tabs pause the timer.
 - The blue jay perched in a pine tree opens [Brydon’s Twitter](https://twitter.com/brhydon) in a new tab.
+- The chalkboard contains personalized research diagrams; click it for a readable view. Mathematical sources and drawing conventions are in `docs/chalkboard-notes.md`.
 - Reduced motion skips camera travel and disables environmental animation.
 - Look closely at the coffee mug, motorcycle and outdoor fire. The old Base64 note and a harder SHA-256 discovery are tucked away.
 
