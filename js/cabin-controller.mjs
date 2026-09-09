@@ -3,6 +3,7 @@ import {createCabinAudio} from './cabin-audio.mjs';
 import {prepareAudioSamples} from './audio-preload.mjs';
 import {CABIN_NOTES} from './cabin-notes.mjs';
 import {projectedVolumeBounds} from './hit-area.mjs';
+import {REWARD_CODE} from './cabin-reward.mjs';
 const $=id=>document.getElementById(id);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let scene,view='outside',computerRequested=false,audio,melting=false,engaged=false,replacementQueued=false;
@@ -11,8 +12,12 @@ const soundWorld={inside:false,boiling:false,burning:false,aurora:false,coffee:'
 function soundState(values){
   Object.assign(soundWorld,values);audio?.setWorld(values);
   if(values.coffee){
-    const description={idle:'The grinder and filter are empty.',grinding:'The hand grinder is turning.',ground:'Ground coffee fills the catch cup.',loading:'Ground coffee is falling into the filter.',ready:'18 grams of fresh grounds are in the filter. The gooseneck is empty.',filling:'Hot water is filling the gooseneck.',hot:'Steam rises from the filled gooseneck.',pouring:'Water is pouring into the V60.',bloom:'The wet grounds are blooming.',brewed:'300 grams of coffee brewed. Steam rises from the server.',broken:'The coffee equipment is out of service.'}[values.coffee];
+    const description={idle:'The grinder and filter are empty.',grinding:'The hand grinder is turning.',ground:'Ground coffee fills the catch cup.',loading:'Ground coffee is falling into the filter.',ready:'18 grams of fresh grounds are in the filter. The gooseneck is empty.',filling:'Hot water is filling the gooseneck.',hot:'Steam rises from the filled gooseneck.',pouring:'Water is pouring into the V60.',bloom:'The wet grounds are blooming.',brewed:'300 grams of coffee brewed. Steam rises from the server.',carrying:'The coffee server is being carried to or from the desk.',serving:'Fresh coffee is pouring into the desk mug.',served:'The mug is full. Warm lettering has appeared on its glaze.',broken:'The coffee equipment is out of service.'}[values.coffee];
     for(const object of ['grinder','v60','gooseneck'])$('coffee-'+object).setAttribute('aria-description',description);
+    const serving=['carrying','serving'].includes(values.coffee);
+    $('receipt').disabled=serving;
+    $('receipt').setAttribute('aria-label',values.coffee==='served'?'Read the warm coffee mug':'Inspect the desk mug');
+    $('receipt').setAttribute('aria-description',serving||values.coffee==='served'?description:'A ceramic coffee mug on the desk.');
   }
 }
 const storage={get(key){try{return localStorage.getItem('switchback:'+key);}catch{return null;}},set(key,value){try{localStorage.setItem('switchback:'+key,value);}catch{/* Preferences are optional. */}}};
@@ -110,10 +115,19 @@ $('chalkboard').addEventListener('click',()=>{
   board.alt='Chalk diagrams of Delaney chambers and a hexagonal tiling, the circulant C12(1,3,4), a sparse companion matrix with its matching intercyclic digraph, and a schematic supercritical Hopf bifurcation for the chemostat.';
   $('discovery-copy').append(board);
 });
-$('receipt').addEventListener('click',()=>discover('Under the coffee mug','<p>On a coffee-stained scrap of paper:</p><p><code>take the</code></p>'));
+function readMug(){discover('The warm mug','<p>Letters have appeared in the glaze:</p><p><code>take the</code></p>');}
+$('receipt').addEventListener('click',()=>{
+  if(view!=='inside'||melting||!scene)return;
+  if(scene.coffeeClueRevealed())readMug();
+  else if(!scene.coffeeAction('mug'))discover('The desk mug','<p>An empty mug. The glaze feels cool.</p>');
+});
 function visit(place,title,copy){if(!scene||view!=='outside'||melting)return;engage();view='walking';scene.visit(place,()=>{view='outside';discover(title,copy);});}
 $('bridge-note').addEventListener('click',()=>visit('bike','The luggage tag','<p>Pressed into the leather:</p><p><code>long way</code></p>'));
 $('camp-note').addEventListener('click',()=>visit('fire','A carving in the stone','<p><code>home</code></p>'));
+$('reward-sign').addEventListener('click',()=>{
+  if(!scene?.rewardVisible())return;
+  visit('sign','The long way home',`<p><code style="overflow-wrap:anywhere">${REWARD_CODE}</code></p><p><a href="/contact.html" target="_blank" rel="noopener noreferrer">Contact me</a> with this code and thanks for taking the time to look around!</p>`);
+});
 $('service-note').addEventListener('click',()=>{
   discover('A scrap of paper','<a href="/images/switchback/service-064.png" target="_blank" rel="noopener noreferrer"><img class="service-scan" src="/images/switchback/service-064.png" width="384" height="176" alt="A scrap of paper with printed characters"></a>');
   $('discovery').classList.add('bitmap-discovery');
@@ -141,7 +155,7 @@ function sceneError(){$('scene-loading').hidden=true;$('scene-fallback').hidden=
 async function init(){
   try{
     const {createCabinScene}=await import('./cabin-scene.mjs');
-    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling}),onCoffee:coffee=>soundState({coffee})});
+    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling}),onCoffee:coffee=>{soundState({coffee});if(coffee==='served'&&view==='inside'&&!melting)readMug();}});
     $('scene-loading').hidden=true;if(storage.get('overlook')==='found')scene.unlock();if(storage.get('administrator')==='found')scene.administrator();const preference=storage.get('eveningOverride');evening(preference===null?isEvening():preference==='true',false);
     function area(id,vertices,enabled,volume=false){
       const button=$(id);button.hidden=!enabled;if(!enabled)return;
@@ -161,6 +175,7 @@ async function init(){
       area('cabin-door',[[-.15,2.62,2.18],[1.15,2.62,2.18],[1.15,.43,2.18],[-.15,.43,2.18]],inside||outside);
       area('bridge-note',[[3.91,1.47,-.6],[3.91,1.47,2.2],[3.91,.08,2.2],[3.91,.08,-.6]],outside);
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
+      area('reward-sign',scene.rewardArea(),outside&&scene.rewardVisible());
       area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
       area('pet-dog',[[-.2,1.25,.69],[1.5,1.25,.69],[1.5,.53,.69],[-.2,.53,.69]],inside);
       area('hearth-kettle',scene.kettleArea(),inside&&(soundWorld.boiling||scene.kettleOffHeat())&&!melting,true);
@@ -168,7 +183,7 @@ async function init(){
       for(const [object,vertices]of Object.entries(scene.coffeeAreas()))area('coffee-'+object,vertices,inside&&!melting);
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
-      area('receipt',[[-.15,1.46,-.96],[.14,1.46,-.96],[.14,1.2,-.96],[-.15,1.2,-.96]],inside);
+      area('receipt',[[-.25,1.46,-.91],[.13,1.46,-.91],[.13,1.18,-.91],[-.25,1.18,-.91]],inside&&!melting);
       for(const note of CABIN_NOTES)area(note.id,note.vertices,inside&&!melting);
       requestAnimationFrame(updateHotspots);
     }
