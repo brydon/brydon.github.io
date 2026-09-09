@@ -4,6 +4,14 @@ export const createCoffeeState=()=>({phase:'idle',elapsed:0});
 export const coffeeProgress=state=>COFFEE_DURATION[state.phase]?Math.min(1,state.elapsed/COFFEE_DURATION[state.phase]):0;
 export const coffeeClueRevealed=state=>state.phase==='served';
 export const servingFraction=progress=>Math.max(0,Math.min(1,(progress-.4)/.35));
+export function servingMotion(progress){
+  const ease=value=>{const x=Math.max(0,Math.min(1,value));return x*x*(3-2*x);};
+  return {
+    filter:ease(progress/.18)*(1-ease((progress-.91)/.09)),
+    server:ease((progress-.18)/.20)*(1-ease((progress-.80)/.11)),
+    tilt:ease((progress-.34)/.06)*(1-ease((progress-.75)/.05))
+  };
+}
 
 /** Physical prerequisites, independent of rendering and audio. */
 export function coffeeAction(state,object,{offHeat=false}={}){
