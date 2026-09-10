@@ -23,7 +23,7 @@ export function coffeeAction(state,object,{offHeat=false}={}){
   if(object==='grinder'&&state.phase==='idle')phase='grinding';
   if(object==='v60'&&state.phase==='ground')phase='loading';
   if((object==='v60'||object==='gooseneck')&&state.phase==='hot')phase='pouring';
-  if(object==='mug'&&state.phase==='brewed')phase='serving';
+  if((object==='mug'||object==='v60')&&state.phase==='brewed')phase='serving';
   if(!phase)return false;
   state.phase=phase;state.elapsed=0;if(phase==='pouring')state.water='spent';return true;
 }

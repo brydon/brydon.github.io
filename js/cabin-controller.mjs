@@ -1,6 +1,7 @@
 import {isEvening} from './lighting.mjs';
 import {createCabinAudio} from './cabin-audio.mjs';
 import {prepareAudioSamples} from './audio-preload.mjs';
+import {createSoundPreference,isSoundRestoreGesture} from './sound-preference.mjs';
 import {CABIN_NOTES} from './cabin-notes.mjs';
 import {projectedVolumeBounds} from './hit-area.mjs';
 import {REWARD_CODE} from './cabin-reward.mjs';
@@ -18,6 +19,7 @@ function soundState(values){
     const waterDescription={empty:'The gooseneck is empty. Either kettle can fill it once the hearth water has boiled.',filling:'Hot water is being transferred into the gooseneck.',hot:'The gooseneck is full of hot water.',spent:'The brew water has been poured.'}[soundWorld.coffeeWater];
     $('coffee-gooseneck').setAttribute('aria-description',waterDescription+' '+description);
     $('coffee-gooseneck').setAttribute('aria-label',soundWorld.coffeeWater==='empty'?'Fill the gooseneck with hot water':'Pour from the gooseneck');
+    $('coffee-v60').setAttribute('aria-label',soundWorld.coffee==='brewed'?'Pour coffee into the desk mug':soundWorld.coffee==='hot'?'Begin the pour-over':'Use the V60 dripper');
     const serving=['carrying','serving'].includes(values.coffee);
     $('receipt').disabled=serving;
     $('receipt').setAttribute('aria-label',values.coffee==='served'?'Read the warm coffee mug':'Inspect the desk mug');
@@ -86,7 +88,7 @@ document.addEventListener('keydown',event=>{
   else if(!event.repeat&&key==='escape'){if(!$('mobile-menu').hidden){$('mobile-menu').hidden=true;$('menu-toggle').setAttribute('aria-expanded','false');}else if(view==='computer')room();else leave();}
 });
 document.addEventListener('keyup',event=>scene?.key(event.key.toLowerCase(),false));window.addEventListener('blur',()=>scene?.clearKeys());
-function evening(on,persist=true){scene?.night(on);document.body.classList.toggle('afterglow',on&&storage.get('overlook')==='found');$('night-toggle').setAttribute('aria-pressed',String(on));$('night-toggle').textContent=on?'Daylight':'Evening';$('night-toggle').setAttribute('aria-label',on?'Switch to daylight':'Switch to evening');if(persist)storage.set('eveningOverride',String(on));}
+function evening(on,persist=true){scene?.night(on);document.body.classList.toggle('afterglow',on&&storage.get('overlook')==='found');$('night-toggle').setAttribute('aria-pressed',String(on));$('night-toggle').textContent=on?'Evening':'Daylight';$('night-toggle').setAttribute('aria-label',on?'Switch to daylight':'Switch to evening');if(persist)storage.set('eveningOverride',String(on));}
 $('night-toggle').addEventListener('click',()=>evening($('night-toggle').getAttribute('aria-pressed')!=='true'));
 function prepareSound(){
   if(!audioReady){
@@ -98,21 +100,24 @@ function prepareSound(){
   }
   return audioReady;
 }
-async function toggleSound(){
-  const button=$('sound-toggle');if(button.disabled)return;button.disabled=true;
-  const on=button.getAttribute('aria-pressed')!=='true';
-  try{
-    if(on&&!audio)button.textContent='Starting sound…';
-    const ready=prepareSound();
-    // Resume in the actual click handler so an early click keeps its user gesture.
-    const resumed=on?audioContext.resume():Promise.resolve();
-    const [prepared]=await Promise.all([ready,resumed]);await prepared.setEnabled(on);
-    if(document.hidden)await prepared.visibility(false);
-    button.setAttribute('aria-pressed',String(on));button.textContent=on?'Sound on':'Sound off';button.setAttribute('aria-label',on?'Turn ambient sound off':'Turn ambient sound on');
-  }catch{$('toast').textContent='Ambient sound isn’t available in this browser.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);}
-  finally{button.disabled=false;button.textContent=button.getAttribute('aria-pressed')==='true'?'Sound on':'Sound off';}
-}
-$('sound-toggle').addEventListener('click',toggleSound);
+const soundPreference=createSoundPreference({
+  read:()=>storage.get('sound'),write:value=>storage.set('sound',value),
+  prepare:prepareSound,resume:()=>audioContext.resume(),
+  disable:()=>audio?audio.setEnabled(false):audioContext?.suspend(),
+  hidden:()=>document.hidden,
+  onChange:on=>{
+    const button=$('sound-toggle');
+    button.setAttribute('aria-pressed',String(on));button.textContent=on?'Sound on':'Sound off';
+    button.setAttribute('aria-label',on?'Turn ambient sound off':'Turn ambient sound on');
+  },
+  onError:()=>{$('toast').textContent='Ambient sound isn’t available in this browser.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);}
+});
+$('sound-toggle').addEventListener('click',()=>{soundPreference.toggle();});
+// Restoring a preference never attempts autoplay. Unlock from a real gesture;
+// the sound button handles its own gesture so an Off click cannot also restore.
+for(const type of ['pointerdown','keydown'])document.addEventListener(type,event=>{
+  if(isSoundRestoreGesture(event))soundPreference.gesture();
+},{capture:true});
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
 function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery','recipe-discovery','portrait-discovery','notebook-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
 for(const note of CABIN_NOTES)$(note.id).addEventListener('click',()=>{if(view==='inside'&&!melting){discover(note.title,note.copy);if(note.id==='coffee-recipe')$('discovery').classList.add('recipe-discovery');}});
@@ -180,7 +185,11 @@ $('reward-sign').addEventListener('click',()=>{
   if(!scene?.rewardVisible())return;
   visit('sign','The long way home',`<p><code style="overflow-wrap:anywhere">${REWARD_CODE}</code></p><p><a href="/contact.html" target="_blank" rel="noopener noreferrer">Contact me</a> with this code and thanks for taking the time to look around!</p>`);
 });
+$('feynman-book').addEventListener('click',()=>{
+  if(view==='inside'&&!melting&&scene){scene.clearKeys();scene.releaseBookNote();}
+});
 $('service-note').addEventListener('click',()=>{
+  if(view!=='inside'||melting||!scene?.canReadFallenNote())return;
   discover('A scrap of paper','<a href="/images/switchback/service-064.png" target="_blank" rel="noopener noreferrer"><img class="service-scan" src="/images/switchback/service-064.png" width="384" height="176" alt="A scrap of paper with printed characters"></a>');
   $('discovery').classList.add('bitmap-discovery');
 });
@@ -237,7 +246,8 @@ async function init(){
       area('hearth-kettle',scene.kettleArea(),inside&&(soundWorld.boiling||scene.kettleOffHeat())&&!melting,true);
       $('hearth-kettle').setAttribute('aria-label','Fill the gooseneck from the hearth kettle');
       for(const [object,vertices]of Object.entries(scene.coffeeAreas()))area('coffee-'+object,vertices,inside&&!melting);
-      area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
+      area('feynman-book',scene.feynmanBookArea(),inside&&!melting,true);
+      area('service-note',scene.fallenNoteArea(),inside&&!melting,true);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('couple-portrait',scene.portraitArea(),inside&&!melting);
       area('desk-notebook',inside&&!melting?scene.notebookArea():[],inside&&!melting,true);

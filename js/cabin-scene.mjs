@@ -225,10 +225,6 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   box(1.38,1.13,.09,-.95,2.16,-1.77,'#a07c46',cabin);
   const chalkboard=box(1.22,.97,.015,-.95,2.16,-1.715,'#203932',cabin);chalkboard.material=new THREE.MeshBasicMaterial({map:chalkTexture,toneMapped:false});
   box(1.43,.09,.22,-.95,1.54,-1.66,'#87623c',cabin);box(.15,.03,.03,-.59,1.60,-1.56,'#dadcc3',cabin);
-  // A printed bitmap on a solid plaque: its message has no HTML text layer.
-  box(.67,.34,.035,-1.33,1.19,-1.82,'#725435',cabin);
-  const serviceScan=new THREE.TextureLoader().load('/images/switchback/service-064.png');serviceScan.colorSpace=THREE.SRGBColorSpace;serviceScan.magFilter=THREE.NearestFilter;
-  const serviceLabel=box(.63,.29,.008,-1.33,1.19,-1.798,'#ceb98d',cabin);serviceLabel.material=new THREE.MeshBasicMaterial({map:serviceScan,toneMapped:false});
   box(1.75,.09,.31,-1.22,2.91,-1.74,'#a0804b',cabin);
   for(const [i,id]of ['kr','knuth','geb'].entries()){
     const height=.29+i*.025,book=createShelfBook(id,{height,thickness:.13,depth:.23});book.position.set(-1.84+i*.18,2.955+height/2,-1.74);cabin.add(book);
@@ -383,6 +379,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
         flag.rotation.y=Math.sin(time*.0012)*.13-.2;
         smoke.forEach((p,i)=>{const phase=(time*.00016+i*.2)%1;p.position.set(-2.1+phase*.5,5.3+phase*2.3,.95+phase*.18);p.scale.setScalar(.6+phase*1.9);p.material.opacity=(1-phase)*.15;});
       }
+      interiorDetails.animateBookNote(dt,reducedMotion.matches,brokenComputer);
       cradle.userData.tick(dt,reducedMotion.matches,onCradle);
       posters.animate(dt,reducedMotion.matches);
       worldEffects.animate(time,reducedMotion.matches);
@@ -418,7 +415,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
       if((object==='kettle'||object==='gooseneck')&&!hearthKettle.isOffHeat())hearthKettle.takeOff();
       const accepted=coffeeStation.action(object,{offHeat:hearthKettle.isOffHeat()});
       if(accepted&&coffeeStation.filling){targetPanX=.32;targetPanY=-.3;panKeys.clear();}
-      if(accepted&&object==='mug'){targetPanX=0;targetPanY=-.3;panKeys.clear();}
+      if(accepted&&coffeeStation.phase==='serving'){targetPanX=0;targetPanY=-.3;panKeys.clear();}
       return accepted;
     },
     posterTap(){if(inside&&!brokenComputer)return posters.tap(performance.now());return false;},
@@ -429,6 +426,10 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
     ringArea(){return personalDetails.ringArea();},
+    feynmanBookArea(){return brokenComputer?[]:interiorDetails.feynmanBookArea();},
+    fallenNoteArea(){return brokenComputer?[]:interiorDetails.fallenNoteArea();},
+    canReadFallenNote(){return !brokenComputer&&interiorDetails.canReadFallenNote();},
+    releaseBookNote(){return inside&&!brokenComputer?interiorDetails.releaseBookNote(reducedMotion.matches):false;},
     dieArea(){return interiorDetails.dieArea();},
     setDieResult(value){interiorDetails.setDieResult(value);},
     cradleArea(){return propArea(cradle);},

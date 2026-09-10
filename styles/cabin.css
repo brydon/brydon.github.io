@@ -50,3 +50,8 @@
 
 /* The hand grinder sits in front of the gooseneck on the counter. */
 .cabin-page #coffee-grinder{z-index:3}
+
+/* Once welcomed in, the cabin continues behind the translucent interface bars. */
+.cabin-page.has-arrived #cabin-stage{position:fixed;inset:0}
+.cabin-page.has-arrived .site-header,.cabin-page.has-arrived .cabin-footer{position:fixed;left:0;right:0;z-index:4;background:rgb(21 45 48 / .5)}
+.cabin-page.has-arrived .site-header{top:0}.cabin-page.has-arrived .cabin-footer{bottom:0}

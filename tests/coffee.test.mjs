@@ -64,6 +64,27 @@ test('the mug clue requires a completed brew and a separate completed serving',(
   advanceCoffee(state,COFFEE_DURATION.serving*.2);assert.equal(coffeeClueRevealed(state),true);
   advanceCoffee(state,60);assert.equal(coffeeClueRevealed(state),true);assert.equal(coffeeAction(state,'mug'),false);
 });
+test('either brewing target then either serving target completes the same coffee sequence',()=>{
+  for(const waterFirst of [false,true])for(const brewingTarget of ['gooseneck','v60'])for(const servingTarget of ['mug','v60']){
+    const state=createCoffeeState();
+    const fill=()=>{assert.equal(coffeeAction(state,'gooseneck',{offHeat:true}),true);advanceCoffee(state,COFFEE_DURATION.filling);};
+    const prepareGrounds=()=>{
+      assert.equal(coffeeAction(state,'grinder'),true);advanceCoffee(state,COFFEE_DURATION.grinding);
+      assert.equal(coffeeAction(state,'v60'),true);advanceCoffee(state,COFFEE_DURATION.loading);
+    };
+    if(waterFirst){fill();prepareGrounds();}else{prepareGrounds();fill();}
+    assert.equal(state.phase,'hot');assert.equal(state.water,'hot');
+    assert.equal(coffeeAction(state,brewingTarget),true);assert.equal(state.phase,'pouring');
+    for(const object of ['mug','v60','gooseneck'])assert.equal(coffeeAction(state,object),false,'busy equipment cannot start another pour');
+    advanceCoffee(state,COFFEE_DURATION.pouring);assert.equal(state.phase,'brewed');
+    assert.equal(coffeeAction(state,'gooseneck'),false,'the empty gooseneck does not serve brewed coffee');
+    assert.equal(coffeeAction(state,servingTarget),true);assert.equal(state.phase,'serving');
+    assert.equal(coffeeClueRevealed(state),false);
+    for(const object of ['mug','v60'])assert.equal(coffeeAction(state,object),false,'serving cannot be restarted mid-animation');
+    advanceCoffee(state,COFFEE_DURATION.serving);assert.equal(state.phase,'served');assert.equal(coffeeClueRevealed(state),true);
+    for(const object of ['mug','v60'])assert.equal(coffeeAction(state,object),false,'the completed mug cannot be overfilled');
+  }
+});
 test('serving conserves the coffee and a fire cannot finish revealing the mug',()=>{
   for(const phase of ['serving','served']){
     const state={phase,elapsed:COFFEE_DURATION.serving*.8};advanceCoffee(state,60,{burning:true});
