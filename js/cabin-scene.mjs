@@ -8,8 +8,9 @@ import {createPosterStack} from './cabin-posters.mjs';
 import {createCabinEffects} from './cabin-effects.mjs';
 import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
 import {createRaccoon} from './cabin-raccoon.mjs';
+import {createCellarEntrance} from './cabin-cellar.mjs';
 import {createFirewoodArea} from './cabin-firewood.mjs';
-import {createNotebookSketch} from './cabin-notebook.mjs';
+import {createNotebookSketch,notebookHitArea} from './cabin-notebook.mjs';
 import {createPersonalDetails} from './cabin-personal-details.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
@@ -197,7 +198,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   box(.39,.01,.46,1.37,1.25,-1.02,'#f2e8cd',cabin);
   const interiorDetails=furnishCabin(cabin);
   const personalDetails=createPersonalDetails(cabin);
-  cabin.add(createNotebookSketch());
+  const notebook=createNotebookSketch();cabin.add(notebook);
+  const notebookOccluders=[monitorBody,cabin.getObjectByName('Graphite mesh desk chair')].filter(Boolean);
   const posters=createPosterStack(cabin);
   const hearthKettle=createHearthKettle(cabin,onKettle);
   const blueJay=createBlueJay(scene);
@@ -237,6 +239,21 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   await createGearWall(cabin);
   box(.64,.09,1.05,1.94,1.05,.50,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.50,'#425a50',cabin);
   const coffeeStation=createCoffeeStation(cabin,onCoffee);
+  // A sleeve and braced iron arm clamp the flagpole to the right porch rail.
+  const flagMount=new THREE.Group();flagMount.name='Flagpole bracket on the porch rail';scene.add(flagMount);
+  for(const z of [2.73,2.87]){
+    for(const y of [1.2825,1.4375])box(.204,.025,.034,2.3,y,z,'#38413c',flagMount);
+    for(const x of [2.209,2.391])box(.022,.13,.034,x,1.36,z,'#38413c',flagMount);
+    cylinder(.008,.008,.018,2.409,1.36,z,'#899185',flagMount,6).rotation.z=Math.PI/2;
+  }
+  box(.30,.036,.13,2.541,1.3175,2.8,'#38413c',flagMount);
+  const brace=new THREE.Shape();brace.moveTo(2.398,1.39);brace.lineTo(2.659,1.335);brace.lineTo(2.398,1.335);brace.closePath();
+  for(const z of [2.749,2.837])mesh(new THREE.ExtrudeGeometry(brace,{depth:.014,bevelEnabled:false}),'#455048',flagMount).position.z=z;
+  cylinder(.042,.046,.255,2.68,1.3025,2.8,'#38413c',flagMount,10);
+  cylinder(.05,.05,.035,2.68,1.16,2.8,'#455048',flagMount,10);
+  for(const y of [1.205,1.415])cylinder(.05,.05,.022,2.68,y,2.8,'#455048',flagMount,10);
+  cylinder(.009,.009,.025,2.729,1.37,2.8,'#899185',flagMount,6).rotation.z=Math.PI/2;
+
   // Red details sit on both faces of the opaque white flag cloth.
   cylinder(.025,.035,2.3,2.68,2.31,2.8,'#b8aa87',scene,6);
   const flag=new THREE.Group();flag.position.set(2.68,3.18,2.8);scene.add(flag);
@@ -251,6 +268,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   for(const side of [-1,1]){const maple=new THREE.Mesh(leafGeometry,flagRed);maple.position.set(.51,-.01,side*.013);flag.add(maple);}
 
   scene.add(createFirewoodArea());
+  scene.add(createCellarEntrance());
 
   // Fire ring and a couple of seats outside.
   const fire=new THREE.Group();fire.position.set(-3.55,.1,3.45);scene.add(fire);
@@ -419,6 +437,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     cubeState(){return interiorDetails.cubeState();},
     setCubeState(state){interiorDetails.setCubeState(state);},
     cubeArea(){return interiorDetails.cubeArea();},
+    notebookArea(){return notebookHitArea(notebook,camera,notebookOccluders);},
     portraitArea(){
       coupleFrame.updateWorldMatrix(true,false);
       return [[-.66,.525,.06],[.66,.525,.06],[.66,-.525,.06],[-.66,-.525,.06]].map(p=>coupleFrame.localToWorld(new THREE.Vector3(...p)).toArray());

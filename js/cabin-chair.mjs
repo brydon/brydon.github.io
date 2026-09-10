@@ -2,7 +2,9 @@ import * as THREE from './vendor/three.module.min.js';
 
 /** A mesh task chair: open woven geometry, curved frame, arms and five casters. */
 export function createDeskChair(cabin){
-  const chair=new THREE.Group();chair.name='Graphite mesh desk chair';chair.position.set(1.4,.47,-.35);chair.rotation.y=-.4;cabin.add(chair);
+  const chair=new THREE.Group();chair.name='Graphite mesh desk chair';chair.position.set(1.4,.47,-.35);
+  // Its open front faces the monitor, with the armrests clear of the desk edge.
+  chair.rotation.y=.58;cabin.add(chair);
   const materials=new Map();
   function mesh(geometry,color,parent=chair){if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({color,roughness:.7,metalness:color==='#7b8580'?.5:.12,flatShading:true}));const m=new THREE.Mesh(geometry,materials.get(color));m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
   function tube(points,r,color,closed=false,parent=chair){return mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),closed),40,r,7,closed),color,parent);}

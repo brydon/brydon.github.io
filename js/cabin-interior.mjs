@@ -95,13 +95,12 @@ export function furnishCabin(cabin){
   cabin.add(createCabinRug());
 
   createDeskChair(cabin);
-  plant(cabin,1.88,1.13,-.49,.65);
-  // Desk lamp, pencil cup, and a scatter of folded field notes.
+  // Rest the pot on the right window sill; the coffee cart has moved forward.
+  plant(cabin,2.14,1.4375,-.54,.5);
+  // A warm desk lamp beside the open notebook.
   cylinder(cabin,.11,.13,.028,1.61,1.214,-1.34,'#333e33');cylinder(cabin,.016,.016,.44,1.61,1.44,-1.34,'#535b44');
   cylinder(cabin,.085,.17,.12,1.61,1.69,-1.34,'#425244');mesh(cabin,new THREE.SphereGeometry(.047,8,6),'#ffd190',1.61,1.615,-1.34,true);
   const deskGlow=new THREE.PointLight('#ffcf85',.55,2,2);deskGlow.position.set(1.61,1.58,-1.3);cabin.add(deskGlow);
-  cylinder(cabin,.055,.05,.13,1.72,1.28,-.98,'#637365');
-  for(let i=0;i<4;i++){const pencil=cylinder(cabin,.008,.008,.19,1.69+i*.017,1.39,-.98,'#d5ac5d',5);pencil.rotation.z=(i-1.5)*.12;}
   // A warm pendant anchors the room, instead of an invisible ceiling light.
   cylinder(cabin,.018,.018,.8,-.05,3.03,-.2,'#384035');cylinder(cabin,.10,.29,.23,-.05,2.55,-.2,'#374637');
   const bulb=mesh(cabin,new THREE.SphereGeometry(.09,10,7),'#ffe1a5',-.05,2.46,-.2,true);bulb.scale.y=.55;

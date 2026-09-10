@@ -46,13 +46,18 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
 
   // A hollow heat-reveal mug: the ink stays invisible until coffee is served.
   const mug=new THREE.Group();mug.name='Heat-reveal desk mug';mug.position.set(-.02,1.187,-1.03);cabin.add(mug);
-  const ceramic=new THREE.MeshStandardMaterial({color:'#d8c59e',roughness:.42,side:THREE.DoubleSide});
-  const mugProfile=[[0,0],[.09,0],[.10,.012],[.11,.23],[.095,.23],[.085,.026],[0,.026]].map(p=>new THREE.Vector2(...p));
-  const vessel=mesh(new THREE.LatheGeometry(mugProfile,20),'#d8c59e',0,0,0,mug);vessel.material=ceramic;
-  mesh(new THREE.TorusGeometry(.08,.025,5,10),'#d8c59e',-.12,.143,0,mug);
+  const ceramic=new THREE.MeshPhysicalMaterial({color:'#ece8df',roughness:.30,clearcoat:.38,clearcoatRoughness:.22,side:THREE.DoubleSide});
+  const clay=new THREE.MeshStandardMaterial({color:'#b59a77',roughness:.92,side:THREE.DoubleSide});
+  function stoneware(profile,material,name){const part=mesh(new THREE.LatheGeometry(profile.map(p=>new THREE.Vector2(...p)),32),'#ece8df',0,0,0,mug);part.material=material;part.name=name;return part;}
+  // Exposed stoneware is confined to the rounded lower fifth and a narrow lip.
+  stoneware([[0,0],[.075,0],[.086,.002],[.093,.008],[.097,.017],[.100,.035],[.102,.050],[.098,.055]],clay,'Unglazed clay foot');
+  stoneware([[.1018,.047],[.106,.051],[.107,.058],[.108,.075],[.109,.11],[.110,.17],[.111,.221],[.111,.228],[.102,.228],[.101,.216],[.093,.075],[.087,.032],[.080,.026],[0,.026]],ceramic,'Cream glazed hollow mug');
+  stoneware([[.111,.2265],[.1115,.229],[.1105,.231],[.103,.231],[.1018,.229],[.102,.2265]],clay,'Thin unglazed rim');
+  const handlePath=new THREE.CatmullRomCurve3([[-.113,.179,0],[-.157,.190,0],[-.196,.178,0],[-.212,.148,0],[-.205,.116,0],[-.172,.089,0],[-.113,.078,0]].map(p=>new THREE.Vector3(...p)));
+  const handle=mesh(new THREE.TubeGeometry(handlePath,40,.013,8,false),'#ece8df',0,0,0,mug);handle.material=ceramic;handle.name='Smooth oval mug handle';
   const mugCoffee=cylinder(.09,.082,.16,0,.106,0,'#533322',20,mug);mugCoffee.name='Coffee in the desk mug';mugCoffee.visible=false;
-  const ink=label(320,90,'#35463c','#d8c59e');ink.draw('take the');
-  const lettering=new THREE.Mesh(new THREE.PlaneGeometry(.135,.038),ink.material);lettering.name='Warm mug lettering';lettering.position.set(0,.13,.107);lettering.visible=false;mug.add(lettering);
+  const ink=label(320,90,'#35463c','rgba(0,0,0,0)');ink.material.transparent=true;ink.material.depthWrite=false;ink.draw('take the');
+  const lettering=new THREE.Mesh(new THREE.CylinderGeometry(.111,.1102,.038,20,1,true,-.61,1.22),ink.material);lettering.name='Warm mug lettering';lettering.position.set(0,.13,0);lettering.visible=false;mug.add(lettering);
   const mugSteam=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshBasicMaterial({color:'#e6ddc6',transparent:true,opacity:.2,depthWrite:false}),10);mugSteam.visible=false;mug.add(mugSteam);
   const servingStream=new THREE.Mesh(new THREE.CylinderGeometry(.004,.003,1,7),new THREE.MeshStandardMaterial({color:'#785136',roughness:.3}));servingStream.name='Coffee into the desk mug';servingStream.visible=false;cabin.add(servingStream);
 
