@@ -22,7 +22,7 @@ export function createDiceGame(dialog,{onRoll,onResult,onDim,onStatic,random=Mat
   const observer=new ResizeObserver(resize);
   function result(value){
     model.quaternion.copy(model.userData.faces.find(face=>face.value===value).orientation);model.position.set(0,0,0);
-    status.textContent=value===20?'Natural 20.':'You rolled a '+value+'.';canvas.setAttribute('aria-label','Twenty-sided die showing '+value);onResult?.(value);
+    status.textContent=value===20?'Natural 20.':'You rolled a '+value+'.';canvas.setAttribute('aria-label','Roll the twenty-sided die. Last roll: '+value);onResult?.(value);
   }
   function beginStory(){
     story={elapsed:0,static:false,announced:-1};lastGrain=-1;dialog.classList.add('diner-mode');dialog.setAttribute('aria-labelledby','diner-title');
@@ -77,6 +77,14 @@ export function createDiceGame(dialog,{onRoll,onResult,onDim,onStatic,random=Mat
     cancelSound();cancelSound=onRoll?.()||(()=>{});roll.disabled=true;status.textContent='Rolling…';
     motion={value,elapsed:reduced.matches?1650:0,from:model.quaternion.clone()};resume();
   });
+  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+  canvas.addEventListener('click',event=>{
+    if(motion||story||lost)return;const box=canvas.getBoundingClientRect();
+    pointer.set((event.clientX-box.left)/box.width*2-1,-(event.clientY-box.top)/box.height*2+1);
+    world.updateMatrixWorld(true);raycaster.setFromCamera(pointer,camera);
+    if(raycaster.intersectObject(model.children[0],false).length)roll.click();
+  });
+  canvas.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();if(!event.repeat)roll.click();}});
   $('#dice-close').addEventListener('click',close);$('#diner-return').addEventListener('click',close);
   dialog.addEventListener('cancel',event=>{event.preventDefault();close();});dialog.addEventListener('close',cleanup);
   dialog.addEventListener('click',event=>{if(event.target!==dialog||story)return;const b=dialog.getBoundingClientRect();if(event.clientX<b.left||event.clientX>b.right||event.clientY<b.top||event.clientY>b.bottom)close();});

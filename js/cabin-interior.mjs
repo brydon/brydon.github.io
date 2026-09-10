@@ -3,6 +3,7 @@ import {createCubeModel} from './cube-model.mjs';
 import {scrambleCube} from './cube-state.mjs';
 import {createDeskChair} from './cabin-chair.mjs';
 import {createShelfBook} from './cabin-books.mjs';
+import {createCabinRug} from './cabin-rug.mjs';
 import {createD20,propArea} from './cabin-shelf-props.mjs';
 
 /** Solid furniture with printed artwork on book spines and the wall poster. */
@@ -90,17 +91,8 @@ export function furnishCabin(cabin){
   }
   cylinder(hearth,.058,.06,.16,.43,1.31,.08,'#decc94');mesh(hearth,new THREE.ConeGeometry(.023,.08,5),'#ffcd78',.43,1.435,.08,true);
 
-  // A thick woven rug, with borders, geometric medallions and individual fringe.
-  const rug=new THREE.Group();rug.name='Woven cabin rug';rug.position.set(.13,.482,.56);cabin.add(rug);
-  box(rug,2.8,.026,1.87,0,0,0,'#683e32');
-  for(const[w,d,c]of[[2.68,1.75,'#bf905c'],[2.55,1.62,'#394e49'],[2.42,1.49,'#bd9868'],[2.3,1.37,'#8e4935']])box(rug,w,.005,d,0,.018+(2.8-w)*.025,0,c);
-  for(let i=0;i<5;i++){
-    const x=(i-2)*.43;
-    for(const[size,c,y]of[[.29,'#e0b878',.04],[.215,'#354e49',.045],[.095,'#cc9a61',.05]]){const diamond=box(rug,size,.005,size,x,y,0,c);diamond.rotation.y=Math.PI/4;}
-    for(const z of [-.53,.53]){const tile=box(rug,.12,.005,.12,x,.05,z,'#d0aa73');tile.rotation.y=Math.PI/4;}
-  }
-  for(let i=0;i<27;i++)for(const z of [-1,1]){const fringe=box(rug,.022,.016,.13,-1.3+i*.1,.001,z*.985,'#c4b085');fringe.rotation.y=(i%3-1)*.12;}
-  for(let i=0;i<24;i++)box(rug,2.64,.003,.008,0,.055,-.82+i*.071,'#95613f').material=new THREE.MeshStandardMaterial({color:'#bd9366',transparent:true,opacity:.12,roughness:1});
+  // A woven kilim with its warp fringe on the two short ends.
+  cabin.add(createCabinRug());
 
   createDeskChair(cabin);
   plant(cabin,1.88,1.13,-.49,.65);

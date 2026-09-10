@@ -67,12 +67,12 @@ test('default lighting follows local morning and evening boundaries',()=>{
   assert.equal(isEvening(6),true);assert.equal(isEvening(7),false);assert.equal(isEvening(12),false);assert.equal(isEvening(18),false);assert.equal(isEvening(19),true);assert.equal(isEvening(0),true);
 });
 
-test('the kettle takes one continuous minute inside, pauses in background, and resets on exit',()=>{
-  let elapsed=0;
-  for(let i=0;i<59;i++)elapsed=advanceKettleTimer(elapsed,1,{inside:true});
-  assert.ok(elapsed<BOIL_SECONDS);
-  assert.equal(advanceKettleTimer(elapsed,120,{inside:true,visible:false}),59);
-  elapsed=advanceKettleTimer(elapsed,1,{inside:true});assert.equal(elapsed,BOIL_SECONDS);
-  elapsed=advanceKettleTimer(elapsed,.1,{inside:false});assert.equal(elapsed,0);
-  assert.equal(advanceKettleTimer(elapsed,1,{inside:true}),1);
+test('the kettle heats across visits after first entry and pauses in the background',()=>{
+  let elapsed=advanceKettleTimer(0,120,{inside:false});assert.equal(elapsed,0);
+  elapsed=advanceKettleTimer(elapsed,20,{inside:true});assert.equal(elapsed,20);
+  elapsed=advanceKettleTimer(elapsed,20,{inside:false});assert.equal(elapsed,40);
+  for(const inside of [true,false])assert.equal(advanceKettleTimer(elapsed,120,{inside,visible:false}),40);
+  elapsed=advanceKettleTimer(elapsed,20,{inside:true});assert.equal(elapsed,BOIL_SECONDS);
+  elapsed=advanceKettleTimer(elapsed,10,{inside:false});assert.equal(elapsed,70);
+  assert.equal(advanceKettleTimer(elapsed,NaN,{inside:true}),70);
 });

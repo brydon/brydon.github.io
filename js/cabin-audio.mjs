@@ -12,7 +12,7 @@
 export function createCabinAudio(context,samples){
   const master=context.createGain();master.gain.value=.60;
   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-15;limiter.knee.value=18;limiter.ratio.value=5;limiter.attack.value=.006;limiter.release.value=.25;master.connect(limiter).connect(context.destination);
-  const state={inside:false,boiling:false,burning:false,aurora:false,coffee:'idle'};
+  const state={inside:false,boiling:false,burning:false,aurora:false,coffee:'idle',coffeeWater:'empty'};
   let enabled=false,nextCrackle=0,lastBark=-10,lastChirp=-10,lastKey=-10,scoreUntil=0;
   const voices=new Set();let seed=805;
   const random=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
@@ -62,7 +62,7 @@ export function createCabinAudio(context,samples){
     const coffeeActive=state.inside&&!state.burning,grinding=coffeeActive&&state.coffee==='grinding',dosing=coffeeActive&&state.coffee==='loading';
     ramp(grounds.level.gain,grinding?.06:dosing?.028:0,.055);ramp(grounds.eq.frequency,grinding?1050:2600,.05);
     ramp(burr.level.gain,grinding?.12:0,.07);
-    ramp(water.level.gain,coffeeActive&&['filling','pouring','serving'].includes(state.coffee)?.036:0,.1);
+    ramp(water.level.gain,coffeeActive&&(state.coffeeWater==='filling'||['pouring','serving'].includes(state.coffee))?.036:0,.1);
     if(state.burning)ramp(musicBus.gain,0,.25);
   }
   return {

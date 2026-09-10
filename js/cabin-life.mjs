@@ -35,7 +35,7 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
   const droplets=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.012,0),new THREE.MeshStandardMaterial({color:'#aacccd',transparent:true,opacity:.7,roughness:.2}),24);
   droplets.frustumCulled=false;rig.add(droplets);
   const puddle=mesh(new THREE.CylinderGeometry(.26,.26,.008,18),'#638e87',.08,.078,.31);puddle.material=new THREE.MeshStandardMaterial({color:'#789f96',transparent:true,opacity:.48,roughness:.18});
-  const dummy=new THREE.Object3D();let elapsed=0,wasBoiling=false,offHeat=false,cooling=0,swingProgress=0,transferring=false;
+  const dummy=new THREE.Object3D();let elapsed=0,heatingStarted=false,wasBoiling=false,offHeat=false,cooling=0,swingProgress=0,transferring=false;
   const restingPosition=body.position.clone(),restingRotation=body.quaternion.clone(),home=new THREE.Vector3(),homeRotation=new THREE.Quaternion();
   const stream=new THREE.Mesh(new THREE.CylinderGeometry(.008,.006,1,8),new THREE.MeshStandardMaterial({color:'#b4d9d5',transparent:true,opacity:.72,roughness:.1}));stream.name='Hot water transfer';stream.visible=false;cabin.add(stream);
   const up=new THREE.Vector3(0,1,0),tip=new THREE.Vector3(),direction=new THREE.Vector3();
@@ -59,12 +59,21 @@ export function createHearthKettle(cabin,onBoil=()=>{}){
     if(!transferring){cabin.attach(body);home.copy(body.position);homeRotation.copy(body.quaternion);transferring=true;}
     const destination=cabin.worldToLocal(target.clone()),end=destination.clone().add(new THREE.Vector3(.08,.30,.453));
     const t=progress<.23?ease(progress/.23):progress>.80?1-ease((progress-.80)/.20):1;
-    const path=new THREE.CubicBezierCurve3(home,home.clone().add(new THREE.Vector3(0,1,-.8)),end.clone().add(new THREE.Vector3(0,.4,-.8)),end);
-    body.position.copy(path.getPoint(t));body.quaternion.copy(homeRotation).slerp(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,-Math.PI/2,.5)),t);
+    let resting=home,rotation=homeRotation;
+    if(progress>.80){
+      // The arm can finish swinging while the kettle is away. Return to its
+      // current hook, preserving the captured departure pose on the way out.
+      rig.updateWorldMatrix(true,false);
+      resting=cabin.worldToLocal(rig.localToWorld(restingPosition.clone()));
+      rotation=cabin.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(rig.getWorldQuaternion(new THREE.Quaternion())).multiply(restingRotation);
+    }
+    const path=new THREE.CubicBezierCurve3(resting,resting.clone().add(new THREE.Vector3(0,1,-.8)),end.clone().add(new THREE.Vector3(0,.4,-.8)),end);
+    body.position.copy(path.getPoint(t));body.quaternion.copy(rotation).slerp(new THREE.Quaternion().setFromEuler(new THREE.Euler(0,-Math.PI/2,.5)),t);
     steam.visible=false;stream.visible=progress>=.23&&progress<=.80;
     if(stream.visible){body.updateWorldMatrix(true,false);tip.set(-.362,.281,.08);body.localToWorld(tip);cabin.worldToLocal(tip);direction.subVectors(destination,tip);stream.position.copy(tip).add(destination).multiplyScalar(.5);stream.scale.y=direction.length();stream.quaternion.setFromUnitVectors(up,direction.normalize());}
   },animate(time,seconds,inside,reduced,visible=true,burning=false){
-    elapsed=offHeat?0:advanceKettleTimer(elapsed,seconds,{inside,visible});
+    heatingStarted ||= inside;
+    elapsed=offHeat?0:advanceKettleTimer(elapsed,seconds,{inside,visible,started:heatingStarted});
     if(offHeat&&visible){
       const dt=Math.min(.05,Math.max(0,seconds));
       swingProgress=reduced?1:Math.min(1,swingProgress+dt/.9);cooling=Math.min(1,cooling+dt/3);

@@ -89,6 +89,7 @@
     <button type="button" class="scene-secret" id="coffee-gooseneck" aria-label="Pour from the gooseneck" hidden></button>
     <button type="button" class="scene-secret" id="chalkboard" aria-label="Inspect the chalkboard" hidden></button>
     <button type="button" class="scene-secret" id="couple-portrait" aria-label="Look at the framed picture" hidden></button>
+    <button type="button" class="scene-secret" id="wedding-ring" aria-label="Inspect the gold wedding band" hidden></button>
     <button type="button" class="scene-secret" id="bookshelf-die" aria-label="Pick up the twenty-sided die" hidden></button>
     <button type="button" class="scene-secret" id="shelf-cradle" aria-label="Set Newton’s cradle swinging" hidden></button>
     <button type="button" class="scene-secret" id="bookshelf-cube" aria-label="Pick up the Rubik’s cube" hidden></button>
@@ -116,7 +117,7 @@
   <dialog id="dice-game" aria-labelledby="dice-title">
     <div id="dice-content">
       <div class="dice-header"><div><span class="eyebrow">FROM THE BOOKSHELF</span><h2 id="dice-title">A little luck.</h2></div><button type="button" id="dice-close" aria-label="Put the die back">×</button></div>
-      <div class="dice-stage"><canvas id="dice-canvas" role="img" aria-label="A purple twenty-sided die with gold numbers"></canvas></div>
+      <div class="dice-stage"><canvas id="dice-canvas" role="button" tabindex="0" aria-label="Roll the twenty-sided die"></canvas></div>
       <div class="dice-footer"><p id="dice-status" role="status">Twenty possibilities.</p><button type="button" id="dice-roll">Roll it</button><p class="dice-hint">Sound follows the cabin’s sound switch.</p></div>
     </div>
     <section id="diner-scene" aria-labelledby="diner-title" hidden>
