@@ -58,6 +58,7 @@
   <link rel="stylesheet" href="/styles/switchback.css">
   <link rel="stylesheet" href="/styles/cabin.css">
   <link rel="stylesheet" href="/styles/cube.css">
+  <link rel="stylesheet" href="/styles/dice.css">
 </head>
 <body class="cabin-page">
   <a class="skip-link" href="/home.html">Skip to the reading version</a>
@@ -88,6 +89,8 @@
     <button type="button" class="scene-secret" id="coffee-gooseneck" aria-label="Pour from the gooseneck" hidden></button>
     <button type="button" class="scene-secret" id="chalkboard" aria-label="Inspect the chalkboard" hidden></button>
     <button type="button" class="scene-secret" id="couple-portrait" aria-label="Look at the framed picture" hidden></button>
+    <button type="button" class="scene-secret" id="bookshelf-die" aria-label="Pick up the twenty-sided die" hidden></button>
+    <button type="button" class="scene-secret" id="shelf-cradle" aria-label="Set Newton’s cradle swinging" hidden></button>
     <button type="button" class="scene-secret" id="bookshelf-cube" aria-label="Pick up the Rubik’s cube" hidden></button>
     <button type="button" class="scene-secret" id="receipt" aria-label="Inspect the desk mug" hidden></button>
     <button type="button" class="scene-secret" id="service-note" aria-label="Inspect the faded service label" hidden>·</button>
@@ -110,6 +113,17 @@
     <div class="cabin-settings"><button type="button" id="sound-toggle" aria-pressed="false" aria-label="Turn ambient sound on">Sound off</button><button type="button" id="night-toggle" aria-pressed="false" aria-label="Switch to evening">Evening</button></div>
   </footer>
   <dialog id="discovery" aria-labelledby="discovery-title"><div class="reader-bar"><span class="eyebrow">A SMALL DISCOVERY</span><button type="button" data-close="discovery" aria-label="Close discovery">×</button></div><div class="discovery-body"><h2 id="discovery-title">A small discovery</h2><div id="discovery-copy"></div></div></dialog>
+  <dialog id="dice-game" aria-labelledby="dice-title">
+    <div id="dice-content">
+      <div class="dice-header"><div><span class="eyebrow">FROM THE BOOKSHELF</span><h2 id="dice-title">A little luck.</h2></div><button type="button" id="dice-close" aria-label="Put the die back">×</button></div>
+      <div class="dice-stage"><canvas id="dice-canvas" role="img" aria-label="A purple twenty-sided die with gold numbers"></canvas></div>
+      <div class="dice-footer"><p id="dice-status" role="status">Twenty possibilities.</p><button type="button" id="dice-roll">Roll it</button><p class="dice-hint">Sound follows the cabin’s sound switch.</p></div>
+    </div>
+    <section id="diner-scene" aria-labelledby="diner-title" hidden>
+      <h2 id="diner-title">SOMEWHERE ELSE</h2><p id="diner-text" aria-hidden="true"></p><p id="diner-announcement" class="diner-sr" role="status"></p>
+      <canvas id="diner-static" aria-hidden="true" hidden></canvas><button type="button" id="diner-return">Back to the cabin</button>
+    </section>
+  </dialog>
   <dialog id="cube-game" aria-labelledby="cube-title" aria-describedby="cube-instructions">
     <div class="cube-header"><div><span class="eyebrow">FROM THE BOOKSHELF</span><h2 id="cube-title">One more turn.</h2></div><button type="button" id="cube-close" aria-label="Put the cube back">×</button></div>
     <div class="cube-layout">

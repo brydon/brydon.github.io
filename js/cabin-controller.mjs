@@ -139,6 +139,20 @@ $('bookshelf-cube').addEventListener('click',async()=>{
     console.error('Cube failed to load:',error);$('toast').textContent='The cube couldn’t load. Please try again.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);
   }finally{cubeLoading=false;}
 });
+let diceGame,diceLoading=false;
+$('bookshelf-die').addEventListener('click',async()=>{
+  if(view!=='inside'||melting||!scene||diceLoading)return;
+  scene.clearKeys();diceLoading=true;
+  try{
+    if(!diceGame){
+      const {createDiceGame}=await import('./dice-game.mjs');
+      diceGame=createDiceGame($('dice-game'),{onRoll:()=>audio?.dice(),onResult:value=>scene.setDieResult(value),onDim:amount=>scene.dramaticDim(amount),onStatic:()=>audio?.static()});
+    }
+    if(view==='inside'&&!melting&&!document.querySelector('dialog[open]'))diceGame.open();
+  }catch(error){console.error('Die failed to load:',error);$('toast').textContent='The die couldn’t load. Please try again.';$('toast').hidden=false;setTimeout(()=>$('toast').hidden=true,4000);}
+  finally{diceLoading=false;}
+});
+$('shelf-cradle').addEventListener('click',()=>{if(view==='inside'&&!melting)scene?.releaseCradle();});
 function readMug(){discover('The warm mug','<p>Letters have appeared in the glaze:</p><p><code>take the</code></p>');}
 $('receipt').addEventListener('click',()=>{
   if(view!=='inside'||melting||!scene)return;
@@ -179,7 +193,7 @@ function sceneError(){$('scene-loading').hidden=true;$('scene-fallback').hidden=
 async function init(){
   try{
     const {createCabinScene}=await import('./cabin-scene.mjs');
-    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onKettle:boiling=>soundState({boiling}),onCoffee:coffee=>{soundState({coffee});if(coffee==='served'&&view==='inside'&&!melting)readMug();}});
+    scene=await createCabinScene($('cabin-canvas'),{reducedMotion,onEnter:entered,onExit:outside,onComputer:computerChanged,onError:sceneError,onCradle:strength=>audio?.cradle(strength),onKettle:boiling=>soundState({boiling}),onCoffee:coffee=>{soundState({coffee});if(coffee==='served'&&view==='inside'&&!melting)readMug();}});
     $('scene-loading').hidden=true;if(storage.get('overlook')==='found')scene.unlock();if(storage.get('administrator')==='found')scene.administrator();const preference=storage.get('eveningOverride');evening(preference===null?isEvening():preference==='true',false);
     function area(id,vertices,enabled,volume=false){
       const button=$(id);button.hidden=!enabled;if(!enabled)return;
@@ -213,6 +227,8 @@ async function init(){
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('couple-portrait',scene.portraitArea(),inside&&!melting);
       area('bookshelf-cube',scene.cubeArea(),inside&&!melting,true);
+      area('bookshelf-die',scene.dieArea(),inside&&!melting,true);
+      area('shelf-cradle',scene.cradleArea(),inside&&!melting,true);
       area('receipt',[[-.25,1.46,-.91],[.13,1.46,-.91],[.13,1.18,-.91],[-.25,1.18,-.91]],inside&&!melting);
       for(const note of CABIN_NOTES)area(note.id,note.vertices,inside&&!melting);
       requestAnimationFrame(updateHotspots);

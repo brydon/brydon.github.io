@@ -18,6 +18,10 @@ for(const [id,title,base]of [['algebra','Algebra','#e6bd42'],['topology','Topolo
 }
 const jackets=new Map();
 Object.assign(SHELF_BOOKS,{
+  holmes:{title:'The Adventures of Sherlock Holmes',spineTitle:'Sherlock Holmes',lines:['THE ADVENTURES OF','SHERLOCK','HOLMES'],author:'ARTHUR CONAN DOYLE',spineAuthor:'CONAN DOYLE',edition:'',base:'#49352f',ink:'#dbbf80',accent:'#c4a163',motif:'holmes'},
+  kr:{title:'The C Programming Language',lines:['The C','Programming','Language'],author:'KERNIGHAN & RITCHIE',spineAuthor:'K&R',edition:'SECOND EDITION',base:'#eee9d8',ink:'#234c7f',accent:'#2d5b8e',motif:'c'},
+  knuth:{title:'The Art of Computer Programming',spineTitle:'The Art of Computer Programming',lines:['The Art of','Computer','Programming'],author:'DONALD E. KNUTH',spineAuthor:'KNUTH',edition:'VOLUME 1',base:'#d8bd83',ink:'#593127',accent:'#733b2a',motif:'knuth'},
+  geb:{title:'Gödel, Escher, Bach',lines:['Gödel,','Escher, Bach'],author:'DOUGLAS R. HOFSTADTER',spineAuthor:'HOFSTADTER',edition:'AN ETERNAL GOLDEN BRAID',base:'#e8dcc1',ink:'#5a302a',accent:'#ab683c',motif:'geb'},
   murray1:{title:'Mathematical Biology I',lines:['Mathematical','Biology I'],author:'J. D. MURRAY',edition:'THIRD EDITION',subtitle:'An Introduction',base:'#254f3b',ink:'#e0d57a',accent:'#ded06a',motif:'biology'},
   murray2:{title:'Mathematical Biology II',lines:['Mathematical','Biology II'],author:'J. D. MURRAY',edition:'THIRD EDITION',subtitle:'Spatial Models and Biomedical Applications',base:'#1e4938',ink:'#e0d57a',accent:'#ded06a',motif:'biology'},
   bible:{title:'Holy Bible',lines:['HOLY','BIBLE'],author:'',edition:'',base:'#24231f',ink:'#d9bb67',accent:'#d9bb67',motif:'bible'},
@@ -30,7 +34,17 @@ function type(c,text,x,y,size,color,maxWidth,font='Georgia'){c.fillStyle=color;c
 function line(c,points,color,width=2){c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();}
 function motif(c,book,x,y,scale=1){
   c.save();c.translate(x,y);c.scale(scale,scale);
-  if(book.motif==='bible'){
+  if(book.motif==='holmes'){
+    c.strokeStyle=book.accent;c.lineWidth=6;c.beginPath();c.arc(-15,-18,43,0,Math.PI*2);c.stroke();line(c,[[15,16],[64,74]],book.accent,13);
+  }else if(book.motif==='c'){
+    type(c,'C',-76,61,191,book.accent,160,'Georgia');
+  }else if(book.motif==='knuth'){
+    c.strokeStyle=book.accent;c.lineWidth=2;c.strokeRect(-90,-64,180,131);type(c,'1',-24,26,92,book.ink,160,'Georgia');
+  }else if(book.motif==='geb'){
+    for(const [x,y,letter]of [[-45,-38,'G'],[18,36,'E'],[66,-52,'B']]){
+      c.fillStyle=book.accent;c.fillRect(x-30,y-30,61,61);line(c,[[x-30,y-30],[x-13,y-45],[x+47,y-45],[x+31,y-30]],'#d6a773',3);line(c,[[x+31,y-30],[x+47,y-45],[x+47,y+17],[x+31,y+31]],'#7e4b30',3);type(c,letter,x-22,y+18,53,'#f3e2bd',52);
+    }
+  }else if(book.motif==='bible'){
     line(c,[[0,-54],[0,62]],book.accent,6);line(c,[[-34,-17],[34,-17]],book.accent,6);
   }else if(book.motif==='physics'){
     type(c,book.part,-26,18,79,book.ink,170);line(c,[[-100,58],[100,58]],book.ink,2);
@@ -103,7 +117,7 @@ function jacket(id){
   else if(book.motif==='geometry'){s.fillStyle=book.accent;s.fillRect(0,658,128,110);type(s,'UTM',64,700,22,'#fff',100,'Arial');}
   else if(book.motif==='chaos'||book.motif==='entropy')motif(s,book,64,653,.43);
   else if(book.motif==='learning')for(let i=0;i<5;i++){s.fillStyle=['#b54345','#bd9141','#588891','#679566','#617598'][i];s.fillRect(18+i*19,627,9,60);}
-  else if(['biology','bible','wizard','algorithms','physics'].includes(book.motif))motif(s,book,64,648,.44);
+  else if(['biology','bible','wizard','algorithms','physics','c','knuth','geb'].includes(book.motif))motif(s,book,64,648,.44);
   type(s,book.motif==='ring'?['','I','II','III'][book.part]:book.edition.replace(' EDITION',''),64,741,17,book.ink,112,'Arial');
   const result={front:new THREE.MeshStandardMaterial({map:texture(front),roughness:.92}),spine:new THREE.MeshStandardMaterial({map:texture(spine),roughness:.9}),cloth:new THREE.MeshStandardMaterial({color:book.base,roughness:.96}),pages:new THREE.MeshStandardMaterial({color:'#d9d0b7',roughness:1})};
   jackets.set(id,result);return result;

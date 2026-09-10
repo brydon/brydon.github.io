@@ -3,6 +3,7 @@ import {createCubeModel} from './cube-model.mjs';
 import {scrambleCube} from './cube-state.mjs';
 import {createDeskChair} from './cabin-chair.mjs';
 import {createShelfBook} from './cabin-books.mjs';
+import {createD20,propArea} from './cabin-shelf-props.mjs';
 
 /** Solid furniture with printed artwork on book spines and the wall poster. */
 export function furnishCabin(cabin){
@@ -50,6 +51,7 @@ export function furnishCabin(cabin){
   const displayBook=createShelfBook('dragon',{height:.43,thickness:.062,depth:.295});
   displayBook.position.set(.43,1.185+.43/2,.105);displayBook.rotation.y=-Math.PI/2+.07;library.add(displayBook);
   plant(library,-.43,2.43,0,.7);
+  const die=createD20(),dieBounds=new THREE.Box3().setFromObject(die);die.position.set(-.025,2.425-dieBounds.min.y,.045);library.add(die);
   box(library,.32,.36,.05,.42,2.6,.035,'#d2b583');box(library,.26,.29,.009,.42,2.6,.065,'#58777a');
   const mountain=mesh(library,new THREE.ConeGeometry(.13,.21,3),'#acb8a0',.42,2.58,.08);mountain.scale.z=.13;
 
@@ -68,6 +70,8 @@ export function furnishCabin(cabin){
     const log=cylinder(hearth,.085,.1,.65,(i-1)*.11,.23+i*.035,.04,'#604029',7);log.rotation.z=Math.PI/2;log.rotation.y=(i-1)*.36;
     const ember=mesh(hearth,new THREE.IcosahedronGeometry(.07,0),'#e97223',(i-1)*.21,.21,.2,true);ember.scale.y=.3;
   }
+  const holmes=createShelfBook('holmes',{height:.30,thickness:.065,depth:.22});
+  holmes.rotation.set(0,0,Math.PI/2);holmes.position.set(-.43,1.2325+.065/2,.09);hearth.add(holmes);
   const flames=[];
   for(let i=0;i<7;i++){
     const flame=new THREE.Group();flame.position.set((i%4-1.5)*.145,.28,Math.floor(i/4)*.17-.04);hearth.add(flame);
@@ -111,6 +115,14 @@ export function furnishCabin(cabin){
   const bulb=mesh(cabin,new THREE.SphereGeometry(.09,10,7),'#ffe1a5',-.05,2.46,-.2,true);bulb.scale.y=.55;
   const roomGlow=new THREE.PointLight('#ffd1a0',3.5,7,2);roomGlow.position.set(-.05,2.36,-.2);cabin.add(roomGlow);
   return {
+    dieArea(){return propArea(die);},
+    setDieResult(value){
+      const face=die.userData.faces.find(face=>face.value===value);if(!face)return;
+      die.quaternion.copy(face.orientation);die.rotation.x-=Math.PI/2;
+      const p=die.children[0].geometry.attributes.position;let minY=Infinity;
+      for(let i=0;i<p.count;i++)minY=Math.min(minY,new THREE.Vector3().fromBufferAttribute(p,i).applyQuaternion(die.quaternion).y);
+      die.position.y=2.425-minY;
+    },
     cubeState(){return shelfCubeState;},
     setCubeState(state){shelfCubeState=state;shelfCube.sync(state);},
     cubeArea(){
