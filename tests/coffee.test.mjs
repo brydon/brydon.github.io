@@ -1,21 +1,52 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createCoffeeState,coffeeAction,advanceCoffee,coffeeProgress,coffeeClueRevealed,servingFraction,servingMotion,COFFEE_DURATION,brewWater} from '../js/coffee.mjs';
+import {createCoffeeState,coffeeAction,advanceCoffee,coffeeProgress,fillProgress,coffeeClueRevealed,servingFraction,servingMotion,COFFEE_DURATION,brewWater} from '../js/coffee.mjs';
 
-test('coffee requires grinding, dosing, boiled water off the heat, and a final pour',()=>{
+test('brewing requires both grounds and hot water, with a final manual pour',()=>{
   for(const pourObject of ['v60','gooseneck']){
     const state=createCoffeeState();
-    for(const object of ['v60','kettle','gooseneck'])assert.equal(coffeeAction(state,object,{offHeat:true}),false);
+    for(const object of ['v60','kettle','gooseneck'])assert.equal(coffeeAction(state,object),false);
     assert.equal(coffeeAction(state,'grinder'),true);assert.equal(coffeeAction(state,'grinder'),false);
     advanceCoffee(state,COFFEE_DURATION.grinding);assert.equal(state.phase,'ground');
-    assert.equal(coffeeAction(state,'kettle',{offHeat:true}),false);
     assert.equal(coffeeAction(state,'v60'),true);advanceCoffee(state,COFFEE_DURATION.loading);
     assert.equal(coffeeAction(state,'kettle',{offHeat:false}),false);assert.equal(coffeeAction(state,'v60'),false);
     assert.equal(coffeeAction(state,'kettle',{offHeat:true}),true);assert.equal(coffeeAction(state,'gooseneck'),false);
     advanceCoffee(state,COFFEE_DURATION.filling);assert.equal(state.phase,'hot');
     assert.equal(coffeeAction(state,pourObject),true);advanceCoffee(state,COFFEE_DURATION.pouring);
     assert.equal(state.phase,'brewed');assert.equal(coffeeAction(state,'grinder'),false);
+    assert.equal(coffeeAction(state,'kettle',{offHeat:true}),false);
   }
+});
+test('either kettle can fill before, during or after coffee preparation without losing progress',()=>{
+  for(const object of ['kettle','gooseneck'])for(const preparation of ['idle','grinding','ground','loading','ready']){
+    const state=createCoffeeState();
+    if(preparation!=='idle')coffeeAction(state,'grinder');
+    if(['ground','loading','ready'].includes(preparation))advanceCoffee(state,COFFEE_DURATION.grinding);
+    if(['loading','ready'].includes(preparation))coffeeAction(state,'v60');
+    if(preparation==='ready')advanceCoffee(state,COFFEE_DURATION.loading);
+    if(['grinding','loading'].includes(preparation))advanceCoffee(state,.25);
+    const phase=state.phase,elapsed=state.elapsed;
+    assert.equal(coffeeAction(state,object,{offHeat:false}),false);
+    assert.equal(coffeeAction(state,object,{offHeat:true}),true);
+    assert.equal(state.phase,phase);assert.equal(state.elapsed,elapsed);assert.equal(state.water,'filling');
+    assert.equal(coffeeAction(state,object,{offHeat:true}),false,'no duplicate filling');
+    advanceCoffee(state,COFFEE_DURATION.filling);assert.equal(state.water,'hot');
+    if(state.phase==='idle'){coffeeAction(state,'grinder');advanceCoffee(state,COFFEE_DURATION.grinding);}
+    if(state.phase==='ground'){coffeeAction(state,'v60');advanceCoffee(state,COFFEE_DURATION.loading);}
+    assert.equal(state.phase,'hot');assert.equal(coffeeAction(state,'v60'),true);
+    advanceCoffee(state,COFFEE_DURATION.pouring);assert.equal(state.phase,'brewed');
+  }
+});
+test('water and grinding have independent clocks; filling pauses and cancels safely',()=>{
+  const state=createCoffeeState();coffeeAction(state,'gooseneck',{offHeat:true});advanceCoffee(state,1);
+  coffeeAction(state,'grinder');advanceCoffee(state,1);
+  assert.equal(state.elapsed,1);assert.equal(state.waterElapsed,2);
+  const before=fillProgress(state);advanceCoffee(state,60,{visible:false});assert.equal(fillProgress(state),before);
+  advanceCoffee(state,NaN);assert.equal(fillProgress(state),before);
+  advanceCoffee(state,2.2);assert.equal(state.phase,'ground');assert.equal(state.water,'filling');
+  advanceCoffee(state,.3);assert.equal(state.water,'hot');assert.equal(state.phase,'ground');
+  const filling=createCoffeeState();coffeeAction(filling,'kettle',{offHeat:true});
+  advanceCoffee(filling,60,{burning:true});assert.equal(filling.phase,'broken');assert.equal(fillProgress(filling),0);
 });
 test('the mug clue requires a completed brew and a separate completed serving',()=>{
   const state=createCoffeeState();

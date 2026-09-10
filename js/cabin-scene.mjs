@@ -7,6 +7,10 @@ import {createNewtonsCradle,propArea} from './cabin-shelf-props.mjs';
 import {createPosterStack} from './cabin-posters.mjs';
 import {createCabinEffects} from './cabin-effects.mjs';
 import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
+import {createRaccoon} from './cabin-raccoon.mjs';
+import {createFirewoodArea} from './cabin-firewood.mjs';
+import {createNotebookSketch} from './cabin-notebook.mjs';
+import {createPersonalDetails} from './cabin-personal-details.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
 import {createRewardSign} from './cabin-reward.mjs';
@@ -192,9 +196,12 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   box(.42,.04,.5,1.37,1.225,-1.02,'#dfd0a3',cabin);
   box(.39,.01,.46,1.37,1.25,-1.02,'#f2e8cd',cabin);
   const interiorDetails=furnishCabin(cabin);
+  const personalDetails=createPersonalDetails(cabin);
+  cabin.add(createNotebookSketch());
   const posters=createPosterStack(cabin);
   const hearthKettle=createHearthKettle(cabin,onKettle);
   const blueJay=createBlueJay(scene);
+  const raccoon=createRaccoon(scene);
   // A favorite picture above the monitor: printed art, cream mat, and walnut frame.
   const coupleFrame=new THREE.Group();coupleFrame.name='Brydon and his wife at the Golden Gate Bridge';
   coupleFrame.position.set(.96,2.53,-1.855);coupleFrame.scale.setScalar(.75);cabin.add(coupleFrame);
@@ -228,7 +235,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const helmet=mesh(new THREE.SphereGeometry(.21,10,6,0,Math.PI*2,0,Math.PI*.65),'#50788a',cabin);helmet.position.set(-.64,3.08,-1.74);
 
   await createGearWall(cabin);
-  box(.64,.09,1.05,1.94,1.05,.23,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.23,'#425a50',cabin);
+  box(.64,.09,1.05,1.94,1.05,.50,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.50,'#425a50',cabin);
   const coffeeStation=createCoffeeStation(cabin,onCoffee);
   // Red details sit on both faces of the opaque white flag cloth.
   cylinder(.025,.035,2.3,2.68,2.31,2.8,'#b8aa87',scene,6);
@@ -243,13 +250,15 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const leafGeometry=new THREE.ShapeGeometry(leaf);
   for(const side of [-1,1]){const maple=new THREE.Mesh(leafGeometry,flagRed);maple.position.set(.51,-.01,side*.013);flag.add(maple);}
 
+  scene.add(createFirewoodArea());
+
   // Fire ring and a couple of seats outside.
   const fire=new THREE.Group();fire.position.set(-3.55,.1,3.45);scene.add(fire);
   for(let i=0;i<10;i++){const a=i*Math.PI/5;const rock=mesh(new THREE.DodecahedronGeometry(.23,0),'#85846d',fire);rock.position.set(Math.cos(a)*.64,.08,Math.sin(a)*.64);rock.scale.y=.6;}
   for(let i=0;i<3;i++){const log=cylinder(.1,.13,.9,0,.16,0,'#51402b',fire,6);log.rotation.z=Math.PI/2;log.rotation.y=i*Math.PI/3;}
   const flames=[];for(let i=0;i<5;i++){const f=mesh(new THREE.ConeGeometry(.16+i*.018,.65+i*.05,5),i%2?'#ffc260':'#e87932',fire,true);f.position.set(Math.sin(i*3)*.2,.5,Math.cos(i*3)*.19);flames.push(f);}
   const fireLight=new THREE.PointLight('#ffad50',15,7,2);fireLight.position.set(-3.55,1,3.45);scene.add(fireLight);
-  for(const [x,z,a] of [[-5.1,2.5,-.5],[-3.7,5.2,.15]]){
+  for(const [x,z,a] of [[-5.1,2.5,Math.atan2(1.55,.95)],[-3.7,5.2,.15]]){
     const logSeat=new THREE.Group();scene.add(logSeat);logSeat.position.set(x,.29,z);logSeat.rotation.y=a;
     cylinder(.25,.27,1.35,0,0,0,'#67513a',logSeat,10).rotation.z=Math.PI/2;
     for(const side of [-1,1]){
@@ -361,7 +370,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
       worldEffects.animate(time,reducedMotion.matches);
       hearthKettle.animate(time,elapsedSeconds,inside&&desired===1,reducedMotion.matches,true,brokenComputer);
       coffeeStation.animate(time,elapsedSeconds,reducedMotion.matches,brokenComputer);
-      hearthKettle.fill(coffeeStation.phase==='filling'?coffeeStation.progress:null,coffeeStation.fillTarget());
+      hearthKettle.fill(coffeeStation.filling?coffeeStation.fillProgress:null,coffeeStation.fillTarget());
+      raccoon.animate(dt,reducedMotion.matches,progress<.67);
       blueJay.animate(time,reducedMotion.matches);
       htmlRenderer.render(htmlScene,camera);renderer.render(scene,camera);
     }
@@ -378,7 +388,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     key(key,down){down?panKeys.add(key):panKeys.delete(key);},
     clearKeys(){panKeys.clear();},
     turn(direction,axis='x'){if(focusDesired)return;if(inside){if(axis==='y')targetPanY=THREE.MathUtils.clamp(targetPanY+direction*.3,-.6,.7);else targetPanX=THREE.MathUtils.clamp(targetPanX+direction*.16,-1,1);}else if(desired===0)angleStep=THREE.MathUtils.clamp(angleStep+direction*.7,-4,4);},
-    night(on){night=on;windowNight.visible=night;sun.intensity=night?(afterglow?.14:.5):3.4;hemisphere.intensity=night?(afterglow?.78:1.2):2.4;renderer.toneMappingExposure=night?1.1:1.35;worldEffects.night(on);},
+    night(on){night=on;windowNight.visible=night;sun.intensity=night?(afterglow?.14:.5):3.4;hemisphere.intensity=night?(afterglow?.78:1.2):2.4;renderer.toneMappingExposure=night?1.1:1.35;worldEffects.night(on);raccoon.night(on);},
     unlock(){afterglow=true;worldEffects.unlock();rewardSign.unlock();scene.fog.color.set('#172a39');},
     rewardArea(){return rewardSign.hitArea();},
     rewardVisible(){return rewardSign.visible;},
@@ -387,9 +397,9 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     takeKettleOff(){return hearthKettle.takeOff();},
     coffeeAction(object){
       if(brokenComputer)return false;
-      if(object==='kettle'&&!hearthKettle.isOffHeat())return hearthKettle.takeOff();
+      if((object==='kettle'||object==='gooseneck')&&!hearthKettle.isOffHeat())hearthKettle.takeOff();
       const accepted=coffeeStation.action(object,{offHeat:hearthKettle.isOffHeat()});
-      if(accepted&&object==='kettle'){targetPanX=.32;targetPanY=-.3;panKeys.clear();}
+      if(accepted&&coffeeStation.filling){targetPanX=.32;targetPanY=-.3;panKeys.clear();}
       if(accepted&&object==='mug'){targetPanX=0;targetPanY=-.3;panKeys.clear();}
       return accepted;
     },
@@ -400,6 +410,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     kettleArea(){return hearthKettle.hitArea();},
     kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
+    ringArea(){return personalDetails.ringArea();},
     dieArea(){return interiorDetails.dieArea();},
     setDieResult(value){interiorDetails.setDieResult(value);},
     cradleArea(){return propArea(cradle);},

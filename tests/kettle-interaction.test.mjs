@@ -4,6 +4,22 @@ import * as THREE from '../js/vendor/three.module.min.js';
 import {createHearthKettle} from '../js/cabin-life.mjs';
 import {projectedVolumeBounds} from '../js/hit-area.mjs';
 
+test('the first entry starts the kettle and later exits preserve heat and boiling',()=>{
+  const notifications=[],kettle=createHearthKettle(new THREE.Group(),boiling=>notifications.push(boiling));
+  kettle.animate(120000,120,false,false);assert.deepEqual(notifications,[]);assert.equal(kettle.takeOff(),false);
+  kettle.animate(120000,0,true,false); // A visit starts it even on a zero-delta frame.
+  kettle.animate(140000,20,false,false);assert.equal(kettle.takeOff(),false);
+  kettle.animate(160000,20,true,false);assert.equal(kettle.takeOff(),false);
+  kettle.animate(280000,120,false,false,false);assert.deepEqual(notifications,[]);
+  kettle.animate(299000,19,false,false);assert.equal(kettle.takeOff(),false);
+  kettle.animate(300000,1,true,false);assert.deepEqual(notifications,[true]);
+  kettle.animate(310000,10,false,false);kettle.animate(320000,10,true,false);
+  assert.deepEqual(notifications,[true],'leaving and returning cannot cancel or retrigger boiling');
+  assert.equal(kettle.takeOff(),true);assert.deepEqual(notifications,[true,false]);
+  kettle.animate(440000,120,false,false);kettle.animate(560000,120,true,false);
+  assert.deepEqual(notifications,[true,false],'taking the kettle off still ends heating');
+});
+
 test('taking a boiling kettle off stops its sound and keeps it off across room visits',()=>{
   const notifications=[],kettle=createHearthKettle(new THREE.Group(),boiling=>notifications.push(boiling));
   assert.equal(kettle.takeOff(),false);
@@ -34,6 +50,29 @@ test('filling moves the hot kettle and its hit area, then safely restores the sw
     else assert.ok(new THREE.Vector3(...area[0]).distanceTo(new THREE.Vector3(...home[0]))>2);
   }
   assert.equal(kettle.isOffHeat(),true);assert.equal(kettle.takeOff(),false);
+});
+
+test('filling immediately after taking the kettle off returns continuously to the swung hook',()=>{
+  for(const reduced of [false,true]){
+    const cabin=new THREE.Group(),kettle=createHearthKettle(cabin),body=cabin.getObjectByName('Hearth kettle body');
+    const rig=body.parent,target=new THREE.Vector3(1.915,1.377,.77),point=new THREE.Vector3();
+    kettle.animate(60000,60,true,reduced);assert.equal(kettle.takeOff(),true);
+    const departure=body.getWorldPosition(new THREE.Vector3()),departureRotation=body.getWorldQuaternion(new THREE.Quaternion());
+    kettle.fill(0,target);
+    assert.ok(body.getWorldPosition(point).distanceTo(departure)<1e-8,'the outward path starts at the current kettle position');
+    assert.ok(body.getWorldQuaternion(new THREE.Quaternion()).angleTo(departureRotation)<1e-7);
+    for(let frame=1;frame<=270;frame++){
+      kettle.animate(60000+frame*1000/60,1/60,true,reduced);
+      kettle.fill(frame/270,target);
+    }
+    const returned=body.getWorldPosition(new THREE.Vector3()),returnedRotation=body.getWorldQuaternion(new THREE.Quaternion());
+    assert.ok(returned.distanceTo(departure)>.7,'the kettle follows the hook that swung away while it was filling');
+    kettle.fill(null,target);
+    assert.equal(body.parent,rig);
+    assert.ok(body.getWorldPosition(point).distanceTo(returned)<1e-8,'reattaching to the hook must not jump');
+    assert.ok(body.getWorldQuaternion(new THREE.Quaternion()).angleTo(returnedRotation)<1e-7,'reattaching must not rotate the kettle');
+    assert.equal(cabin.getObjectByName('Hot water transfer').visible,false);
+  }
 });
 
 test('the kettle click area covers its geometry before, during and after swinging at different viewing angles',()=>{
