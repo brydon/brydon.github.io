@@ -2,6 +2,8 @@ import * as THREE from './vendor/three.module.min.js';
 import {createCubeModel} from './cube-model.mjs';
 import {scrambleCube} from './cube-state.mjs';
 import {createDeskChair} from './cabin-chair.mjs';
+import {createShelfBook} from './cabin-books.mjs';
+import {createD20,propArea} from './cabin-shelf-props.mjs';
 
 /** Solid furniture with printed artwork on book spines and the wall poster. */
 export function furnishCabin(cabin){
@@ -28,28 +30,28 @@ export function furnishCabin(cabin){
   for(const x of [-.76,.76])box(library,.09,2.3,.46,x,1.16,0,'#9a6b3c');
   for(const y of [.08,.61,1.14,1.67,2.27])box(library,1.61,.09,.49,0,y,.015,'#b0854c');
   box(library,1.73,.13,.53,0,2.36,.01,'#785133');
-  const colors=['#4c6867','#a96b42','#b8a77b','#697442','#7c4741','#526177'];
-  for(let row=0;row<4;row++)for(let i=0;i<(row>=2?6:9);i++){
-    const height=.32+((i*3+row)%4)*.033,x=-.63+i*.151,y=.17+row*.53+height/2;
-    const book=new THREE.Group();book.position.set(x,y,.022);library.add(book);
-    if(i===8)book.rotation.z=-.09;
-    box(book,.12,height,.3,0,0,0,colors[(i+row*2)%colors.length]);
-    box(book,.095,height-.035,.26,0,0,-.006,'#cabb99');
-    box(book,.122,height,.026,0,0,.153,colors[(i+row*2)%colors.length]);
-    for(const sy of [-height*.32,height*.32])box(book,.093,.016,.007,0,sy,.17,'#d1bc84');
+  const readingRows=[
+    ['feynmanI','feynmanII','feynmanIII','complex','differential','combinatorics','axler','rudin','algebra'],
+    ['murray1','murray2','bible','sicp','clrs','differential','graphs','complex','topology'],
+    ['fellowship','towers','king','algebra','complex','graphs'],
+    ['sutton','cover','strogatz','axler','rudin','dragon']
+  ];
+  for(let row=0;row<4;row++)for(let i=0;i<readingRows[row].length;i++){
+    const height=row===3?[.43,.44,.45,.40,.375,.43][i]:row===2&&i<3?.395:row===1&&i<2?.435:row===0&&i<3?.414:.32+((i*3+row)%4)*.033;
+    const thickness=row===1&&i<3?.139:row===2&&i<3?.126:.112;
+    const book=createShelfBook(readingRows[row][i],{height,thickness,depth:.30});
+    const tilt=i===8?-.045:0;
+    book.position.set(-.63+i*.151,.125+row*.53+(height*Math.cos(tilt)+thickness*Math.abs(Math.sin(tilt)))/2,.022+(i%3)*.004);
+    book.rotation.z=tilt;library.add(book);
   }
   let shelfCubeState=scrambleCube();
   const shelfCube=createCubeModel(shelfCubeState);
   shelfCube.group.position.set(.43,1.7962,.095);shelfCube.group.scale.setScalar(.055);shelfCube.group.rotation.y=-.25;library.add(shelfCube.group);
-  // A few readable volumes and a tiny framed mountain photograph.
-  ['MATH','ML','SYSTEMS'].forEach((title,i)=>{
-    const book=box(library,.5,.075,.29,.41,1.25+i*.09,.035,colors[i]);book.rotation.y=i*.035;
-    const canvas=document.createElement('canvas');canvas.width=256;canvas.height=48;const c=canvas.getContext('2d');
-    c.fillStyle=colors[i];c.fillRect(0,0,256,48);c.fillStyle='#f0e2bd';c.font='26px monospace';c.fillText(title,18,34);
-    const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
-    const spine=box(library,.47,.06,.008,.41,1.25+i*.09,.185,colors[i]);spine.material=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});
-  });
+  // One jacket faces out beside the Tolkien trilogy; the cube stays on its shelf.
+  const displayBook=createShelfBook('dragon',{height:.43,thickness:.062,depth:.295});
+  displayBook.position.set(.43,1.185+.43/2,.105);displayBook.rotation.y=-Math.PI/2+.07;library.add(displayBook);
   plant(library,-.43,2.43,0,.7);
+  const die=createD20(),dieBounds=new THREE.Box3().setFromObject(die);die.position.set(-.025,2.425-dieBounds.min.y,.045);library.add(die);
   box(library,.32,.36,.05,.42,2.6,.035,'#d2b583');box(library,.26,.29,.009,.42,2.6,.065,'#58777a');
   const mountain=mesh(library,new THREE.ConeGeometry(.13,.21,3),'#acb8a0',.42,2.58,.08);mountain.scale.z=.13;
 
@@ -68,6 +70,8 @@ export function furnishCabin(cabin){
     const log=cylinder(hearth,.085,.1,.65,(i-1)*.11,.23+i*.035,.04,'#604029',7);log.rotation.z=Math.PI/2;log.rotation.y=(i-1)*.36;
     const ember=mesh(hearth,new THREE.IcosahedronGeometry(.07,0),'#e97223',(i-1)*.21,.21,.2,true);ember.scale.y=.3;
   }
+  const holmes=createShelfBook('holmes',{height:.30,thickness:.065,depth:.22});
+  holmes.rotation.set(0,0,Math.PI/2);holmes.position.set(-.43,1.2325+.065/2,.09);hearth.add(holmes);
   const flames=[];
   for(let i=0;i<7;i++){
     const flame=new THREE.Group();flame.position.set((i%4-1.5)*.145,.28,Math.floor(i/4)*.17-.04);hearth.add(flame);
@@ -111,6 +115,14 @@ export function furnishCabin(cabin){
   const bulb=mesh(cabin,new THREE.SphereGeometry(.09,10,7),'#ffe1a5',-.05,2.46,-.2,true);bulb.scale.y=.55;
   const roomGlow=new THREE.PointLight('#ffd1a0',3.5,7,2);roomGlow.position.set(-.05,2.36,-.2);cabin.add(roomGlow);
   return {
+    dieArea(){return propArea(die);},
+    setDieResult(value){
+      const face=die.userData.faces.find(face=>face.value===value);if(!face)return;
+      die.quaternion.copy(face.orientation);die.rotation.x-=Math.PI/2;
+      const p=die.children[0].geometry.attributes.position;let minY=Infinity;
+      for(let i=0;i<p.count;i++)minY=Math.min(minY,new THREE.Vector3().fromBufferAttribute(p,i).applyQuaternion(die.quaternion).y);
+      die.position.y=2.425-minY;
+    },
     cubeState(){return shelfCubeState;},
     setCubeState(state){shelfCubeState=state;shelfCube.sync(state);},
     cubeArea(){

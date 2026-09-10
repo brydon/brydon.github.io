@@ -92,6 +92,25 @@ export function createCabinAudio(context,samples){
       tone(heavy?155:195+random()*35,at,heavy?.05:.032,heavy?.035:.022,'sine',master,.003);
       burst(at+.025,.016,.004,2400,'highpass');return true;
     },
+    dice(){
+      if(!enabled||context.state!=='running'||!state.inside||state.burning)return ()=>{};
+      const nodes=[];
+      for(const [i,offset]of [0,.09,.21,.38,.61,.91,1.28].entries()){
+        const at=context.currentTime+offset,level=.043*(1-i*.115);
+        nodes.push(burst(at,.028,level,2100),tone(330+random()*200,at,.045,level,'triangle',master,.002));
+      }
+      return ()=>nodes.forEach(node=>{try{node.stop();}catch{/* Already ended. */}});
+    },
+    cradle(strength=1){
+      if(!enabled||context.state!=='running'||!state.inside||state.burning)return;
+      const at=context.currentTime,level=.035*strength;
+      burst(at,.015,level*.4,3600,'highpass');tone(2350,at,.065,level,'sine',master,.001);tone(3870,at,.033,level*.28,'sine',master,.001);
+    },
+    static(){
+      if(!enabled||context.state!=='running'||!state.inside||state.burning)return ()=>{};
+      const source=burst(context.currentTime,.95,.13,4200);
+      return ()=>{try{source.stop();}catch{/* Already ended. */}};
+    },
     pet(){
       if(!enabled||context.state!=='running'||context.currentTime-lastBark<1.3)return;
       lastBark=context.currentTime;

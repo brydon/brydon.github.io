@@ -1,0 +1,25 @@
+#dice-game{width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:0;background:#efe6d5;color:#304038;border:1px solid #c0ad8d;border-radius:8px;box-shadow:0 24px 100px #091a20b0}
+.dice-header{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dice-header .eyebrow{font-size:9px;letter-spacing:2px;color:#7c7262}
+.dice-header h2{font:26px Georgia,serif;margin:8px 0 0}
+#dice-close{border:1px solid #c0b59f;border-radius:50%;width:44px;height:44px;background:transparent;font-size:27px}
+.dice-stage{height:clamp(180px,38dvh,290px);position:relative;background:radial-gradient(ellipse at center,#d7c5b8 0,transparent 67%)}
+.dice-stage:after{content:'';position:absolute;bottom:12%;left:30%;width:40%;height:8%;background:#48304430;filter:blur(12px);border-radius:50%;pointer-events:none}
+#dice-canvas{width:100%;height:100%;display:block;position:relative;z-index:1}
+.dice-footer{text-align:center;padding:0 24px 26px}
+#dice-status{min-height:1.5em;font-size:15px;margin:0 0 16px}
+#dice-roll{padding:13px 34px;min-height:44px;background:#503b56;color:#f7ead3;border:1px solid #765a7b;border-radius:4px;font:inherit;cursor:pointer}
+#dice-roll:disabled{opacity:.55;cursor:wait}
+.dice-hint{font-size:10px;color:#7c7366;margin:14px 0 0}
+#dice-game.diner-mode{inset:0;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:#eee5cf;overflow:auto}
+#dice-game.diner-mode::backdrop{background:#060b0dd9;backdrop-filter:blur(2px)}
+#diner-scene{min-height:100%;padding:clamp(28px,8vw,100px);display:flex;flex-direction:column;justify-content:center}
+#diner-scene[hidden],#dice-content[hidden],#diner-static[hidden]{display:none}
+#diner-title{font-size:10px;font-weight:400;letter-spacing:5px;color:#b4a582;margin:0 0 36px}
+#diner-text{font:clamp(18px,3.4vw,32px)/1.65 Georgia,serif;max-width:860px;min-height:9em;margin:0;white-space:pre-wrap;text-shadow:0 2px 15px #000}
+.diner-paragraph{display:block;margin-top:1em}
+#diner-text strong{color:#f4c77c;font-weight:400}
+#diner-return{position:fixed;bottom:24px;right:28px;z-index:3;background:#152024cc;border:1px solid #d4c5a54d;color:#d1c8b5;min-height:44px;padding:10px 16px;font:11px 'IBM Plex Mono',monospace}
+#diner-static{position:fixed;inset:0;width:100%;height:100%;z-index:2;opacity:.73;image-rendering:pixelated;pointer-events:none}
+.diner-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(prefers-reduced-motion:reduce){#diner-static{opacity:.25}#dice-game.diner-mode::backdrop{backdrop-filter:none}}

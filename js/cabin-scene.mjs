@@ -2,6 +2,8 @@ import * as THREE from './vendor/three.module.min.js';
 import {advanceEntrance} from './entrance.mjs';
 import {createDog,createIron883,createBrydon,createHelmet} from './cabin-models.mjs';
 import {furnishCabin} from './cabin-interior.mjs';
+import {createShelfBook} from './cabin-books.mjs';
+import {createNewtonsCradle,propArea} from './cabin-shelf-props.mjs';
 import {createPosterStack} from './cabin-posters.mjs';
 import {createCabinEffects} from './cabin-effects.mjs';
 import {createWalk,advanceWalk,travelHeading} from './walk.mjs';
@@ -16,7 +18,7 @@ const ease = t => t*t*(3-2*t);
 const mix = (a,b,t) => a+(b-a)*t;
 
 /** One small scene, with an authored entrance instead of a movement controller. */
-export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, onError, onComputer, onKettle, onCoffee}) {
+export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, onError, onComputer, onKettle, onCoffee, onCradle}) {
   const renderer = new THREE.WebGLRenderer({canvas, antialias:false, alpha:true, powerPreference:'low-power'});
   renderer.setPixelRatio(1);
   renderer.shadowMap.enabled = true;
@@ -219,7 +221,10 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const serviceScan=new THREE.TextureLoader().load('/images/switchback/service-064.png');serviceScan.colorSpace=THREE.SRGBColorSpace;serviceScan.magFilter=THREE.NearestFilter;
   const serviceLabel=box(.63,.29,.008,-1.33,1.19,-1.798,'#ceb98d',cabin);serviceLabel.material=new THREE.MeshBasicMaterial({map:serviceScan,toneMapped:false});
   box(1.75,.09,.31,-1.22,2.91,-1.74,'#a0804b',cabin);
-  for(let i=0;i<6;i++){const book=box(.14,.29+(i%3)*.035,.22,-1.84+i*.19,3.1,-1.74,['#41574e','#b77f40','#c1b389','#536575','#984f38'][i%5],cabin);book.rotation.z=(i%2)*.05;}
+  for(const [i,id]of ['kr','knuth','geb'].entries()){
+    const height=.29+i*.025,book=createShelfBook(id,{height,thickness:.13,depth:.23});book.position.set(-1.84+i*.18,2.955+height/2,-1.74);cabin.add(book);
+  }
+  const cradle=createNewtonsCradle();cradle.position.set(-1.05,2.955,-1.74);cabin.add(cradle);
   const helmet=mesh(new THREE.SphereGeometry(.21,10,6,0,Math.PI*2,0,Math.PI*.65),'#50788a',cabin);helmet.position.set(-.64,3.08,-1.74);
 
   await createGearWall(cabin);
@@ -351,6 +356,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
         flag.rotation.y=Math.sin(time*.0012)*.13-.2;
         smoke.forEach((p,i)=>{const phase=(time*.00016+i*.2)%1;p.position.set(-2.1+phase*.5,5.3+phase*2.3,.95+phase*.18);p.scale.setScalar(.6+phase*1.9);p.material.opacity=(1-phase)*.15;});
       }
+      cradle.userData.tick(dt,reducedMotion.matches,onCradle);
       posters.animate(dt,reducedMotion.matches);
       worldEffects.animate(time,reducedMotion.matches);
       hearthKettle.animate(time,elapsedSeconds,inside&&desired===1,reducedMotion.matches,true,brokenComputer);
@@ -394,6 +400,11 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
     kettleArea(){return hearthKettle.hitArea();},
     kettleOffHeat(){return hearthKettle.isOffHeat();},
     chalkboardImage(){return chalkCanvas.toDataURL('image/png');},
+    dieArea(){return interiorDetails.dieArea();},
+    setDieResult(value){interiorDetails.setDieResult(value);},
+    cradleArea(){return propArea(cradle);},
+    releaseCradle(){cradle.userData.release(reducedMotion.matches);if(reducedMotion.matches)onCradle?.(1);},
+    dramaticDim(amount){renderer.toneMappingExposure=(night?1.1:1.35)*(1-.75*amount);},
     cubeState(){return interiorDetails.cubeState();},
     setCubeState(state){interiorDetails.setCubeState(state);},
     cubeArea(){return interiorDetails.cubeArea();},
