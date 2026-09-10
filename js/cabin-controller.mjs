@@ -114,7 +114,7 @@ async function toggleSound(){
 }
 $('sound-toggle').addEventListener('click',toggleSound);
 document.addEventListener('visibilitychange',()=>{scene?.clearKeys();audio?.visibility(!document.hidden).catch(()=>{});});
-function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery','recipe-discovery','portrait-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
+function discover(title,copy){scene?.clearKeys();$('discovery').classList.remove('chalkboard-discovery','bitmap-discovery','recipe-discovery','portrait-discovery','notebook-discovery');$('discovery-title').textContent=title;$('discovery-copy').innerHTML=copy;if(!$('discovery').open)$('discovery').showModal();}
 for(const note of CABIN_NOTES)$(note.id).addEventListener('click',()=>{if(view==='inside'&&!melting){discover(note.title,note.copy);if(note.id==='coffee-recipe')$('discovery').classList.add('recipe-discovery');}});
 $('chalkboard').addEventListener('click',()=>{
   if(view!=='inside'||!scene)return;
@@ -133,6 +133,14 @@ $('couple-portrait').addEventListener('click',()=>{
   portrait.src='/images/switchback/brydon-and-wife.png';portrait.width=1448;portrait.height=1086;
   portrait.alt='Pixel-art portrait of Brydon and his wife smiling in front of the Golden Gate Bridge.';
   $('discovery-copy').append(portrait);
+});
+$('desk-notebook').addEventListener('click',()=>{
+  if(view!=='inside'||melting||!scene)return;
+  discover('Drawing hands','');$('discovery').classList.add('notebook-discovery');
+  const sketch=document.createElement('img');sketch.className='notebook-study';
+  sketch.src='/images/switchback/robot-drawing-hands.png';
+  sketch.alt='A graphite sketch of two robot hands drawing one another, with articulated fingers and unfinished pencil lines fading into the paper.';
+  $('discovery-copy').append(sketch);
 });
 let cubeGame,cubeLoading=false;
 $('bookshelf-cube').addEventListener('click',async()=>{
@@ -232,6 +240,7 @@ async function init(){
       area('service-note',[[-1.67,1.36,-1.78],[-1,1.36,-1.78],[-1,1.02,-1.78],[-1.67,1.02,-1.78]],inside);
       area('chalkboard',[[-1.56,2.645,-1.70],[-.34,2.645,-1.70],[-.34,1.675,-1.70],[-1.56,1.675,-1.70]],inside);
       area('couple-portrait',scene.portraitArea(),inside&&!melting);
+      area('desk-notebook',inside&&!melting?scene.notebookArea():[],inside&&!melting,true);
       area('bookshelf-cube',scene.cubeArea(),inside&&!melting,true);
       area('wedding-ring',scene.ringArea(),inside&&!melting,true);
       area('bookshelf-die',scene.dieArea(),inside&&!melting,true);
