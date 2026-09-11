@@ -22,12 +22,12 @@ export function rollD20(random=Math.random){return 1+Math.floor(random()*20);}
 export const DINER_BEATS=[
   {text:'You find yourself in a diner,',pause:950},
   {text:' all evidence of a meal having taken place is before you,',pause:1000},
-  {text:' but you do not remember how you got here',pause:650},
-  {text:' or eating the meal.',pause:1500},
-  {text:' All you remember is',pause:1100,paragraph:true},
-  {text:' you have to',pause:850},
-  {text:' get fast',pause:950,conclusion:true},
-  {text:' and get safe.',pause:2300,conclusion:true}
+  {text:' but you do not remember eating it.',pause:1100},
+  {text:' You don\'t remember how you got here.',pause:900},
+  {text:' You don\'t remember who you are.',pause:1500},
+  {text:' All you remember, is:',pause:1100,paragraph:true},
+  {text:' get fast,',pause:950,conclusion:true},
+  {text:' get safe.',pause:2300,conclusion:true}
 ];
 
 /** One clock for typing, pauses and static, so cancelling never leaves timers behind. */
