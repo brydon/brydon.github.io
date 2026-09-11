@@ -14,6 +14,7 @@ import {createNotebookSketch,notebookHitArea} from './cabin-notebook.mjs';
 import {createPersonalDetails} from './cabin-personal-details.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
+import {createTeaMug} from './cabin-tea.mjs';
 import {createRewardSign} from './cabin-reward.mjs';
 import {createHearthKettle,createBlueJay} from './cabin-life.mjs';
 import {drawResearchBoard} from './chalkboard.mjs';
@@ -136,12 +137,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   for(const x of [-.3,.3]){const rail=box(.07,.08,.88,x,.31,0,'#8a6942',muskoka);rail.rotation.x=-.12;box(.08,.62,.09,x,.29,.29,'#a37d4d',muskoka);const rear=box(.08,.58,.09,x,.23,-.29,'#8a6942',muskoka);rear.rotation.x=-.37;}
   for(let i=0;i<7;i++){const x=(i-3)*.108,h=.7-Math.abs(i-3)*.045,slat=box(.092,h,.055,x,.72+h*.11,-.35,'#bd965f',muskoka);slat.rotation.x=-.24;slat.rotation.z=-(i-3)*.045;}
   for(const x of [-.46,.46]){box(.22,.065,.86,x,.67,.015,'#ca9e62',muskoka);box(.055,.34,.06,x,.49,.3,'#9c7544',muskoka);}
-  // A mug of tea: amber brew, a string over the rim opposite the handle and a paper tag dangling off that side.
-  cylinder(.068,.06,.15,-.46,.78,.2,'#e0ceb0',muskoka,10).name='Porch tea mug';cylinder(.056,.056,.009,-.46,.859,.2,'#8f4b1e',muskoka,10).name='Amber tea';
-  const teaHandle=mesh(new THREE.TorusGeometry(.044,.012,5,10),'#e0ceb0',muskoka);teaHandle.position.set(-.537,.79,.2);
-  const teaString=mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([[-.47,.862,.195],[-.43,.878,.212],[-.396,.866,.228],[-.385,.812,.236]].map(p=>new THREE.Vector3(...p))),16,.0025,4,false),'#f1ead8',muskoka);teaString.name='Tea bag string';
-  const teaTag=new THREE.Group();teaTag.name='Tea bag tag';teaTag.position.set(-.383,.78,.236);teaTag.rotation.set(0,.7,-.08);muskoka.add(teaTag);
-  box(.058,.066,.005,0,0,0,'#f4ead2',teaTag);box(.058,.018,.006,0,.014,.001,'#b8432c',teaTag);
+  // A steeping mug of tea on the arm, built like the desk mug at porch scale.
+  const teaMug=createTeaMug();teaMug.position.set(-.46,.703,.2);teaMug.scale.setScalar(.61);muskoka.add(teaMug);
   // Front and side windows: warm panes, dark mullions, deep timber trim.
   function frontWindow(x,y,z,w=1.25,h=1){
     box(w+.18,h+.18,.1,x,y,z,'#4d3926',cabin);
@@ -389,6 +386,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
       worldEffects.animate(time,reducedMotion.matches);
       hearthKettle.animate(time,elapsedSeconds,inside&&desired===1,reducedMotion.matches,true,brokenComputer);
       coffeeStation.animate(time,elapsedSeconds,reducedMotion.matches,brokenComputer);
+      teaMug.userData.animate(time,reducedMotion.matches);
       hearthKettle.fill(coffeeStation.filling?coffeeStation.fillProgress:null,coffeeStation.fillTarget());
       raccoon.animate(dt,reducedMotion.matches,progress<.67);
       blueJay.animate(time,reducedMotion.matches);
