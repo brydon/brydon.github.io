@@ -18,7 +18,7 @@ test('all twenty results match an upright printed face; opposite sides sum to 21
 });
 
 test('diner keeps the exact text, types in paced beats and finishes only after static',()=>{
-  const quote='You find yourself in a diner, all evidence of a meal having taken place is before you, but you do not remember how you got here or eating the meal. All you remember is you have to get fast and get safe.';
+  const quote='You find yourself in a diner, all evidence of a meal having taken place is before you, but you do not remember eating it. You don\'t remember how you got here. You don\'t remember who you are. All you remember, is: get fast, get safe.';
   assert.equal(DINER_BEATS.map(beat=>beat.text).join(''),quote);
   for(const reduced of [false,true]){
     assert.equal(dinerFrame(0,reduced).segments.map(s=>s.text).join(''),'');
