@@ -1,5 +1,18 @@
 import * as THREE from './vendor/three.module.min.js';
 
+// Import the detailed motorcycle under a different name,
+// so it does not conflict with our cabin factory below.
+import {
+  createIron883 as createDetailedIron883,
+} from './iron883.js';
+
+// Allow the scene to import these controls from cabin-module.mjs too.
+export {
+  setIron883Mirrors,
+  setIron883Steering,
+  disposeIron883,
+} from './iron883.js';
+
 const cache=new Map();
 function material(color,metal=false){const key=color+metal;if(!cache.has(key))cache.set(key,new THREE.MeshStandardMaterial({color,roughness:metal?.34:.9,metalness:metal?.78:0,flatShading:true}));return cache.get(key);}
 function mesh(parent,geometry,color,position,metal=false){const object=new THREE.Mesh(geometry,material(color,metal));object.position.set(...position);object.castShadow=true;object.receiveShadow=true;parent.add(object);return object;}
@@ -167,87 +180,16 @@ export function createDog(){
 
         883 cc. No particularly urgent destination.
 */
-export function createIron883(){
-  const bike=new THREE.Group();bike.name='Black 2015 Iron 883';
-  const black='#202825',rubber='#171e1c',chrome='#b3c2bd',steel='#677873';
-  const wheelY=.42;
-  for(const x of [-.94,.99]){
-    mesh(bike,new THREE.TorusGeometry(.33,.082,8,24),rubber,[x,wheelY,0]);
-    mesh(bike,new THREE.TorusGeometry(.268,.025,6,20),black,[x,wheelY,0]);
-    const axle=mesh(bike,new THREE.CylinderGeometry(.075,.075,.29,10),steel,[x,wheelY,0],true);axle.rotation.x=Math.PI/2;
-    for(let i=0;i<10;i++){
-      const a=i*Math.PI/5;
-      rod(bike,[x+Math.cos(a)*.064,wheelY+Math.sin(a)*.064,0],[x+Math.cos(a+.08)*.26,wheelY+Math.sin(a+.08)*.26,0],.024,black);
-    }
-    const disc=mesh(bike,new THREE.CylinderGeometry(.17,.17,.018,16),steel,[x,wheelY,.095],true);disc.rotation.x=Math.PI/2;
-    for(let i=0;i<7;i++){
-      const a=i*Math.PI/3.5;
-      const hole=mesh(bike,new THREE.CylinderGeometry(.017,.017,.02,6),rubber,[x+Math.cos(a)*.135,wheelY+Math.sin(a)*.135,.108]);hole.rotation.x=Math.PI/2;
-    }
-  }
-  // Tubular frame, rear swingarm, and the rake of the front suspension.
-  for(const z of [-.14,.14]){
-    for(const[a,b]of[[[-.94,.42,z],[-.43,.79,z]],[[-.94,.42,z],[.22,.3,z]],[[-.43,.79,z],[.48,1.02,z]],[[.48,1.02,z],[.35,.33,z]],[[.35,.33,z],[-.35,.3,z]],[[-.35,.3,z],[-.43,.79,z]]])rod(bike,a,b,.028,black);
-    rod(bike,[.99,.42,z],[.51,1.16,z],.032,chrome,true);
-    rod(bike,[.99,.42,z],[.78,.76,z],.052,black);
-    for(let i=0;i<5;i++){
-      const t=i/5;const ring=mesh(bike,new THREE.TorusGeometry(.051,.012,5,10),rubber,[.79-t*.13,.77+t*.2,z]);ring.rotation.x=Math.PI/2;ring.rotation.z=.54;
-    }
-    rod(bike,[-.87,.43,z],[-.62,.83,z],.029,chrome,true);
-    for(let i=0;i<6;i++){
-      const t=i/6;const ring=mesh(bike,new THREE.TorusGeometry(.053,.012,5,10),chrome,[-.84+t*.19,.47+t*.3,z],true);ring.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),new THREE.Vector3(.25,.4,0).normalize());
-    }
-  }
-  // Fenders are extruded bands, not flat side silhouettes.
-  function fender(x,r,start,end,depth){const shape=new THREE.Shape();shape.absarc(0,0,r,start,end,false);shape.absarc(0,0,r-.04,end,start,true);shape.closePath();const cover=mesh(bike,new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,curveSegments:18}),black,[x,wheelY,-depth/2]);return cover;}
-  fender(-.94,.437,.05,Math.PI-.05,.28);fender(.99,.435,.24,Math.PI-.18,.22);
-  box(bike,[.24,.055,.3],[-1.25,.7,0],black);
-  box(bike,[.05,.09,.16],[-1.38,.64,0],'#a62e25');
-  // Low seat and the recognisable peanut tank.
-  const seat=ellipsoid(bike,[.39,.07,.18],[-.55,.88,0],'#252823');seat.rotation.z=.07;
-  const tank=ellipsoid(bike,[.37,.175,.215],[.035,1.005,0],black);tank.rotation.z=.11;
-  tank.material=new THREE.MeshStandardMaterial({color:black,roughness:.44,metalness:.45,flatShading:true});
-  mesh(bike,new THREE.CylinderGeometry(.045,.045,.025,8),chrome,[.15,1.169,0],true);
-  // V-twin barrels with separate cooling fins.
-  for(const sign of [-1,1]){
-    const lower=new THREE.Vector3(.03,.37,0),upper=new THREE.Vector3(.03+sign*.20,.79,0),axis=upper.clone().sub(lower).normalize();
-    rod(bike,lower.toArray(),upper.toArray(),.12,black);
-    for(let i=0;i<7;i++){
-      const center=lower.clone().lerp(upper,.24+i*.1);
-      const fin=mesh(bike,new THREE.CylinderGeometry(.139,.139,.018,10),i%2?steel:chrome,center.toArray(),true);
-      fin.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),axis);
-    }
-    const cap=mesh(bike,new THREE.CylinderGeometry(.146,.146,.075,8),steel,upper.toArray(),true);cap.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),axis);
-  }
-  const crank=mesh(bike,new THREE.CylinderGeometry(.24,.24,.33,12),black,[.025,.38,0]);crank.rotation.x=Math.PI/2;
-  const filter=mesh(bike,new THREE.CylinderGeometry(.177,.177,.09,14),black,[.07,.62,.22]);filter.rotation.x=Math.PI/2;
-  const filterRim=mesh(bike,new THREE.TorusGeometry(.157,.013,6,14),steel,[.07,.62,.269],true);
-  for(let i=0;i<3;i++)box(bike,[.19,.016,.008],[.07,.56+i*.047,.273],steel);
-  box(bike,[.29,.27,.2],[-.49,.63,.04],'#292e27');
-  // Both polished exhausts are visible on the right side.
-  pipe(bike,[[-.17,.78,.13],[-.27,.56,.24],[-.12,.29,.3],[-.42,.245,.31],[-1.10,.245,.31]],.037,chrome,true);
-  pipe(bike,[[.25,.77,.12],[.48,.62,.22],[.46,.24,.37],[.18,.16,.37],[-1.1,.16,.37]],.037,chrome,true);
-  for(const[y,z]of[[.245,.31],[.16,.37]]){
-    rod(bike,[-1.12,y,z],[-.45,y,z],.057,chrome,true);
-    const hole=mesh(bike,new THREE.CylinderGeometry(.038,.038,.012,8),rubber,[-1.125,y,z]);hole.rotation.z=Math.PI/2;
-  }
-  // Handlebars, round lamp, indicators and mirrors.
-  pipe(bike,[[.5,1.15,-.31],[.44,1.23,-.15],[.44,1.23,.15],[.5,1.15,.31]],.021,chrome,true);
-  for(const z of [-.32,.32]){
-    rod(bike,[.48,1.15,z],[.65,1.15,z],.038,rubber);
-    rod(bike,[.48,1.19,z],[.42,1.38,z],.01,steel,true);
-    ellipsoid(bike,[.075,.045,.025],[.42,1.4,z],'#6f8480');
-    const signal=mesh(bike,new THREE.SphereGeometry(.043,8,6),'#dc8a28',[.75,.99,z*.8]);signal.scale.x=1.15;
-  }
-  const lamp=mesh(bike,new THREE.CylinderGeometry(.13,.13,.13,12),black,[.71,1.065,0]);lamp.rotation.z=Math.PI/2;
-  const lens=mesh(bike,new THREE.CylinderGeometry(.106,.106,.01,12),'#e9d49b',[.779,1.065,0]);lens.rotation.z=Math.PI/2;
-  lens.material=new THREE.MeshStandardMaterial({color:'#f3d697',emissive:'#e9bf6f',emissiveIntensity:.3});
-  rod(bike,[-.06,.34,-.38],[-.06,.34,.39],.029,steel,true);
-  rod(bike,[-.5,.28,.08],[-.59,.01,.38],.02,steel,true);
-  // Tank lettering is a texture on a model surface, not an image cutout.
-  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=128;
-  const c=canvas.getContext('2d');c.fillStyle='#202825';c.fillRect(0,0,256,128);c.fillStyle='#d0c9ae';c.textAlign='center';c.font='25px monospace';c.fillText('HARLEY-',128,53);c.fillText('DAVIDSON',128,87);
-  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;
-  for(const side of [-1,1]){const badge=new THREE.Mesh(new THREE.PlaneGeometry(.35,.175),new THREE.MeshStandardMaterial({map:texture,roughness:.7}));badge.position.set(.015,1.013,side*.212);badge.rotation.y=side<0?Math.PI:0;bike.add(badge);}
-  return bike;
+
+/** Detailed Iron 883, keeping the cabin module's existing factory name. */
+export function createIron883(options = {}) {
+  return createDetailedIron883({
+    quality: 'high',
+    finish: 'denim',
+    optimize: true,
+    mirrors: 'drop',
+
+    // Explicit options passed by the scene override these defaults.
+    ...options,
+  });
 }
