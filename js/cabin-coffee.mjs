@@ -71,17 +71,30 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
   pipe([[-.10,-.035,0],[-.165,-.019,0],[-.187,.129,0],[-.255,.211,0],[-.296,.211,0],[-.305,.187,0]],.012,'#657c70',goose);
   pipe([[.095,.122,0],[.184,.129,0],[.212,.052,0],[.176,-.042,0],[.11,-.037,0]],.025,'#25372f',goose);
 
+  // A 1Zpresso-style hand grinder: textured grip, dial collar, Z crank and a knurled catch cup.
+  const graphite='#191b1e',shoulder='#23262a',knurl='#2c2f33',band='#121416',wood='#875538';
+  const shade=c=>materials.get(c)||materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.6,flatShading:true})).get(c);
+  const around=n=>Array.from({length:n},(_,i)=>i/n*Math.PI*2);
+  function marks(angles,w,h,r,y,tilt,c,p){const m=new THREE.InstancedMesh(new THREE.BoxGeometry(w,h,.003),shade(c),angles.length),o=new THREE.Object3D();angles.forEach((a,i)=>{o.position.set(Math.cos(a)*r,y,Math.sin(a)*r);o.rotation.set(0,Math.PI/2-a,tilt);o.updateMatrix();m.setMatrixAt(i,o.matrix);});p.add(m);return m;}
   const grinder=new THREE.Group();grinder.position.set(.47,0,.23);station.add(grinder);
-  cylinder(.045,.045,.19,0,.157,0,'#9b9e88',14,grinder);
-  // Faceted vertical grip grooves and an open catch cup below the burrs.
-  for(let i=0;i<10;i++){const a=i*Math.PI/5;box(.008,.14,.007,Math.cos(a)*.044,.15,Math.sin(a)*.044,'#747f70',grinder);}
-  cylinder(.038,.045,.03,0,.264,0,'#d0c4a1',14,grinder);
-  const crank=new THREE.Group();crank.position.y=.28;grinder.add(crank);
-  pipe([[0,0,0],[0,.025,0],[.135,.025,0]],.007,'#7e8b78',crank);cylinder(.021,.024,.04,.135,.005,0,'#87643f',8,crank);
+  cylinder(.043,.043,.185,0,.188,0,graphite,20,grinder);cylinder(.045,.043,.018,0,.099,0,shoulder,20,grinder);
+  cylinder(.046,.046,.115,0,.185,0,'#111315',24,grinder);marks(around(12),.004,.095,.0465,.185,0,'#303337',grinder);
+  cylinder(.047,.047,.018,0,.116,0,knurl,24,grinder);marks(around(12),.006,.012,.0475,.116,.55,'#101214',grinder);
+  cylinder(.046,.049,.026,0,.286,0,shoulder,24,grinder);cylinder(.051,.051,.032,0,.310,0,knurl,24,grinder);
+  for(const y of [.295,.325])cylinder(.052,.052,.004,0,y,0,band,24,grinder);
+  marks(around(4),.003,.014,.0515,.310,0,'#c5c7c8',grinder);marks(around(12).filter((_,i)=>i%3),.002,.007,.0515,.310,0,'#777b7e',grinder);
+  cylinder(.047,.047,.010,0,.331,0,'#202327',24,grinder);
+  const steel=new THREE.MeshStandardMaterial({color:'#a9adb0',metalness:.5,roughness:.35});
+  cylinder(.010,.010,.022,0,.347,0,'#a9adb0',12,grinder).material=steel;
+  const crank=new THREE.Group();crank.position.y=.354;grinder.add(crank);
+  pipe([[0,0,0],[.040,0,0],[.098,-.055,0],[.170,-.055,0]],.0055,'#a9adb0',crank).material=steel;
+  cylinder(.024,.019,.050,.170,-.055,0,wood,12,crank);mesh(new THREE.SphereGeometry(.024,12,4,0,Math.PI*2,0,Math.PI/2),wood,.170,-.030,0,crank);cylinder(.019,.016,.010,.170,-.085,0,'#68402c',12,crank);
   const catchCup=new THREE.Group();catchCup.position.copy(grinder.position);station.add(catchCup);const cupHome=catchCup.position.clone();
-  const cup=mesh(new THREE.CylinderGeometry(.046,.043,.065,14,1,true),'#666c59',0,.036,0,catchCup);cup.material.side=THREE.DoubleSide;
-  cylinder(.04,.04,.006,0,.006,0,'#666c59',14,catchCup);
-  const cupGrounds=cylinder(.039,.039,.008,0,.054,0,'#593d28',14,catchCup);
+  mesh(new THREE.CylinderGeometry(.046,.045,.088,24,1,true),graphite,0,.047,0,catchCup).material=new THREE.MeshStandardMaterial({color:graphite,roughness:.6,flatShading:true,side:THREE.DoubleSide});
+  cylinder(.044,.044,.006,0,.006,0,graphite,24,catchCup);
+  cylinder(.048,.048,.018,0,.088,0,knurl,24,catchCup);marks(around(10),.005,.012,.0485,.088,-.6,'#111315',catchCup);
+  // Grounds sit just below the rim so the tipped cup shows them in its mouth.
+  const cupGrounds=cylinder(.041,.044,.012,0,.078,0,'#593d28',20,catchCup);
   const dust=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.005,0),materials.get('#593d28'),24);station.add(dust);
   box(.23,.004,.23,.054,.004,.255,'#e1cea3');
   const recipeTexture=new THREE.TextureLoader().load('/images/switchback/gesha-recipe.png');recipeTexture.colorSpace=THREE.SRGBColorSpace;
@@ -101,7 +114,7 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
     get filling(){return state.water==='filling';},get fillProgress(){return fillProgress(state);},
     clueRevealed(){return coffeeClueRevealed(state);},
     fillTarget(){return worldPoint(.27,.277,.025);},
-    hitAreas(){return {grinder:quad(.47,.17,.285,.13,.34),v60:quad(-.21,.414,.17,.33,.25),gooseneck:quad(.27,.15,.14,.30,.30)};},
+    hitAreas(){return {grinder:quad(.54,.185,.285,.27,.37),v60:quad(-.21,.414,.17,.33,.25),gooseneck:quad(.27,.15,.14,.30,.30)};},
     animate(time,seconds,reduced=false,burning=false){
       advanceCoffee(state,seconds,{burning});notify();const phase=state.phase,p=coffeeProgress(state),pour=phase==='pouring',fill=state.water==='filling',loading=phase==='loading';
       const serving=phase==='serving',served=phase==='served',finished=['brewed','serving','served'].includes(phase),cupFill=served?1:serving?servingFraction(p):0;
