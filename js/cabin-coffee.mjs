@@ -83,28 +83,31 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
   cylinderBetween([-.1,-.07,0],[-.135,-.068,0],.015,.009,black,goose,14);
   pipe([[-.13,-.068,0],[-.158,-.064,0],[-.178,-.048,0],[-.19,-.018,0],[-.197,.03,0],[-.207,.09,0],[-.224,.15,0],[-.246,.198,0],[-.27,.226,0],[-.29,.232,0],[-.303,.225,0]],.0065,black,goose);
 
-  // A 1Zpresso-style hand grinder: textured grip, dial collar, Z crank and a knurled catch cup.
-  const graphite='#191b1e',shoulder='#23262a',knurl='#2c2f33',band='#121416',wood='#875538';
+  // A 1Zpresso-style hand grinder: brushed silver body, woven grey grip, dial collar, Z crank
+  // with a pale beech knob, and a knurled catch cup.
+  const alloy='#aab0b5',shoulder='#a1a7ac',knurl='#b3b9bd',band='#6c7378',wood='#d8bd96';
+  // The silver parts are slightly metallic so warm cabin light reads as brushed aluminium, not cream plastic.
+  for(const c of [alloy,shoulder,knurl,'#aeb4b8'])materials.set(c,new THREE.MeshStandardMaterial({color:c,metalness:.45,roughness:.38,flatShading:true}));
   const shade=c=>materials.get(c)||materials.set(c,new THREE.MeshStandardMaterial({color:c,roughness:.6,flatShading:true})).get(c);
   const around=n=>Array.from({length:n},(_,i)=>i/n*Math.PI*2);
   function marks(angles,w,h,r,y,tilt,c,p){const m=new THREE.InstancedMesh(new THREE.BoxGeometry(w,h,.003),shade(c),angles.length),o=new THREE.Object3D();angles.forEach((a,i)=>{o.position.set(Math.cos(a)*r,y,Math.sin(a)*r);o.rotation.set(0,Math.PI/2-a,tilt);o.updateMatrix();m.setMatrixAt(i,o.matrix);});p.add(m);return m;}
   const grinder=new THREE.Group();grinder.position.set(.47,0,.23);station.add(grinder);
-  cylinder(.043,.043,.185,0,.188,0,graphite,20,grinder);cylinder(.045,.043,.018,0,.099,0,shoulder,20,grinder);
-  cylinder(.046,.046,.115,0,.185,0,'#111315',24,grinder);marks(around(12),.004,.095,.0465,.185,0,'#303337',grinder);
-  cylinder(.047,.047,.018,0,.116,0,knurl,24,grinder);marks(around(12),.006,.012,.0475,.116,.55,'#101214',grinder);
+  cylinder(.043,.043,.185,0,.188,0,alloy,20,grinder);cylinder(.045,.043,.018,0,.099,0,shoulder,20,grinder);
+  cylinder(.046,.046,.115,0,.185,0,'#3b3e41',24,grinder);marks(around(12),.0025,.095,.0465,.185,0,'#45484b',grinder);
+  cylinder(.047,.047,.018,0,.116,0,knurl,24,grinder);marks(around(16),.004,.009,.0475,.116,.55,'#737a7f',grinder);
   cylinder(.046,.049,.026,0,.286,0,shoulder,24,grinder);cylinder(.051,.051,.032,0,.310,0,knurl,24,grinder);
   for(const y of [.295,.325])cylinder(.052,.052,.004,0,y,0,band,24,grinder);
-  marks(around(4),.003,.014,.0515,.310,0,'#c5c7c8',grinder);marks(around(12).filter((_,i)=>i%3),.002,.007,.0515,.310,0,'#777b7e',grinder);
-  cylinder(.047,.047,.010,0,.331,0,'#202327',24,grinder);
-  const crankSteel=new THREE.MeshStandardMaterial({color:'#a9adb0',metalness:.5,roughness:.35});
+  marks(around(4),.003,.014,.0515,.310,0,'#34373a',grinder);marks(around(12).filter((_,i)=>i%3),.002,.007,.0515,.310,0,'#62666a',grinder);
+  cylinder(.047,.047,.010,0,.331,0,'#aeb4b8',24,grinder);
+  const crankSteel=new THREE.MeshStandardMaterial({color:'#a9b0b5',metalness:.5,roughness:.35});
   cylinder(.010,.010,.022,0,.347,0,'#a9adb0',12,grinder).material=crankSteel;
   const crank=new THREE.Group();crank.position.y=.354;grinder.add(crank);
   pipe([[0,0,0],[.040,0,0],[.098,-.055,0],[.170,-.055,0]],.0055,'#a9adb0',crank).material=crankSteel;
-  cylinder(.024,.019,.050,.170,-.055,0,wood,12,crank);mesh(new THREE.SphereGeometry(.024,12,4,0,Math.PI*2,0,Math.PI/2),wood,.170,-.030,0,crank);cylinder(.019,.016,.010,.170,-.085,0,'#68402c',12,crank);
-  const catchCup=new THREE.Group();catchCup.position.copy(grinder.position);station.add(catchCup);const cupHome=catchCup.position.clone();
-  mesh(new THREE.CylinderGeometry(.046,.045,.088,24,1,true),graphite,0,.047,0,catchCup).material=new THREE.MeshStandardMaterial({color:graphite,roughness:.6,flatShading:true,side:THREE.DoubleSide});
-  cylinder(.044,.044,.006,0,.006,0,graphite,24,catchCup);
-  cylinder(.048,.048,.018,0,.088,0,knurl,24,catchCup);marks(around(10),.005,.012,.0485,.088,-.6,'#111315',catchCup);
+  cylinder(.024,.019,.050,.170,-.055,0,wood,12,crank);mesh(new THREE.SphereGeometry(.024,12,4,0,Math.PI*2,0,Math.PI/2),wood,.170,-.030,0,crank);cylinder(.019,.016,.010,.170,-.085,0,'#c2a47c',12,crank);
+  const catchCup=new THREE.Group();catchCup.name='Grinder catch cup';catchCup.position.copy(grinder.position);station.add(catchCup);const cupHome=catchCup.position.clone();
+  mesh(new THREE.CylinderGeometry(.046,.045,.088,24,1,true),alloy,0,.047,0,catchCup).material=new THREE.MeshStandardMaterial({color:alloy,metalness:.45,roughness:.38,flatShading:true,side:THREE.DoubleSide});
+  cylinder(.044,.044,.006,0,.006,0,alloy,24,catchCup);
+  cylinder(.048,.048,.018,0,.088,0,knurl,24,catchCup);marks(around(16),.004,.009,.0485,.088,-.6,'#737a7f',catchCup);
   // Grounds sit just below the rim so the tipped cup shows them in its mouth.
   const cupGrounds=cylinder(.041,.044,.012,0,.078,0,'#593d28',20,catchCup);
   const dust=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.005,0),materials.get('#593d28'),24);station.add(dust);
@@ -134,7 +137,7 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
       crank.rotation.y=phase==='grinding'?(reduced?0:state.elapsed*15):0;
       grinder.rotation.z=phase==='grinding'&&!reduced?Math.sin(time*.045)*.014:0;
       const lift=loading?ease(p/.27)*(1-ease((p-.80)/.20)):0;
-      catchCup.position.copy(cupHome).lerp(new THREE.Vector3(-.17,.60,.015),lift);catchCup.rotation.z=-2.3*lift;
+      catchCup.position.copy(cupHome).lerp(new THREE.Vector3(-.143,.68,.015),lift);catchCup.rotation.z=2.3*lift;
       cupGrounds.visible=phase==='ground'||(loading&&p<.55);
       grounds.visible=['ready','hot','pouring','brewed','serving','served'].includes(phase)||(loading&&p>.4);
       grounds.material.color.set(pour||finished?'#392b21':'#6a4630');
