@@ -136,7 +136,7 @@ $('couple-portrait').addEventListener('click',()=>{
   discover('A Lovely Coufle','');$('discovery').classList.add('portrait-discovery');
   const portrait=document.createElement('img');portrait.className='couple-portrait';
   portrait.src='/images/switchback/brydon-and-wife.png';portrait.width=1448;portrait.height=1086;
-  portrait.alt='Pixel-art portrait of Brydon and his wife smiling in front of the Golden Gate Bridge.';
+  portrait.alt='Pixel-art selfie of Brydon and his wife at sunset in front of the Toronto skyline and the CN Tower.';
   $('discovery-copy').append(portrait);
 });
 $('desk-notebook').addEventListener('click',()=>{
