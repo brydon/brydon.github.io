@@ -234,7 +234,7 @@ async function init(){
       const inside=view==='inside',outside=view==='outside'&&!melting;
       area('desk-terminal',[[-.02,2.0025,-1.291],[1.14,2.0025,-1.291],[1.14,1.2775,-1.291],[-.02,1.2775,-1.291]],inside);
       area('cabin-door',[[-.15,2.62,2.18],[1.15,2.62,2.18],[1.15,.43,2.18],[-.15,.43,2.18]],inside||outside);
-      area('bridge-note',[[3.91,1.47,-.6],[3.91,1.47,2.2],[3.91,.08,2.2],[3.91,.08,-.6]],outside);
+      area('bridge-note',[[4.49,1.72,.9],[3.31,1.72,3.7],[3.31,.08,3.7],[4.49,.08,.9]],outside);
       area('camp-note',[[-4.3,1.2,3.7],[-2.8,1.2,3.7],[-2.8,.1,3.7],[-4.3,.1,3.7]],outside);
       area('reward-sign',scene.rewardArea(),outside&&scene.rewardVisible());
       area('blue-jay',[[5.14,2.30,2.41],[5.75,2.30,2.41],[5.75,1.60,2.41],[5.14,1.60,2.41]],outside);
