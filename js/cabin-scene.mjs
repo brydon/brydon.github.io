@@ -283,14 +283,16 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   }
   const smoke=[];for(let i=0;i<5;i++){const puff=mesh(new THREE.IcosahedronGeometry(.2+i*.06,0),'#adbaad');puff.material=new THREE.MeshBasicMaterial({color:'#adbaad',transparent:true,opacity:.13,depthWrite:false});puff.castShadow=false;smoke.push(puff);}
   // Every subject has volume: the reference art guides these low-poly models.
-  const bike=createIron883();bike.position.set(3.65,.045,.8);bike.rotation.y=-Math.PI/2+.1;scene.add(bike);
+  // The bike is scaled past life size so it reads true beside Brydon's big head,
+  // and angled out from the wall so the chrome side faces the visitor.
+  const bike=createIron883();bike.scale.setScalar(1.4);bike.position.set(3.9,.045,2.3);bike.rotation.y=-Math.PI/2-.4;scene.add(bike);
   const dog=createDog();dog.position.set(.53,.52,-.05);dog.rotation.y=-.08;dog.scale.setScalar(.85);scene.add(dog);
   const worldEffects=createCabinEffects(scene,cabin,dog);
   const rewardSign=createRewardSign(scene);
   const person=createBrydon();scene.add(person);person.position.set(1.5,.41,3.45);const arms=person.userData.arms;
   const porchHelmet=createHelmet();porchHelmet.position.set(1.7,.62,2.7);porchHelmet.rotation.y=.35;scene.add(porchHelmet);
   // Subtle ground-contact shadows supplement the models' cast shadows.
-  for(const [x,z,sx,sz]of[[1.5,3.45,.38,.18],[3.65,.8,.4,1.5]]){const shadow=new THREE.Mesh(new THREE.CircleGeometry(1,16),new THREE.MeshBasicMaterial({color:'#1f3028',transparent:true,opacity:.28,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.scale.set(sx,sz,1);shadow.position.set(x,.045,z);scene.add(shadow);}
+  for(const [x,z,sx,sz,angle=0]of[[1.5,3.45,.38,.18],[3.9,2.3,.55,2.1,-.4]]){const shadow=new THREE.Mesh(new THREE.CircleGeometry(1,16),new THREE.MeshBasicMaterial({color:'#1f3028',transparent:true,opacity:.28,depthWrite:false}));shadow.rotation.set(-Math.PI/2,0,angle);shadow.scale.set(sx,sz,1);shadow.position.set(x,.045,z);scene.add(shadow);}
 
   let width=1,height=1,inside=false,progress=0,desired=0,angleStep=0,orbit=0,night=false,disposed=false,last=0;
   let focusProgress=0,focusDesired=0,panX=0,panY=0,targetPanX=0,targetPanY=0,computerNotified=false;const panKeys=new Set();
@@ -398,7 +400,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   positionCamera();requestAnimationFrame(animate);
   return {
     enter(){approachDoor(()=>{desired=1;targetPanX=0;targetPanY=0;});}, exit(){desired=0;focusDesired=0;focusProgress=0;computerNotified=false;panKeys.clear();},
-    visit(place,onArrive){const via=[avatarPosition[0],.07,4.15];walkRoute(place==='bike'?[via,[3.15,.07,3.5],[3.23,.07,2.25]]:place==='sign'?[via,[2.45,.07,5.55]]:[via,[-2.7,.07,4.15]],onArrive);},
+    visit(place,onArrive){const via=[avatarPosition[0],.07,4.15];walkRoute(place==='bike'?[via,[4.95,.07,4.4],[4.9,.07,2.75]]:place==='sign'?[via,[2.45,.07,5.55]]:[via,[-2.7,.07,4.15]],onArrive);},
     evacuate(onArrive){walkRoute([[.55,.07,4.3],[.55,.07,5.05]],onArrive);},
     computer(page){if(page)pendingPage=page;approachDoor(()=>{desired=1;focusDesired=1;targetPanX=0;targetPanY=0;panKeys.clear();});if(page)computerFrame.contentWindow?.postMessage({source:'switchback-cabin',type:'page',value:page},location.origin);},
     room(){focusDesired=0;panKeys.clear();},
