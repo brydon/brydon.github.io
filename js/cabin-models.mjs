@@ -75,8 +75,8 @@ export function createBrydon(){
     ellipsoid(arm,[.068,.096,.064],[side*.024,-.56,.02],skin);
     ellipsoid(arm,[.03,.055,.03],[-side*.03,-.54,.06],'#e2b38c');
   }
-  // A longer face, a short sandy beard that follows the jaw, and swept medium-brown hair.
-  const beard='#9a6a42',moustache='#b98b5a',frame='#e1e4de';
+  // A longer face, a big easy smile, a short ginger-brown beard on the jaw, and swept medium-brown hair.
+  const beard='#9c6a44',moustache='#ad7a4d',frame='#aab0b4';
   function cap(radii,position,color,phi,theta,tilt){const object=mesh(person,new THREE.SphereGeometry(1,28,16,phi[0],phi[1],theta[0],theta[1]),color,position);object.scale.set(...radii);object.rotation.x=tilt;return object;}
   mesh(person,new THREE.SphereGeometry(1,22,16),skin,[0,1.645,0]).scale.set(.182,.25,.182);
   for(const x of [-.182,.182]){
@@ -86,14 +86,17 @@ export function createBrydon(){
   // The trimmed beard is a thin shell over the jaw, cut on a slight diagonal from
   // the sideburns to the mouth and fuller only at the chin.
   cap([.193,.262,.196],[0,1.645,.003],beard,[-.25,Math.PI+.5],[Math.PI*.56,Math.PI*.44],.2);
-  ellipsoid(person,[.034,.06,.046],[0,1.63,.188],'#e2b08a');
-  ellipsoid(person,[.04,.027,.04],[0,1.6,.205],'#d9a07a');
-  for(const x of [-.036,.036]){const lip=ellipsoid(person,[.046,.017,.02],[x,1.568,.2],moustache);lip.rotation.z=x<0?.2:-.2;}
-  box(person,[.05,.007,.008],[0,1.545,.199],'#6f4a39');
-  ellipsoid(person,[.028,.01,.01],[0,1.532,.192],'#b77b5d');
+  // A straight nose, a full moustache over the upper lip that droops into the beard at the
+  // corners, and a wide toothy grin tucked under it: the grin is what makes the face read as him.
+  ellipsoid(person,[.027,.066,.04],[0,1.637,.184],'#e2b08a');
+  ellipsoid(person,[.027,.02,.03],[0,1.598,.203],'#d9a07a');
+  ellipsoid(person,[.056,.016,.021],[0,1.567,.199],moustache);
+  for(const x of [-.05,.05])ellipsoid(person,[.013,.018,.014],[x,1.553,.189],beard).rotation.z=x<0?-.3:.3;
+  const grin=(radius,tube,z,color)=>{const part=mesh(person,new THREE.TorusGeometry(radius,tube,6,24,1.1),color,[0,1.605,z]);part.rotation.z=-Math.PI/2-.55;part.scale.z=.55;return part;};
+  grin(.07,.011,.19,'#f4efe6');grin(.082,.005,.187,'#b0705a');
   // Hair sits low at the nape and lifts off the forehead, swept to one side.
-  cap([.197,.31,.192],[0,1.645,-.008],darkHair,[0,Math.PI*2],[0,Math.PI*.36],0);
-  cap([.197,.31,.192],[0,1.645,-.008],darkHair,[Math.PI-.35,Math.PI+.7],[Math.PI*.36,Math.PI*.16],0);
+  cap([.197,.31,.192],[0,1.645,-.008],darkHair,[0,Math.PI*2],[0,Math.PI*.38],0);
+  cap([.197,.31,.192],[0,1.645,-.008],darkHair,[Math.PI-.35,Math.PI+.7],[Math.PI*.38,Math.PI*.14],0);
   cap([.194,.262,.196],[0,1.645,-.004],darkHair,[Math.PI+.2,Math.PI-.4],[Math.PI*.3,Math.PI*.36],0);
   // The tall shell hugs the forehead at the hairline, so nothing reads as a brim;
   // small flat tufts give it a messy texture, and two lift off the front.
@@ -106,25 +109,25 @@ export function createBrydon(){
   for(const[x,y,z]of[[-.03,1.835,.14],[.06,1.845,.125]]){
     const quiff=mesh(person,new THREE.IcosahedronGeometry(.05,0),'#957150',[x,y,z]);quiff.scale.set(1.4,.6,1);quiff.rotation.set(-.7,.2,.3);
   }
-  // Light blue eyes under darker brows, so the face still reads from the yard.
+  // Smiling, slightly narrowed light blue eyes under thin, gently arched brows.
   for(const x of [-.075,.075]){
-    ellipsoid(person,[.036,.022,.011],[x,1.684,.161],'#f0e6d2');
-    ellipsoid(person,[.014,.017,.008],[x+.003,1.684,.169],'#6b8ea3');
-    ellipsoid(person,[.006,.009,.005],[x+.004,1.684,.175],'#1f2629');
-    const brow=ellipsoid(person,[.052,.012,.015],[x,1.735,.156],'#74533a');brow.rotation.z=x<0?-.1:.1;
+    ellipsoid(person,[.031,.015,.01],[x,1.686,.161],'#f0e6d2');
+    ellipsoid(person,[.012,.013,.008],[x+.003,1.686,.168],'#6d93a8');
+    ellipsoid(person,[.005,.007,.005],[x+.004,1.686,.174],'#1f2629');
+    const brow=ellipsoid(person,[.048,.009,.013],[x,1.733,.156],'#8a6340');brow.rotation.z=x<0?-.12:.12;
   }
-  // Clear acrylic frames with a faint lens glint, temples running back over the ears.
+  // Thin silver-grey rectangular frames with a faint lens glint, temples running back over the ears.
   const glass=new THREE.MeshStandardMaterial({color:'#e8f2f2',transparent:true,opacity:.22,roughness:.15,metalness:.1});
   for(const side of [-1,1]){
-    const center=side*.078,points=[];
-    const corners=[[-.048,-.03],[.048,-.034],[.05,.036],[-.05,.036]];
-    for(const[x,y]of corners)points.push([center+x,1.683+y,.186]);
-    const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),true,'catmullrom',.25);
-    mesh(person,new THREE.TubeGeometry(curve,24,.0095,6,true),frame,[0,0,0]);
-    const lens=new THREE.Mesh(new THREE.CircleGeometry(1,12),glass);lens.scale.set(.049,.034,1);lens.position.set(center,1.685,.187);person.add(lens);
-    rod(person,[side*.128,1.712,.178],[side*.185,1.698,-.04],.0085,frame);
+    const center=side*.08,points=[];
+    const corners=[[-.052,-.032],[.052,-.034],[.054,.034],[-.054,.034]];
+    for(const[x,y]of corners)points.push([center+x,1.685+y,.188]);
+    const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),true,'catmullrom',.2);
+    mesh(person,new THREE.TubeGeometry(curve,24,.0065,6,true),frame,[0,0,0]);
+    const lens=new THREE.Mesh(new THREE.CircleGeometry(1,12),glass);lens.scale.set(.052,.034,1);lens.position.set(center,1.686,.189);person.add(lens);
+    rod(person,[side*.133,1.714,.178],[side*.185,1.698,-.04],.006,frame);
   }
-  rod(person,[-.03,1.702,.19],[.03,1.702,.19],.007,frame);
+  rod(person,[-.028,1.705,.192],[.028,1.705,.192],.005,frame);
   person.userData.arms=arms;
   return person;
 }
