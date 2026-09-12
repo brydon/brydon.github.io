@@ -62,23 +62,26 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
   const servingStream=new THREE.Mesh(new THREE.CylinderGeometry(.004,.003,1,7),new THREE.MeshStandardMaterial({color:'#785136',roughness:.3}));servingStream.name='Coffee into the desk mug';servingStream.visible=false;cabin.add(servingStream);
 
   // Every movable part is geometry. Open rims and separate lids make filling readable.
-  const goose=new THREE.Group();goose.position.set(.27,.116,.025);station.add(goose);const gooseHome=goose.position.clone();
-  // Stagg-style: matte hollow body, thermometer lid, rigid grip on +X and a low spout on -X so the tilt pours.
-  const matte=color=>new THREE.MeshStandardMaterial({color,roughness:.6,flatShading:true,side:THREE.DoubleSide}),steel=new THREE.MeshStandardMaterial({color:'#aeb3b0',metalness:.4,roughness:.32,flatShading:true});
+  // Stagg: a matte black flask with a walnut knob and Y-branch grip, and a low spout on -X so
+  // the tilt pours.
+  const walnut='#6b4430',walnutDark='#553422',black='#101317';
+  const matte=color=>new THREE.MeshStandardMaterial({color,roughness:.85,flatShading:true,side:THREE.DoubleSide}),steel=new THREE.MeshStandardMaterial({color:'#c9cdcf',metalness:.55,roughness:.25,flatShading:true});
   function cylinderBetween(a,b,rA,rB,color,p,sides=12){const delta=new THREE.Vector3(...b).sub(new THREE.Vector3(...a)),m=mesh(new THREE.CylinderGeometry(rB,rA,delta.length(),sides),color,(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2,p);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return m;}
-  mesh(new THREE.LatheGeometry([[.101,-.112],[.116,-.108],[.126,-.096],[.13,-.074],[.126,-.03],[.116,.025],[.103,.082],[.094,.108],[.091,.114]].map(p=>new THREE.Vector2(...p)),28),'#202321',0,0,0,goose).material=matte('#202321');
-  cylinder(.101,.101,.008,0,-.111,0,'#202321',28,goose);
-  mesh(new THREE.CylinderGeometry(.084,.088,.045,28,1,true),'#171a19',0,.092,0,goose).material=matte('#171a19');
-  mesh(new THREE.TorusGeometry(.089,.0035,7,28),'#202321',0,.114,0,goose).rotation.x=Math.PI/2;
+  const goose=new THREE.Group();goose.name='Stagg kettle';goose.position.set(.27,.116,.025);station.add(goose);const gooseHome=goose.position.clone();
+  mesh(new THREE.LatheGeometry([[0,-.112],[.112,-.112],[.122,-.107],[.126,-.096],[.121,-.066],[.108,-.025],[.093,.018],[.08,.052],[.076,.072],[.076,.104]].map(p=>new THREE.Vector2(...p)),32),black,0,0,0,goose).material=matte(black);
+  mesh(new THREE.CylinderGeometry(.071,.071,.04,24,1,true),'#141616',0,.084,0,goose).material=matte('#141616');
+  mesh(new THREE.TorusGeometry(.0745,.003,6,32),black,0,.104,0,goose).rotation.x=Math.PI/2;
   const gooseLid=new THREE.Group();gooseLid.position.y=.12;goose.add(gooseLid);
-  cylinder(.087,.087,.009,0,0,0,'#202321',28,gooseLid);cylinder(.078,.084,.006,0,.006,0,'#262927',28,gooseLid);
-  cylinder(.027,.029,.009,0,.012,0,'#111413',20,gooseLid);cylinder(.024,.024,.006,0,.019,0,'#aeb3b0',24,gooseLid).material=steel;cylinder(.0205,.0205,.002,0,.023,0,'#e5e4df',24,gooseLid);
-  box(.0025,.002,.015,0,.025,-.003,'#353836',gooseLid).rotation.y=.45;
-  cylinderBetween([.09,.057,0],[.125,.057,0],.017,.017,'#aeb3b0',goose,16).material=steel;
-  cylinderBetween([.122,.057,0],[.141,.045,0],.026,.028,'#171a19',goose);cylinderBetween([.14,.049,0],[.19,-.067,0],.028,.023,'#202321',goose);cylinderBetween([.19,-.067,0],[.183,-.083,0],.023,.021,'#202321',goose);
-  cylinderBetween([-.094,-.038,0],[-.126,-.037,0],.016,.012,'#202321',goose,14);
-  pipe([[-.12,-.037,0],[-.152,-.034,0],[-.176,-.018,0],[-.187,.018,0],[-.202,.065,0],[-.222,.116,0],[-.246,.166,0],[-.27,.205,0],[-.291,.221,0]],.0085,'#202321',goose);
-  cylinderBetween([-.286,.216,0],[-.296,.225,0],.009,.0105,'#202321',goose);
+  cylinder(.078,.078,.008,0,-.011,0,black,32,gooseLid);
+  cylinder(.021,.023,.016,0,.004,0,walnut,18,gooseLid);cylinder(.019,.021,.003,0,.0135,0,'#7a5038',18,gooseLid);
+  // Chrome collar into a walnut Y-branch: a small upward nub and a long diagonal grip.
+  cylinderBetween([.07,.072,0],[.1,.072,0],.013,.013,'#c9cdcf',goose,16).material=steel;
+  cylinderBetween([.099,.072,0],[.132,.076,0],.016,.018,walnut,goose);mesh(new THREE.SphereGeometry(.019,12,8),walnut,.131,.077,0,goose);
+  cylinderBetween([.128,.078,0],[.148,.1,0],.014,.011,walnut,goose);mesh(new THREE.SphereGeometry(.011,10,8),walnut,.148,.1,0,goose);
+  cylinderBetween([.13,.076,0],[.205,-.058,0],.019,.016,walnut,goose);mesh(new THREE.SphereGeometry(.016,10,8),walnutDark,.205,-.058,0,goose);
+  // A thin spout leaves the body low and rises in a long S to a slightly downturned tip.
+  cylinderBetween([-.1,-.07,0],[-.135,-.068,0],.015,.009,black,goose,14);
+  pipe([[-.13,-.068,0],[-.158,-.064,0],[-.178,-.048,0],[-.19,-.018,0],[-.197,.03,0],[-.207,.09,0],[-.224,.15,0],[-.246,.198,0],[-.27,.226,0],[-.29,.232,0],[-.303,.225,0]],.0065,black,goose);
 
   // A 1Zpresso-style hand grinder: textured grip, dial collar, Z crank and a knurled catch cup.
   const graphite='#191b1e',shoulder='#23262a',knurl='#2c2f33',band='#121416',wood='#875538';
@@ -122,8 +125,8 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
     get phase(){return state.phase;},get progress(){return coffeeProgress(state);},
     get filling(){return state.water==='filling';},get fillProgress(){return fillProgress(state);},
     clueRevealed(){return coffeeClueRevealed(state);},
-    fillTarget(){return worldPoint(.27,.25,.025);},
-    hitAreas(){return {grinder:quad(.54,.185,.285,.27,.37),v60:quad(-.21,.414,.17,.33,.25),gooseneck:quad(.205,.172,.14,.39,.345)};},
+    fillTarget(){return worldPoint(.27,.24,.025);},
+    hitAreas(){return {grinder:quad(.54,.185,.285,.27,.37),v60:quad(-.21,.414,.17,.33,.25),gooseneck:quad(.18,.172,.14,.44,.345)};},
     animate(time,seconds,reduced=false,burning=false){
       advanceCoffee(state,seconds,{burning});notify();const phase=state.phase,p=coffeeProgress(state),pour=phase==='pouring',fill=state.water==='filling',loading=phase==='loading';
       const serving=phase==='serving',served=phase==='served',finished=['brewed','serving','served'].includes(phase),cupFill=served?1:serving?servingFraction(p):0;
@@ -142,7 +145,7 @@ export function createCoffeeStation(cabin,onChange=()=>{}){
       if(pour&&!reduced){goose.position.x+=Math.sin(time*.0018)*.008*raised;goose.position.z+=Math.cos(time*.0018)*.008*raised;}
       const fp=fillProgress(state),lidLift=fill?ease(fp/.18)*(1-ease((fp-.84)/.16)):0;gooseLid.position.set(0,.12+.11*lidLift,-.07*lidLift);gooseLid.rotation.x=-.45*lidLift;
       water.visible=pour&&waterIsFlowing(p);station.updateWorldMatrix(true,true);
-      if(water.visible){tip.set(-.296,.225,0);goose.localToWorld(tip);station.worldToLocal(tip);direction.subVectors(landing,tip);water.position.copy(tip).add(landing).multiplyScalar(.5);water.scale.y=direction.length();water.quaternion.setFromUnitVectors(up,direction.normalize());}
+      if(water.visible){tip.set(-.303,.225,0);goose.localToWorld(tip);station.worldToLocal(tip);direction.subVectors(landing,tip);water.position.copy(tip).add(landing).multiplyScalar(.5);water.scale.y=direction.length();water.quaternion.setFromUnitVectors(up,direction.normalize());}
       // Set the dripper down, carry the server to the desk, pour, then return it.
       const motion=serving?servingMotion(p):servingMotion(0),filterMove=motion.filter;
       filterRig.position.set(-.14*filterMove,-.235*filterMove+Math.sin(filterMove*Math.PI)*.24,.23*filterMove);
