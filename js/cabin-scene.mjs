@@ -15,6 +15,7 @@ import {createPersonalDetails} from './cabin-personal-details.mjs';
 import {createGearWall} from './cabin-gear.mjs';
 import {createCoffeeStation} from './cabin-coffee.mjs';
 import {createTeaMug} from './cabin-tea.mjs';
+import {createMonitorDisplay,createMonitorStand,createDeskKeyboard} from './cabin-desk-computer.mjs';
 import {createRewardSign} from './cabin-reward.mjs';
 import {createHearthKettle,createBlueJay} from './cabin-life.mjs';
 import {drawResearchBoard} from './chalkboard.mjs';
@@ -181,7 +182,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   for(const x of [-.08,1.67])for(const z of [-1.53,-.86])box(.1,.71,.1,x,.72,z,'#6f4b2d',cabin);
   box(.95,.65,.6,1.35,.76,-1.23,'#8b5d31',cabin);
   for(let i=0;i<2;i++){box(.78,.012,.02,1.35,.66+i*.26,-.916,'#563e27',cabin);box(.18,.04,.04,1.35,.77+i*.22,-.89,'#d6b680',cabin);}
-  const monitorBody=box(1.36,.94,.2,.56,1.64,-1.4,'#253934',cabin);
+  const monitorBody=createMonitorDisplay();cabin.add(monitorBody,createMonitorStand());
   // Transparent WebGL cutout exposes the CSS3D iframe behind the scene. Geometry
   // in front still occludes it; DOM text and controls stay sharp and interactive.
   const monitor=new THREE.Mesh(new THREE.PlaneGeometry(1.16,.725),new THREE.MeshBasicMaterial({color:0,opacity:0,blending:THREE.NoBlending,side:THREE.DoubleSide}));
@@ -192,9 +193,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const htmlScreen=new CSS3DObject(screenElement);htmlScreen.position.copy(monitor.position);htmlScene.add(htmlScreen);
   let pendingPage='home';
   computerFrame.addEventListener('load',()=>computerFrame.contentWindow?.postMessage({source:'switchback-cabin',type:'page',value:pendingPage},location.origin));
-  box(.3,.1,.27,.56,1.2,-1.26,'#354039',cabin);
-  box(.79,.04,.28,.56,1.22,-.99,'#3d4940',cabin);
-  for(let i=0;i<5;i++)box(.09,.016,.02,.28+i*.12,1.246,-.95,'#b7bba6',cabin);
+  // A walnut 75% keyboard sits between the mug and the notebook.
+  const keyboard=createDeskKeyboard();keyboard.position.set(.56,1.195,-1.0);cabin.add(keyboard);
   box(.42,.04,.5,1.37,1.225,-1.02,'#dfd0a3',cabin);
   box(.39,.01,.46,1.37,1.25,-1.02,'#f2e8cd',cabin);
   const interiorDetails=furnishCabin(cabin);
