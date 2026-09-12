@@ -21,96 +21,110 @@ function ellipsoid(parent,size,position,color){const object=mesh(parent,new THRE
 function rod(parent,a,b,radius,color,metal=false){const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),delta=end.clone().sub(start);const object=mesh(parent,new THREE.CylinderGeometry(radius,radius,delta.length(),8),color,start.add(end).multiplyScalar(.5).toArray(),metal);object.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return object;}
 function pipe(parent,points,radius,color,metal=false){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));return mesh(parent,new THREE.TubeGeometry(curve,24,radius,7,false),color,[0,0,0],metal);}
 
-/** Brydon in his green flannel, glasses, worn jeans and riding boots. */
+/** Brydon in his grey plaid flannel over a dark tee, clear glasses, worn jeans and riding boots. */
 export function createBrydon(){
-  const person=new THREE.Group();person.name='Brydon in green plaid';
-  const skin='#d4a076',hair='#68412a',darkHair='#493325',green='#3e5341',olive='#85815a',ink='#273a31';
+  const person=new THREE.Group();person.name='Brydon in plaid flannel';
+  const skin='#dfab85',hair='#7a5a3d',darkHair='#6a4b32',tee='#26282a';
+  // A tiny pixel tartan: black and grey blocks crossed by charcoal and a thin cream line.
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=32;const context=canvas.getContext('2d');
+  const sett=[['#1e2022',7],['#4a4e51',2],['#8f9493',6],['#4a4e51',1],['#e6e2d6',1],['#4a4e51',4],['#1e2022',6],['#8f9493',2],['#e6e2d6',1],['#4a4e51',2]];
+  const stripes=sett.flatMap(([color,count])=>Array(count).fill(new THREE.Color(color)));
+  for(let y=0;y<32;y++)for(let x=0;x<32;x++){context.fillStyle='#'+stripes[x].clone().lerp(stripes[y],(x+y)%2?.35:.65).getHexString();context.fillRect(x,y,1,1);}
+  const plaids=new Map();
+  function plaid(rx,ry){
+    const key=rx+','+ry;
+    if(!plaids.has(key)){const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.RepeatWrapping;map.magFilter=THREE.NearestFilter;map.repeat.set(rx,ry);plaids.set(key,new THREE.MeshStandardMaterial({map,roughness:.95,flatShading:true}));}
+    return plaids.get(key);
+  }
+  function cloth(geometry,rx,ry,position,parent=person){const object=new THREE.Mesh(geometry,plaid(rx,ry));object.position.set(...position);object.castShadow=object.receiveShadow=true;parent.add(object);return object;}
   function tailored(size,position,color,parent=person,r=.025){
     const[w,h,d]=size,shape=new THREE.Shape();shape.moveTo(-w/2+r,-h/2+r);shape.lineTo(w/2-r,-h/2+r);shape.lineTo(w/2-r,h/2-r);shape.lineTo(-w/2+r,h/2-r);shape.closePath();
     const geometry=new THREE.ExtrudeGeometry(shape,{depth:d-r*2,bevelEnabled:true,bevelSize:r,bevelThickness:r,bevelSegments:1,steps:1});geometry.translate(0,0,-d/2+r);
     return mesh(parent,geometry,color,position);
   }
-  // Slightly relaxed legs, cuffs, stitching, laces and solid boot soles.
+  // Tapered jeans over rolled cuffs, laced boots and solid soles.
   for(const side of [-1,1]){
-    const x=side*.14;
-    tailored([.235,.4,.25],[x,.65,-.025],'#344e60');
-    const shin=tailored([.185,.35,.21],[x+side*.015,.32,0],'#3d5869');shin.rotation.z=side*.025;
-    box(person,[.014,.48,.014],[x+side*.091,.45,.111],'#67808a');
+    const x=side*.125;
+    mesh(person,new THREE.CylinderGeometry(.118,.1,.42,10),'#3b5568',[x,.62,-.01]);
+    mesh(person,new THREE.CylinderGeometry(.1,.092,.34,10),'#3b5568',[x+side*.01,.36,0]);
     tailored([.20,.055,.22],[x+side*.015,.18,.008],'#74838a',person,.009);
     tailored([.23,.145,.36],[x+side*.015,.087,.075],'#795233');
     tailored([.235,.036,.375],[x+side*.015,.025,.075],'#302e27',person,.009);
     tailored([.18,.16,.19],[x+side*.015,.15,-.008],'#90653e');
     for(let i=0;i<4;i++)rod(person,[x-.068,.18-i*.018,.035+i*.022],[x+.068,.18-i*.018,.035+i*.022],.008,'#c3a577');
-    const knee=box(person,[.13,.023,.008],[x,.47,.127],'#69808a');knee.rotation.z=side*.15;
   }
-  tailored([.49,.16,.28],[0,.84,-.018],'#344b5a');
-  box(person,[.48,.035,.29],[0,.883,-.015],'#594434');box(person,[.055,.05,.015],[0,.884,.139],'#9e9b7e');
-  // The flannel has thickness and a wraparound plaid pattern, over a dark tee.
-  tailored([.575,.57,.34],[0,1.13,0],green);
+  mesh(person,new THREE.CylinderGeometry(.228,.228,.14,12),'#344b5a',[0,.85,-.005]).scale.z=.6;
+  // The untucked flannel is turned on a lathe: soft sloped shoulders and a gentle taper.
+  const profile=[[0,-.06],[.245,-.06],[.245,.06],[.25,.26],[.262,.4],[.25,.47],[.2,.52],[.11,.55],[0,.56]].map(([r,y])=>new THREE.Vector2(r,y));
+  cloth(new THREE.LatheGeometry(profile,14),5,2.5,[0,.84,0]).scale.z=.64;
+  mesh(person,new THREE.LatheGeometry(profile,6,-.3,.6),tee,[0,.84,.004]).scale.set(1.012,1,.65);
   for(const side of [-1,1]){
-    for(const x of [-.22,-.105,.105,.22])box(person,[.043,.54,.008],[x,1.13,side*.173],olive);
-    for(let i=0;i<5;i++)box(person,[.55,.045,.012],[0,.91+i*.105,side*.18],ink);
-    for(const x of [-.289,.289])for(let i=0;i<5;i++)box(person,[.008,.045,.31],[x,.91+i*.105,0],ink);
+    cloth(new THREE.BoxGeometry(.035,.44,.02),.3,2.2,[side*.082,1.08,.157]).rotation.y=side*.32;
+    cloth(new THREE.BoxGeometry(.1,.11,.016),.6,.7,[side*.155,1.2,.132]).rotation.y=side*.55;
+    cloth(new THREE.BoxGeometry(.108,.032,.022),.6,.2,[side*.155,1.264,.136]).rotation.y=side*.55;
+    cloth(new THREE.BoxGeometry(.1,.12,.025),.6,.6,[side*.085,1.4,.1]).rotation.set(-.35,side*.35,side*.55);
   }
-  tailored([.175,.5,.017],[0,1.155,.19],'#242f2b',person,.005);
-  for(const x of [-.107,.107])box(person,[.016,.5,.014],[x,1.135,.203],'#b4ac79');
-  for(const x of [-.193,.193]){
-    tailored([.105,.115,.018],[x,1.235,.201],green,person,.009);
-    box(person,[.103,.025,.011],[x,1.267,.215],olive);
-    ellipsoid(person,[.009,.009,.006],[x,1.26,.223],'#c5baa0');
-    const collar=tailored([.096,.125,.033],[x*.48,1.392,.152],'#697653',person,.008);collar.rotation.z=Math.sign(x)*.38;
-  }
-  for(let i=0;i<5;i++)ellipsoid(person,[.009,.009,.006],[.102,.95+i*.08,.218],'#c9bea2');
-  rod(person,[0,1.36,0],[0,1.47,0],.092,skin);
+  rod(person,[0,1.36,0],[0,1.47,0],.088,skin);
+  // Rounded sleeves hang from the shoulder pivots used by the walk cycle.
   const arms=[];
   for(const side of [-1,1]){
-    const arm=new THREE.Group();arm.position.set(side*.325,1.35,0);arm.rotation.z=side*.06;person.add(arm);arms.push(arm);
-    tailored([.2,.29,.24],[side*.012,-.12,-.008],green,arm);
-    tailored([.177,.25,.205],[side*.027,-.36,.018],green,arm);
-    for(let i=0;i<5;i++)box(arm,[.18,.034,.008],[side*.021,-.04-i*.095,.127],ink);
-    box(arm,[.04,.43,.012],[side*.04,-.22,.13],olive);
-    tailored([.19,.06,.216],[side*.027,-.48,.023],'#78805b',arm,.009);
-    ellipsoid(arm,[.074,.104,.069],[side*.035,-.59,.035],skin);
-    ellipsoid(arm,[.035,.062,.032],[-side*.025,-.57,.083],'#dcae83');
-    for(let i=0;i<3;i++)box(arm,[.008,.052,.006],[side*.035-.032+i*.025,-.62,.097],'#ac7956');
+    const arm=new THREE.Group();arm.position.set(side*.27,1.33,0);arm.rotation.z=side*.1;person.add(arm);arms.push(arm);
+    cloth(new THREE.CapsuleGeometry(.092,.2,3,10),2,1.4,[side*.01,-.13,0],arm);
+    cloth(new THREE.CapsuleGeometry(.08,.2,3,10),2,1.4,[side*.02,-.35,.012],arm);
+    cloth(new THREE.CylinderGeometry(.085,.085,.06,10),2,.3,[side*.022,-.47,.014],arm);
+    ellipsoid(arm,[.068,.096,.064],[side*.024,-.56,.02],skin);
+    ellipsoid(arm,[.03,.055,.03],[-side*.03,-.54,.06],'#e2b38c');
   }
-  // Faceted cheekbones, ears, a shaped beard, and swept, tousled brown hair.
-  ellipsoid(person,[.196,.242,.179],[0,1.645,0],skin);
-  for(const x of [-.196,.196]){
-    ellipsoid(person,[.039,.069,.03],[x,1.64,-.006],skin);
-    ellipsoid(person,[.016,.039,.012],[x*1.055,1.641,.017],'#b98361');
-    ellipsoid(person,[.038,.092,.075],[x*.88,1.59,.026],darkHair);
+  // A longer face, a short sandy beard that follows the jaw, and swept medium-brown hair.
+  const beard='#9a6a42',moustache='#b98b5a',frame='#e1e4de';
+  function cap(radii,position,color,phi,theta,tilt){const object=mesh(person,new THREE.SphereGeometry(1,28,16,phi[0],phi[1],theta[0],theta[1]),color,position);object.scale.set(...radii);object.rotation.x=tilt;return object;}
+  mesh(person,new THREE.SphereGeometry(1,22,16),skin,[0,1.645,0]).scale.set(.182,.25,.182);
+  for(const x of [-.182,.182]){
+    ellipsoid(person,[.036,.066,.03],[x*1.02,1.645,-.01],skin);
+    ellipsoid(person,[.015,.037,.012],[x*1.09,1.646,.012],'#b98361');
   }
-  ellipsoid(person,[.169,.125,.145],[0,1.5,.054],darkHair);
-  ellipsoid(person,[.123,.093,.057],[0,1.484,.172],hair);
-  for(const x of [-.092,.092])ellipsoid(person,[.064,.066,.049],[x,1.558,.143],hair);
-  ellipsoid(person,[.039,.051,.046],[0,1.624,.187],'#dca980');
-  ellipsoid(person,[.047,.026,.04],[0,1.598,.204],'#d7a075');
-  for(const x of [-.039,.039]){const moustache=ellipsoid(person,[.047,.023,.022],[x,1.565,.207],darkHair);moustache.rotation.z=x<0?.15:-.15;}
-  box(person,[.058,.009,.008],[0,1.542,.214],'#b58465');
-  ellipsoid(person,[.2,.165,.17],[0,1.763,-.065],darkHair);
-  // Asymmetric curls are individual low-poly volumes, so the silhouette reads.
-  for(let i=0;i<22;i++){
-    const a=i*2.399,r=.045+(i%4)*.035;
-    const tuft=mesh(person,new THREE.IcosahedronGeometry(.057+(i%3)*.01,0),['#68412a','#7e4f2e','#986239'][i%3],[Math.cos(a)*r,1.823+(i%3)*.023+Math.cos(a)*.017,Math.sin(a)*r-.012]);
-    tuft.scale.set(1.16,.8,1);tuft.rotation.set(i*.5,i*.7,i*.2);
+  // The trimmed beard is a thin shell over the jaw, cut on a slight diagonal from
+  // the sideburns to the mouth and fuller only at the chin.
+  cap([.193,.262,.196],[0,1.645,.003],beard,[-.25,Math.PI+.5],[Math.PI*.56,Math.PI*.44],.2);
+  ellipsoid(person,[.034,.06,.046],[0,1.63,.188],'#e2b08a');
+  ellipsoid(person,[.04,.027,.04],[0,1.6,.205],'#d9a07a');
+  for(const x of [-.036,.036]){const lip=ellipsoid(person,[.046,.017,.02],[x,1.568,.2],moustache);lip.rotation.z=x<0?.2:-.2;}
+  box(person,[.05,.007,.008],[0,1.545,.199],'#6f4a39');
+  ellipsoid(person,[.028,.01,.01],[0,1.532,.192],'#b77b5d');
+  // Hair sits low at the nape and lifts off the forehead, swept to one side.
+  cap([.197,.31,.192],[0,1.645,-.008],darkHair,[0,Math.PI*2],[0,Math.PI*.36],0);
+  cap([.197,.31,.192],[0,1.645,-.008],darkHair,[Math.PI-.35,Math.PI+.7],[Math.PI*.36,Math.PI*.16],0);
+  cap([.194,.262,.196],[0,1.645,-.004],darkHair,[Math.PI+.2,Math.PI-.4],[Math.PI*.3,Math.PI*.36],0);
+  // The tall shell hugs the forehead at the hairline, so nothing reads as a brim;
+  // small flat tufts give it a messy texture, and two lift off the front.
+  for(let i=0;i<14;i++){
+    const a=i*2.399,r=.03+(i%5)*.028,x=Math.cos(a)*r*.9,z=Math.sin(a)*r*.85+.01;
+    const y=1.64+.31*Math.sqrt(Math.max(0,1-(x/.197)**2-((z+.008)/.192)**2));
+    const tuft=mesh(person,new THREE.IcosahedronGeometry(.045,0),[hair,'#8a6647','#9e7a55'][i%3],[x,y,z]);
+    tuft.scale.set(1.3,.55,1.1);tuft.rotation.set(-.3,i*.7,.25);
   }
-  for(const x of [-.085,.085]){
-    ellipsoid(person,[.04,.026,.013],[x,1.685,.157],'#eee0c7');
-    ellipsoid(person,[.013,.02,.009],[x+.005,1.685,.17],'#3a4335');
-    ellipsoid(person,[.006,.014,.005],[x+.006,1.685,.179],'#222b27');
-    const brow=ellipsoid(person,[.06,.014,.016],[x,1.738,.149],hair);brow.rotation.z=x<0?-.08:.08;
+  for(const[x,y,z]of[[-.03,1.835,.14],[.06,1.845,.125]]){
+    const quiff=mesh(person,new THREE.IcosahedronGeometry(.05,0),'#957150',[x,y,z]);quiff.scale.set(1.4,.6,1);quiff.rotation.set(-.7,.2,.3);
   }
-  // Thick rounded rectangular frames, with actual temples extending to the ears.
+  // Light blue eyes under darker brows, so the face still reads from the yard.
+  for(const x of [-.075,.075]){
+    ellipsoid(person,[.036,.022,.011],[x,1.684,.161],'#f0e6d2');
+    ellipsoid(person,[.014,.017,.008],[x+.003,1.684,.169],'#6b8ea3');
+    ellipsoid(person,[.006,.009,.005],[x+.004,1.684,.175],'#1f2629');
+    const brow=ellipsoid(person,[.052,.012,.015],[x,1.735,.156],'#74533a');brow.rotation.z=x<0?-.1:.1;
+  }
+  // Clear acrylic frames with a faint lens glint, temples running back over the ears.
+  const glass=new THREE.MeshStandardMaterial({color:'#e8f2f2',transparent:true,opacity:.22,roughness:.15,metalness:.1});
   for(const side of [-1,1]){
-    const center=side*.09,points=[];
-    const corners=[[-.052,-.035],[.052,-.035],[.052,.035],[-.052,.035]];
-    for(const[x,y]of corners)points.push([center+x,1.683+y,.192]);
-    const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),true,'catmullrom',.18);
-    mesh(person,new THREE.TubeGeometry(curve,24,.010,6,true),'#252e2b',[0,0,0]);
-    rod(person,[side*.154,1.7,.184],[side*.195,1.687,-.05],.011,'#252e2b');
+    const center=side*.078,points=[];
+    const corners=[[-.048,-.03],[.048,-.034],[.05,.036],[-.05,.036]];
+    for(const[x,y]of corners)points.push([center+x,1.683+y,.186]);
+    const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),true,'catmullrom',.25);
+    mesh(person,new THREE.TubeGeometry(curve,24,.0095,6,true),frame,[0,0,0]);
+    const lens=new THREE.Mesh(new THREE.CircleGeometry(1,12),glass);lens.scale.set(.049,.034,1);lens.position.set(center,1.685,.187);person.add(lens);
+    rod(person,[side*.128,1.712,.178],[side*.185,1.698,-.04],.0085,frame);
   }
-  rod(person,[-.03,1.692,.196],[.03,1.692,.196],.009,'#252e2b');
+  rod(person,[-.03,1.702,.19],[.03,1.702,.19],.007,frame);
   person.userData.arms=arms;
   return person;
 }

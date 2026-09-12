@@ -1,6 +1,6 @@
 # Switchback
 
-A fully 3D mountain cabin for Brydon Eastman. Come through the door, look around, and use the real website on the desk computer. A black 2015 Iron 883, green flannel, Canadian flag, sleeping dog, books, climbing gear, equations and a quiet fire make it home.
+A fully 3D mountain cabin for Brydon Eastman. Come through the door, look around, and use the real website on the desk computer. A black 2015 Iron 883, grey plaid flannel, Canadian flag, sleeping dog, books, climbing gear, equations and a quiet fire make it home.
 
 ## Run locally
 

@@ -2,7 +2,7 @@
 
 One small, fully 3D scene, with an authored entrance and a real website on the computer inside. The mountain valley sets the scene; the cabin is the experience.
 
-The exterior has a timber cabin, Canadian flag, fire ring, front steps, a black 2015 Iron 883 and Brydon in green flannel. All are modeled geometry. The helmet rests on the porch. Entering opens the hinged door, walks Brydon to it and takes the camera inside. WASD, arrow keys and on-screen controls pan the camera within comfortable limits.
+The exterior has a timber cabin, Canadian flag, fire ring, front steps, a black 2015 Iron 883 and Brydon in a grey plaid flannel. All are modeled geometry. The helmet rests on the porch. Entering opens the hinged door, walks Brydon to it and takes the camera inside. WASD, arrow keys and on-screen controls pan the camera within comfortable limits.
 
 The interior follows the approved “After Hours” reference: a left-wall bookshelf, unobstructed math chalkboard, climbing ropes and helmet, coffee setup, open stone fireplace, woven rug, sleeping Bernese and a working desk. Plants, a thrown blanket, firewood, pencils and lighting make the room feel inhabited.
 
