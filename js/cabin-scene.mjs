@@ -206,7 +206,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   const blueJay=createBlueJay(scene);
   const raccoon=createRaccoon(scene);
   // A favorite picture above the monitor: printed art, cream mat, and walnut frame.
-  const coupleFrame=new THREE.Group();coupleFrame.name='Brydon and his wife at the Golden Gate Bridge';
+  const coupleFrame=new THREE.Group();coupleFrame.name='Brydon and his wife by the Toronto skyline at sunset';
   coupleFrame.position.set(.96,2.53,-1.855);coupleFrame.scale.setScalar(.75);cabin.add(coupleFrame);
   box(1.32,1.05,.045,0,0,0,'#63442f',coupleFrame);
   box(1.22,.95,.008,0,0,.027,'#ece0c8',coupleFrame);
