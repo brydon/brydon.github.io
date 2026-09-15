@@ -400,7 +400,7 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   positionCamera();requestAnimationFrame(animate);
   return {
     enter(){approachDoor(()=>{desired=1;targetPanX=0;targetPanY=0;});}, exit(){desired=0;focusDesired=0;focusProgress=0;computerNotified=false;panKeys.clear();},
-    visit(place,onArrive){const via=[avatarPosition[0],.07,4.15];walkRoute(place==='bike'?[via,[4.95,.07,4.4],[4.9,.07,2.75]]:place==='sign'?[via,[2.45,.07,5.55]]:[via,[-2.7,.07,4.15]],onArrive);},
+    visit(place,onArrive){const via=[avatarPosition[0],.07,4.15];walkRoute(place==='bike'?[via,[4.95,.07,4.4],[4.9,.07,2.75]]:place==='sign'?[via,[-.65,.07,5.55]]:[via,[-2.7,.07,4.15]],onArrive);},
     evacuate(onArrive){walkRoute([[.55,.07,4.3],[.55,.07,5.05]],onArrive);},
     computer(page){if(page)pendingPage=page;approachDoor(()=>{desired=1;focusDesired=1;targetPanX=0;targetPanY=0;panKeys.clear();});if(page)computerFrame.contentWindow?.postMessage({source:'switchback-cabin',type:'page',value:page},location.origin);},
     room(){focusDesired=0;panKeys.clear();},

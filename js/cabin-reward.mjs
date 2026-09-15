@@ -3,7 +3,7 @@ import * as THREE from './vendor/three.module.min.js';
 export const REWARD_CODE='4d8be3c34a6d1385fac4538f51b811264bd010ffa4876f2f1bce2b1466c0f094';
 
 export function createRewardSign(scene){
-  const sign=new THREE.Group();sign.name='The long way home sign';sign.position.set(3.4,.07,4.4);sign.rotation.y=.25;sign.scale.setScalar(.8);sign.visible=false;scene.add(sign);
+  const sign=new THREE.Group();sign.name='The long way home sign';sign.position.set(.3,.07,4.4);sign.rotation.y=.25;sign.scale.setScalar(.65);sign.visible=false;scene.add(sign);
   function box(w,h,d,x,y,z,color){const object=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,roughness:.94}));object.position.set(x,y,z);object.castShadow=true;object.receiveShadow=true;sign.add(object);return object;}
   for(const x of [-.83,.83]){box(.12,1.98,.13,x,.99,-.035,'#785635');box(.16,.07,.17,x,2.00,-.035,'#b59159');}
   box(2.20,1.32,.12,0,1.52,0,'#76563a');
