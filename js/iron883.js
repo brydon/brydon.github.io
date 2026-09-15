@@ -67,6 +67,12 @@ export function createIron883({ quality = 'high', finish = 'denim', optimize = t
     emissive: '#d36a0c',
     emissiveIntensity: .1
   });
+  // The front running lamps stay lit alongside the headlight; fork reflectors
+  // keep the dim amber material above.
+  const amberRunningLight = mat('Amber running lights', '#e38a17', .05, .22, {
+    emissive: '#ff4500',
+    emissiveIntensity: 2.5
+  });
   const red = mat('Red rear lenses', '#8b0d13', .03, .23, {
     emissive: '#d20808',
     emissiveIntensity: .14
@@ -1716,11 +1722,12 @@ export function createIron883({ quality = 'high', finish = 'denim', optimize = t
       black, 'Front indicator shell'
     );
 
+    // Sit just ahead of the shell's nose so the entire lit lens is visible.
     const signal = add(
       cockpit,
       new THREE.CircleGeometry(.0195, 32),
-      amber,
-      [.565, .829, s * .149],
+      amberRunningLight,
+      [.570, .829, s * .149],
       'Front amber indicator lens'
     );
     signal.rotation.y = Math.PI / 2;
