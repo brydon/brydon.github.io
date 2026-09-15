@@ -236,8 +236,8 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   await createGearWall(cabin);
   box(.64,.09,1.05,1.94,1.05,.50,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.50,'#425a50',cabin);
   const coffeeStation=createCoffeeStation(cabin,onCoffee);
-  // A bolted bracket on the right corner timber holds the pole 45 degrees out.
-  const flagMount=new THREE.Group();flagMount.name='Flagpole bracket on the corner wall';flagMount.position.set(2.52,2.25,2.09);scene.add(flagMount);
+  // A bracket on the front face of the right corner timber points 45 degrees up over the porch.
+  const flagMount=new THREE.Group();flagMount.name='Flagpole bracket on the corner wall';flagMount.position.set(2.36,2.25,2.26);flagMount.rotation.y=-Math.PI/2;scene.add(flagMount);
   box(.04,.36,.2,-.025,0,0,'#38413c',flagMount);
   for(const y of [-.13,.13])for(const z of [-.065,.065])cylinder(.014,.014,.018,.004,y,z,'#899185',flagMount,6).rotation.z=Math.PI/2;
   const brace=new THREE.Shape();brace.moveTo(0,-.12);brace.lineTo(.19,.16);brace.lineTo(0,.16);brace.closePath();
