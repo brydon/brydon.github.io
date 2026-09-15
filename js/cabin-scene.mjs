@@ -236,24 +236,22 @@ export async function createCabinScene(canvas, {reducedMotion, onEnter, onExit, 
   await createGearWall(cabin);
   box(.64,.09,1.05,1.94,1.05,.50,'#a5844c',cabin);box(.53,.62,.91,1.94,.7,.50,'#425a50',cabin);
   const coffeeStation=createCoffeeStation(cabin,onCoffee);
-  // A sleeve and braced iron arm clamp the flagpole to the right porch rail.
-  const flagMount=new THREE.Group();flagMount.name='Flagpole bracket on the porch rail';scene.add(flagMount);
-  for(const z of [2.73,2.87]){
-    for(const y of [1.2825,1.4375])box(.204,.025,.034,2.3,y,z,'#38413c',flagMount);
-    for(const x of [2.209,2.391])box(.022,.13,.034,x,1.36,z,'#38413c',flagMount);
-    cylinder(.008,.008,.018,2.409,1.36,z,'#899185',flagMount,6).rotation.z=Math.PI/2;
-  }
-  box(.30,.036,.13,2.541,1.3175,2.8,'#38413c',flagMount);
-  const brace=new THREE.Shape();brace.moveTo(2.398,1.39);brace.lineTo(2.659,1.335);brace.lineTo(2.398,1.335);brace.closePath();
-  for(const z of [2.749,2.837])mesh(new THREE.ExtrudeGeometry(brace,{depth:.014,bevelEnabled:false}),'#455048',flagMount).position.z=z;
-  cylinder(.042,.046,.255,2.68,1.3025,2.8,'#38413c',flagMount,10);
-  cylinder(.05,.05,.035,2.68,1.16,2.8,'#455048',flagMount,10);
-  for(const y of [1.205,1.415])cylinder(.05,.05,.022,2.68,y,2.8,'#455048',flagMount,10);
-  cylinder(.009,.009,.025,2.729,1.37,2.8,'#899185',flagMount,6).rotation.z=Math.PI/2;
+  // A bolted bracket on the right corner timber holds the pole 45 degrees out.
+  const flagMount=new THREE.Group();flagMount.name='Flagpole bracket on the corner wall';flagMount.position.set(2.52,2.25,2.09);scene.add(flagMount);
+  box(.04,.36,.2,-.025,0,0,'#38413c',flagMount);
+  for(const y of [-.13,.13])for(const z of [-.065,.065])cylinder(.014,.014,.018,.004,y,z,'#899185',flagMount,6).rotation.z=Math.PI/2;
+  const brace=new THREE.Shape();brace.moveTo(0,-.12);brace.lineTo(.19,.16);brace.lineTo(0,.16);brace.closePath();
+  for(const z of [-.047,.033])mesh(new THREE.ExtrudeGeometry(brace,{depth:.014,bevelEnabled:false}),'#455048',flagMount).position.z=z;
+  const flagPole=new THREE.Group();flagPole.name='Outward angled flagpole';flagPole.rotation.z=-Math.PI/4;flagMount.add(flagPole);
+  cylinder(.052,.058,.26,0,.11,0,'#38413c',flagPole,10);
+  for(const y of [0,.235])cylinder(.063,.063,.027,0,y,0,'#455048',flagPole,10);
+  cylinder(.011,.011,.028,0,.15,.064,'#899185',flagPole,6).rotation.x=Math.PI/2;
+  cylinder(.023,.03,1.7,0,.85,0,'#b8aa87',flagPole,8);
+  const finial=mesh(new THREE.SphereGeometry(.043,8,6),'#c9b993',flagPole);finial.position.y=1.72;
 
   // Red details sit on both faces of the opaque white flag cloth.
-  cylinder(.025,.035,2.3,2.68,2.31,2.8,'#b8aa87',scene,6);
-  const flag=new THREE.Group();flag.position.set(2.68,3.18,2.8);scene.add(flag);
+  // The cloth turns around the sloped pole, keeping its entire hoist attached.
+  const flag=new THREE.Group();flag.name='Two-sided Canadian flag';flag.position.y=1.39;flag.rotation.y=-.2;flagPole.add(flag);
   const flagMat=new THREE.MeshBasicMaterial({color:'#fff6df',side:THREE.DoubleSide});
   const field=new THREE.Mesh(new THREE.PlaneGeometry(1.02,.51),flagMat);field.position.x=.51;flag.add(field);
   const flagRed=new THREE.MeshBasicMaterial({color:'#c33b34',side:THREE.DoubleSide});
