@@ -14,3 +14,9 @@
 # ScienceDirect returns 400 from Actions and 403 to a local automated request.
 ^https://www\.sciencedirect\.com/science/article/abs/pii/S0022519320302393$
 ^https://www\.sciencedirect\.com/science/article/pii/S0024379514005953$
+
+# These OpenAI pages load outside Actions but intermittently return 403 in CI.
+# Run: https://github.com/brydon/brydon.github.io/actions/runs/36499980296
+^https://openai\.com/index/learning-to-reason-with-llms/$
+^https://openai\.com/index/new-embedding-models-and-api-updates/$
+^https://openai\.com/index/healthbench/$
