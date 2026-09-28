@@ -1,0 +1,16 @@
+# These exact URLs reject automated checks from GitHub Actions (2026-09-28).
+# They remain available on the site but need manual checking; an exclusion is
+# not a successful link check. Keep patterns narrow so new links are checked.
+# Run: https://github.com/brydon/brydon.github.io/actions/runs/36498418540
+
+# Scholar returns 403 from Actions, but the profile loads outside the runner.
+^https://scholar\.google\.ca/citations\?user=a1AbiGkAAAAJ&hl=en$
+
+# ResearchGate serves a security check; IUCr and Taylor & Francis use challenges.
+^https://www\.researchgate\.net/profile/Brydon_Eastman/contributions\?sorting=recentlyAdded$
+^https://scripts\.iucr\.org/cgi-bin/paper\?S0108767318099063$
+^https://www\.tandfonline\.com/doi/abs/10\.1080/00927872\.2012\.749886$
+
+# ScienceDirect returns 400 from Actions and 403 to a local automated request.
+^https://www\.sciencedirect\.com/science/article/abs/pii/S0022519320302393$
+^https://www\.sciencedirect\.com/science/article/pii/S0024379514005953$
