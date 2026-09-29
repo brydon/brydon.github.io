@@ -1,6 +1,6 @@
-# These exact URLs reject automated checks from GitHub Actions (2026-09-28).
+# These URLs reject automated checks from GitHub Actions (2026-09-28).
 # They remain available on the site but need manual checking; an exclusion is
-# not a successful link check. Keep patterns narrow so new links are checked.
+# not a successful link check. Prefer exact URLs unless blocking spans a host.
 # Run: https://github.com/brydon/brydon.github.io/actions/runs/36498418540
 
 # Scholar returns 403 from Actions, but the profile loads outside the runner.
@@ -15,8 +15,9 @@
 ^https://www\.sciencedirect\.com/science/article/abs/pii/S0022519320302393$
 ^https://www\.sciencedirect\.com/science/article/pii/S0024379514005953$
 
-# These OpenAI pages load outside Actions but intermittently return 403 in CI.
-# Run: https://github.com/brydon/brydon.github.io/actions/runs/36499980296
-^https://openai\.com/index/learning-to-reason-with-llms/$
-^https://openai\.com/index/new-embedding-models-and-api-updates/$
-^https://openai\.com/index/healthbench/$
+# OpenAI intermittently blocks Actions across its public website. Different
+# runs fail on different pages, so per-page exceptions leave the job flaky.
+# Exclude only the public website host; API/docs and other hosts stay checked.
+# Runs: https://github.com/brydon/brydon.github.io/actions/runs/36499980296
+#       https://github.com/brydon/brydon.github.io/actions/runs/36506559775
+^https?://(www\.)?openai\.com/
